@@ -3,329 +3,638 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Maple's 99 Nights in the Forest</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Maple's 99 Nights · Storybook Village</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;overflow:hidden;background:#8fcbd3;font-family:system-ui;color:white;touch-action:none}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#a9daec;font:14px system-ui,-apple-system,sans-serif;color:#fff;touch-action:none}
 canvas{display:block}
-#hud{position:absolute;top:12px;left:10px;right:10px;background:#173f43df;border:2px solid #ffe1a0;border-radius:17px;padding:10px;font-size:13px;pointer-events:none}
-#tools{position:absolute;top:100px;right:10px;display:flex;flex-direction:column;gap:7px}
-button{background:#28565b;color:white;border:2px solid #ffe5ac;border-radius:15px;padding:10px;font-weight:bold;font-size:13px}
-button:active{background:#658e79}
-#pad{position:absolute;bottom:28px;left:24px;width:145px;height:145px;border:3px solid #fff5d5;border-radius:50%;background:#315d65a8;touch-action:none}
-#nub{position:absolute;width:62px;height:62px;left:39px;top:39px;border-radius:50%;background:#ffd182;border:3px solid white;pointer-events:none}
-#actions{position:absolute;bottom:35px;right:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-#actions button{height:65px;min-width:76px;background:#517d74}
-#msg{position:absolute;bottom:194px;left:10%;right:10%;background:#173f43de;padding:10px;border-radius:16px;text-align:center;font-size:13px;pointer-events:none}
-#intro{position:absolute;inset:0;background:#163a40ee;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px;z-index:8}
-#intro h1{color:#ffd88c;font-size:30px}
-#intro p{max-width:340px;line-height:1.5}
-#intro button{font-size:20px;background:#dba858;padding:16px;color:#263d36}
+button,input,select{font:inherit}
+button{background:#34786e;border:2px solid #fce7b5;border-radius:16px;padding:9px 11px;color:white;font-weight:800;box-shadow:0 3px #285a54}
+button:active{transform:translateY(2px);box-shadow:none}
+#hud{position:absolute;left:9px;right:9px;top:max(8px,env(safe-area-inset-top));padding:10px 12px;border-radius:18px;background:#214e4adf;border:2px solid #ffe8b3;pointer-events:none;max-width:700px}
+#hud strong{color:#ffdc99}
+#stats{font-size:12px;line-height:1.5;margin-top:3px}
+#menu{position:absolute;right:9px;top:105px;display:flex;flex-direction:column;gap:6px}
+#menu button{font-size:12px;min-width:93px}
+#toast{position:absolute;left:12%;right:12%;bottom:193px;text-align:center;border-radius:15px;padding:9px 12px;background:#275551dd;pointer-events:none}
+#stick{position:absolute;left:18px;bottom:calc(21px + env(safe-area-inset-bottom));width:145px;height:145px;border:3px solid #fff2ce;background:#427b72a3;border-radius:50%;touch-action:none}
+#nub{position:absolute;left:40px;top:40px;width:60px;height:60px;border:4px solid white;background:#ffd58e;border-radius:50%;pointer-events:none}
+#buttons{position:absolute;right:9px;bottom:calc(22px + env(safe-area-inset-bottom));display:grid;grid-template-columns:77px 77px;gap:8px}
+#buttons button{height:63px;padding:6px;font-size:12px}
+#overlay,#dialog{position:absolute;inset:0;z-index:8;background:#133c42e9;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center}
+#dialog{display:none;z-index:9}
+.panel{background:#32645d;max-width:420px;width:100%;padding:23px 20px;border:3px solid #ffe1a5;border-radius:24px;box-shadow:0 12px 35px #122a3470}
+.panel h1{font-size:27px;color:#ffe1a0;margin:6px 0}
+.panel p{line-height:1.5}
+.panel input,.panel select{width:100%;padding:10px;margin:5px 0 13px;border:0;border-radius:9px}
+.panel label{display:block;text-align:left}
+.panel button{margin:3px}
+#error{display:none;position:absolute;inset:30% 8% auto;z-index:20;background:#753f46;border-radius:12px;padding:16px}
 </style>
 </head>
 <body>
-<div id="hud">🍁 Maple's 99 Nights<br><span id="info">Loading forest...</span></div>
-<div id="tools">
-<button id="switch">🐾 Switch</button>
-<button id="create">➕ Create</button>
-<button id="music">🎵 Music</button>
+<div id="hud"><strong>🍁 MAPLE'S 99 NIGHTS · STORYBOOK VILLAGE</strong><div id="stats">Preparing the village...</div></div>
+<div id="menu">
+<button id="swap">🐾 Switch</button>
+<button id="make">✨ Create</button>
+<button id="sound">🎵 Music</button>
+<button id="help">📖 Guide</button>
 </div>
-<div id="pad"><div id="nub"></div></div>
-<div id="actions">
+<div id="toast">Welcome to Honeybell Village!</div>
+<div id="stick"><div id="nub"></div></div>
+<div id="buttons">
 <button id="explore">🔎 Explore</button>
-<button id="plant">🌱 Plant</button>
-<button id="build">🏠 Build</button>
+<button id="plant">🌷 Plant</button>
+<button id="build">🏡 Build</button>
 <button id="rest">🌙 Rest</button>
 </div>
-<div id="msg">Welcome to the forest!</div>
-<div id="intro">
-<h1>🍁 Maple's 99 Nights<br>in the Forest</h1>
-<p>Explore a magical 3D village with kittens, puppies, birds and people. Make friends, gather treasures, plant gardens and experience 99 cozy nights!</p>
+<div id="overlay"><div class="panel">
+<div style="font-size:45px">🍁 🐱 🐶 🌷</div>
+<h1>Maple's 99 Nights</h1>
+<b>STORYBOOK VILLAGE</b>
+<p>Make animal friends, explore a colorful village, discover keepsakes, grow gardens, and enjoy all 4 seasons.</p>
 <button id="start">▶ Start Adventure</button>
-</div>
+</div></div>
+<div id="dialog"><div class="panel">
+<h2 id="dialogTitle">Create a friend</h2>
+<div id="dialogBody"></div>
+<button id="cancel">Close</button>
+<button id="confirm">Create</button>
+</div></div>
+<div id="error"></div>
 <script type="module">
-import * as T from "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js";
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 
-const $=id=>document.getElementById(id);
-const scene=new T.Scene();
-scene.background=new T.Color("#a7daec");
-scene.fog=new T.Fog("#a7daec",25,75);
-const camera=new T.PerspectiveCamera(60,innerWidth/innerHeight,.1,150);
-const renderer=new T.WebGLRenderer({antialias:true});
+const $=id=>document.getElementById(id),rand=(a,b)=>a+Math.random()*(b-a),pick=a=>a[Math.floor(rand(0,a.length))];
+const scene=new THREE.Scene();
+scene.background=new THREE.Color('#b5e6ef');
+scene.fog=new THREE.Fog('#b5e6ef',35,83);
+const camera=new THREE.PerspectiveCamera(52,innerWidth/innerHeight,.1,130);
+let renderer;
+try{
+renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'default'});
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.35));
 renderer.setSize(innerWidth,innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.45;
 document.body.prepend(renderer.domElement);
-scene.add(new T.HemisphereLight(0xffffff,0x657550,2));
-const sun=new T.DirectionalLight(0xffe8b0,2);
-sun.position.set(12,20,8);scene.add(sun);
+}catch(e){
+$('error').style.display='block';
+$('error').textContent='3D could not start: '+e.message;
+throw e;
+}
+scene.add(new THREE.HemisphereLight('#fff7e9','#799378',2.35));
+const sun=new THREE.DirectionalLight('#fff0d3',2.5);
+sun.position.set(14,23,11);
+scene.add(sun);
+const M=c=>new THREE.MeshStandardMaterial({color:c,roughness:.84});
+const p={
+grass:M('#79b977'),grass2:M('#8ac785'),
+path:M('#ead1a0'),wood:M('#8e624e'),
+white:M('#fff2df'),dark:M('#333944'),
+pink:M('#eab3b9'),gold:M('#ffd578'),
+green:M('#69a76b'),leaf:M('#81bb7e'),
+stone:M('#abb5b0'),water:M('#6cc4d9'),
+red:M('#c47a76')
+};
+const sphere=new THREE.SphereGeometry(1,16,12);
+const cube=new THREE.BoxGeometry(1,1,1);
+const cone=new THREE.ConeGeometry(1,1,8);
+const cylinder=new THREE.CylinderGeometry(1,1,1,10);
 
-function box(w,h,d,c,x=0,y=0,z=0){
-const m=new T.Mesh(new T.BoxGeometry(w,h,d),new T.MeshLambertMaterial({color:c}));
-m.position.set(x,y,z);return m;
+function mesh(parent,geo,mat,x,y,z,sx=1,sy=sx,sz=sx){
+const o=new THREE.Mesh(geo,mat);
+o.position.set(x,y,z);
+o.scale.set(sx,sy,sz);
+parent.add(o);
+return o;
 }
-function ball(r,c,x=0,y=0,z=0){
-const m=new T.Mesh(new T.SphereGeometry(r,12,9),new T.MeshLambertMaterial({color:c}));
-m.position.set(x,y,z);return m;
-}
-function cone(r,h,c,x=0,y=0,z=0){
-const m=new T.Mesh(new T.ConeGeometry(r,h,7),new T.MeshLambertMaterial({color:c}));
-m.position.set(x,y,z);return m;
-}
-const ground=box(110,.15,110,"#80b77a",0,-.1,0);scene.add(ground);
-scene.add(box(5,.02,46,"#decba0",0,.02,0));
-scene.add(box(40,.02,4,"#decba0",0,.03,0));
-const scenery=[],plants=[],items=[],villagers=[],party=[];
-function tree(x,z){
-const g=new T.Group();
-g.add(box(.45,2,.45,"#80583f",0,1,0));
-g.add(cone(1.5,3.5,"#428b5e",0,3,0));
-g.position.set(x,0,z);scene.add(g);
-scenery.push(g);
-}
-function house(x,z,color){
-const g=new T.Group();
-g.add(box(4,3,4,color,0,1.5,0));
-g.add(cone(3.6,2.5,"#bd7765",0,4.1,0));
-g.add(box(.95,1.9,.12,"#77533c",0,.95,2.05));
-g.add(box(.8,.8,.15,"#c7effb",-1.2,2,2.05));
-g.position.set(x,0,z);scene.add(g);
-}
-house(-9,-8,"#eac997");
-house(9,-7,"#a7b9db");
-house(-10,10,"#dfa7a1");
-house(10,11,"#cfb3df");
-for(let i=0;i<95;i++){
-let x=Math.random()*90-45,z=Math.random()*90-45;
-if(Math.abs(x)<14&&Math.abs(z)<15)continue;
-tree(x,z);
-}
-const artifactNames=["Cat collar","Dog bed","Bird cage","Axe","Rope","Ladder","Flashlight","Magic key","Star crystal"];
-for(let i=0;i<25;i++){
-let x=Math.random()*38-19,z=Math.random()*38-19;
-const o=ball(.36,["#f5ce58","#d7a5ec","#90dbdd"][i%3],x,.5,z);
-scene.add(o);
-items.push({mesh:o,name:artifactNames[i%artifactNames.length],found:false});
-}
-function character(type,color,name,x=0,z=0){
-const g=new T.Group();
-g.add(ball(.57,color,0,1,0));
-g.add(ball(.43,color,0,1.65,.18));
-if(type==="Kitten"){
-g.add(cone(.22,.43,color,-.3,2.12,.12));
-g.add(cone(.22,.43,color,.3,2.12,.12));
-}else if(type==="Puppy"){
-g.add(ball(.26,color,-.48,1.63,0));
-g.add(ball(.26,color,.48,1.63,0));
-}else if(type==="Bird"){
-g.add(cone(.18,.35,"#ffcf70",0,1.6,.64));
-}else{
-g.add(ball(.36,"#f0c9a0",0,2,.1));
-g.add(cone(.49,.48,color,0,2.48,0));
-}
-g.add(ball(.085,"#25343b",-.18,1.73,.54));
-g.add(ball(.085,"#25343b",.18,1.73,.54));
-for(let s of [-1,1]){
-g.add(ball(.19,color,s*.35,.35,.12));
-}
+const oval=(g,m,x,y,z,a,b=a,c=a)=>mesh(g,sphere,m,x,y,z,a,b,c);
+const block=(g,m,x,y,z,a,b,c)=>mesh(g,cube,m,x,y,z,a,b,c);
+const point=(g,m,x,y,z,a,b)=>mesh(g,cone,m,x,y,z,a,b,a);
+const pole=(g,m,x,y,z,a,b)=>mesh(g,cylinder,m,x,y,z,a,b,a);
+
+block(scene,p.grass,0,-.22,0,96,.44,96);
+block(scene,p.path,0,.02,0,3.7,.05,51);
+block(scene,p.path,0,.025,0,49,.05,3.7);
+const sway=[];
+
+function tree(x,z,scale=1){
+const g=new THREE.Group();
 g.position.set(x,0,z);
-g.userData={type,name};
-scene.add(g);return g;
+g.scale.setScalar(scale);
+pole(g,p.wood,0,1.75,0,.28,3.5);
+const crown=new THREE.Group();
+g.add(crown);
+for(let j=0;j<6;j++){
+const a=j*Math.PI/3;
+oval(crown,j%2?p.leaf:p.green,Math.cos(a)*.9,3.85+(j%2)*.22,Math.sin(a)*.8,1.2,1.15,1.13);
 }
-party.push(character("Kitten","#e5b36f","Maple"));
-party.push(character("Puppy","#e6d0b6","Biscuit"));
-party.push(character("Bird","#8ac5d9","Pip"));
-party[1].position.set(1.8,0,0);
-party[2].position.set(-1.8,0,0);
-let active=0;
-const names=["Luna","Clover","Milo","Sunny","Peaches","Robin"];
-const types=["Kitten","Puppy","Bird","Human"];
+oval(crown,p.leaf,0,4.7,0,1.4,1.2,1.3);
+sway.push({crown,phase:rand(0,6)});
+scene.add(g);
+}
+function pine(x,z,scale=1){
+const g=new THREE.Group();
+g.position.set(x,0,z);
+g.scale.setScalar(scale);
+pole(g,p.wood,0,1.5,0,.25,3);
+for(let j=0;j<3;j++)
+point(g,j%2?p.green:p.leaf,0,2.5+j*.8,0,1.5-j*.26,2.35);
+scene.add(g);
+}
+function flower(x,z,col){
+const g=new THREE.Group();
+g.position.set(x,0,z);
+pole(g,p.green,0,.28,0,.035,.5);
+for(let j=0;j<5;j++){
+const a=j*Math.PI*2/5;
+oval(g,col,Math.cos(a)*.14,.58,Math.sin(a)*.14,.14,.12,.13);
+}
+oval(g,p.gold,0,.58,0,.09);
+scene.add(g);
+}
+function fence(x,z){
+const g=new THREE.Group();
+g.position.set(x,0,z);
+for(let s of [-.65,.65]){
+block(g,p.white,s,.5,0,.17,1,.17);
+point(g,p.white,s,1.1,0,.16,.3);
+}
+block(g,p.white,0,.4,0,1.6,.12,.13);
+block(g,p.white,0,.7,0,1.6,.12,.13);
+scene.add(g);
+}
+function home(x,z,color){
+const g=new THREE.Group();
+g.position.set(x,0,z);
+block(g,p.white,0,.2,0,5,.4,4.8);
+block(g,M(color),0,1.8,0,4.4,3.2,4.2);
+const roof=point(g,p.red,0,4.5,0,3.55,2.45);
+roof.rotation.y=Math.PI/4;
+block(g,p.wood,0,1.2,2.16,1.05,2,.13);
+oval(g,p.gold,.29,1.12,2.26,.075);
+for(const s of [-1,1]){
+block(g,p.white,s*1.32,2.1,2.18,.92,1,.13);
+block(g,p.wood,s*1.32,2.1,2.28,.08,1,.12);
+block(g,p.wood,s*1.32,2.1,2.29,.92,.08,.12);
+block(g,p.white,s*1.32,.45,2.22,1.5,.3,.48);
+}
+oval(g,p.green,-2.05,.42,2.15,.48,.44,.45);
+oval(g,p.green,2.05,.42,2.15,.48,.44,.45);
+scene.add(g);
+}
+home(-9,-9,'#efd4af');
+home(9,-9,'#b6cddb');
+home(-10,11,'#e5bfcb');
+home(10,11,'#d2c6e5');
+for(let z of [-15,-12,-7,7,12,15])
+for(let x of [-5,5])fence(x,z);
+
+for(let i=0;i<90;i++){
+const x=rand(-43,43),z=rand(-43,43);
+if(Math.abs(x)<15&&Math.abs(z)<17)continue;
+i%4===0?pine(x,z,rand(.75,1.25)):tree(x,z,rand(.72,1.25));
+}
+for(let i=0;i<110;i++){
+const x=rand(-27,27),z=rand(-27,27);
+if(Math.abs(x)<2||Math.abs(z)<2)continue;
+flower(x,z,pick([p.pink,p.white,p.gold]));
+}
+const pond=new THREE.Group();
+pond.position.set(-18,.04,9);
+oval(pond,p.water,0,0,0,5,.07,3.3);
+for(let j=0;j<20;j++){
+const a=j*Math.PI/10;
+oval(pond,p.stone,Math.cos(a)*5,.1,Math.sin(a)*3.4,.36,.22,.39);
+}
+scene.add(pond);
+function lamp(x,z){
+const g=new THREE.Group();
+g.position.set(x,0,z);
+pole(g,p.wood,0,1.45,0,.11,2.9);
+oval(g,p.gold,0,3.02,0,.34,.4,.34);
+point(g,p.red,0,3.43,0,.48,.48);
+scene.add(g);
+}
+for(const q of [[-4,-7],[4,-7],[-4,8],[4,8]])lamp(...q);
+function stall(x,z){
+const g=new THREE.Group();
+g.position.set(x,0,z);
+block(g,p.wood,0,1,0,4,.25,2.4);
+for(const s of [-1,1])
+for(const t of [-1,1])pole(g,p.wood,s*1.7,2,t*.9,.09,3.8);
+block(g,p.red,0,3.8,0,4.7,.28,2.8);
+for(let s=-2;s<=2;s++)
+block(g,s%2?p.white:p.gold,s*.85,3.65,1.42,.84,.24,.18);
+for(let k=0;k<5;k++)
+oval(g,pick([p.red,p.gold,p.green]),(k-2)*.62,1.4,.45,.3,.3,.3);
+scene.add(g);
+}
+stall(16,2);
+
+const party=[],actors=[],villagers=[];
+function character(spec){
+const root=new THREE.Group(),bob=new THREE.Group();
+root.add(bob);
+const fur=M(spec.color),cream=M('#f6e7d4');
+const eye=M('#252e35'),blush=M('#e79fa4');
+const outfit=M(spec.outfit||'#c89ad0');
+const kind=spec.kind;
+oval(bob,outfit,0,.87,0,.46,.57,.42);
+oval(bob,cream,0,.87,.37,.3,.36,.14);
+for(const s of [-1,1]){
+oval(bob,fur,s*.28,.29,.15,.22,.3,.22);
+oval(bob,fur,s*.41,1.05,.17,.17,.28,.2);
+}
+const head=new THREE.Group();
+head.position.y=1.74;
+bob.add(head);
+oval(head,kind==='person'?cream:fur,0,0,0,.65,.6,.56);
+if(kind==='cat'){
+for(const s of [-1,1]){
+const ear=point(head,fur,s*.43,.55,0,.28,.58);
+ear.rotation.z=-s*.23;
+point(head,blush,s*.43,.57,.17,.13,.28);
+}
+oval(head,fur,-.54,.2,-.46,.15,.18,.43);
+}
+if(kind==='dog'){
+for(const s of [-1,1]){
+const ear=oval(head,fur,s*.64,.07,-.06,.25,.44,.22);
+ear.rotation.z=s*.35;
+}
+oval(head,cream,0,-.22,.44,.42,.28,.33);
+oval(bob,fur,.55,1,-.46,.18,.18,.39);
+}
+if(kind==='bird'){
+for(const s of [-1,1]){
+const wing=oval(bob,fur,s*.46,.94,0,.22,.35,.27);
+wing.rotation.z=s*.28;
+}
+const beak=point(head,p.gold,0,-.13,.56,.2,.37);
+beak.rotation.x=Math.PI/2;
+}
+if(kind==='person'){
+oval(head,fur,0,.44,-.1,.65,.24,.46);
+oval(head,fur,0,.32,-.32,.57,.34,.22);
+}
+for(const s of [-1,1]){
+oval(head,p.white,s*.24,.05,.46,.19,.23,.09);
+oval(head,eye,s*.24,.05,.54,.095,.14,.04);
+oval(head,p.white,s*.27,.13,.58,.034);
+}
+if(kind!=='bird'){
+oval(head,blush,-.43,-.23,.44,.17,.08,.05);
+oval(head,blush,.43,-.23,.44,.17,.08,.05);
+oval(head,eye,0,-.18,.57,.1,.075,.09);
+}
+root.position.set(spec.x||0,0,spec.z||0);
+root.userData={spec,bob,head};
+scene.add(root);
+return root;
+}
+function add(name,kind,color,outfit,x,z){
+const s={name,kind,color,outfit,x,z};
+party.push(s);
+actors.push(character(s));
+}
+add('Maple','cat','#eab46f','#d48caa',0,2);
+add('Biscuit','dog','#d2b294','#8ac5bb',1.7,3.4);
+add('Pip','bird','#8ac8d9','#f0c36b',-1.7,3.4);
+add('Robin','person','#a97e57','#a7b9e0',3,4);
+const names=['Clover','Mochi','Poppy','Juniper','Willow','Peanut','Sunny','Milo','Wren','Pebble'];
 for(let i=0;i<10;i++){
-let x=(Math.random()-.5)*27,z=(Math.random()-.5)*27;
-const m=character(types[i%4],["#e7bd85","#c5b3dc","#9fcdb5","#f4a7a5"][i%4],names[i%6],x,z);
-villagers.push({m,angle:Math.random()*6.28});
+const x=rand(-17,17),z=rand(-17,17);
+const spec={
+name:names[i],
+kind:['cat','dog','person','bird'][i%4],
+color:pick(['#f0d0a6','#b9a5cb','#d9a487','#a1c5c6']),
+outfit:pick(['#d3a5c5','#97c6ae','#aabde8']),x,z
+};
+villagers.push({model:character(spec),x,z,a:rand(0,6)});
 }
-function current(){return party[active]}
-const seasons=["Spring","Summer","Autumn","Winter"];
-const times=["Morning","Afternoon","Evening","Night"];
-const weather=["Sunny","Rainy","Cloudy","Snowy"];
-let season=0,period=0,night=1,rain=false,inventory=[],wood=0,food=0,gardens=0,homes=0,started=false,musicOn=false;
-function say(s){$("msg").textContent=s}
-function info(){
-$("info").textContent=`🌙 Night ${night}/99 · ${times[period]} · ${seasons[season]} · ${weather[rain?season===3?3:1:period===3?2:0]} | 🐾 ${current().userData.name} | 🎒 ${inventory.length} artifacts | 🌱 ${gardens} | 🏠 ${homes}`;
+
+const treasureNames=['Kitten collar','Puppy bed','Birdhouse','Little axe','Rope','Ladder','Lantern','Magic acorn','Star compass','Silver bell'];
+const loot=[];
+for(let i=0;i<26;i++){
+const g=new THREE.Group();
+g.position.set(rand(-27,27),0,rand(-27,27));
+oval(g,p.gold,0,.55,0,.26,.32,.26);
+oval(g,p.white,0,.9,0,.1);
+scene.add(g);
+loot.push({g,name:treasureNames[i%treasureNames.length],found:false});
 }
-function lighting(){
-const colors=["#b3e4f3","#a7dcec","#edac88","#273a72"];
-scene.background=new T.Color(colors[period]);
-scene.fog.color.set(colors[period]);
-ground.material.color.set(season===3?"#e0edee":season===2?"#b89d65":season===1?"#7bbd6c":"#80b77a");
-sun.intensity=[1.3,2,.9,.25][period];
+let selected=0,night=1,part=0,season=0,weather=0;
+let wood=0,berries=0,gardens=0,homes=0,inventory=[];
+let started=false,dialogOpen=false,musicOn=false;
+const seasons=['Spring','Summer','Autumn','Winter'];
+const times=['Morning','Afternoon','Evening','Night'];
+const conditions=['Sunny','Rain','Breezy','Snow'];
+const sky=['#b5e6ef','#a4daea','#efc49a','#354a75'];
+
+function status(){
+$('stats').textContent=`🌙 ${night}/99 · ${times[part]} · ${seasons[season]} · ${conditions[weather]} | 🐾 ${party[selected].name} · 🎒 ${inventory.length} · 🪵 ${wood} · 🍓 ${berries} · 🌱 ${gardens} · 🏡 ${homes}`;
 }
-function nextTime(){
-period=(period+1)%4;
-if(period===0){
-night++;if(night%8===0)season=(season+1)%4;
+function say(s){$('toast').textContent=s}
+function look(){
+scene.background.set(sky[part]);
+scene.fog.color.set(sky[part]);
+sun.intensity=[2.3,2.7,1.3,.38][part];
+p.grass.color.set(['#79b977','#6bab68','#b4a16c','#dce6e9'][season]);
+p.leaf.color.set(['#81bb7e','#71ad68','#d5a15f','#b4cacc'][season]);
+p.green.color.set(['#69a76b','#54975a','#bd8751','#a3c5c7'][season]);
 }
-rain=Math.random()<.25;
-lighting();info();
-say(period===3?"✨ The stars are shining!":"🌤️ "+times[period]+" has arrived!");
-if(night>=99)say("🏆 You made it through 99 cozy nights! Keep exploring!");
+function save(){
+try{
+localStorage.setItem('maple-story-v3',JSON.stringify({
+night,part,season,wood,berries,gardens,homes,inventory,selected,
+party:party.slice(4)
+}));
+}catch(e){}
 }
-lighting();info();
-function switchPet(){
-active=(active+1)%party.length;
-say("🐾 You're now "+current().userData.name+"!");
-info();
+function load(){
+try{
+const o=JSON.parse(localStorage.getItem('maple-story-v3')||'null');
+if(!o)return;
+night=o.night||1;
+part=o.part||0;
+season=o.season||0;
+wood=o.wood||0;
+berries=o.berries||0;
+gardens=o.gardens||0;
+homes=o.homes||0;
+inventory=o.inventory||[];
+for(const c of (o.party||[]).slice(0,8))
+add(c.name,c.kind,c.color,c.outfit,2,2);
+selected=Math.min(o.selected||0,party.length-1);
+for(let i=0;i<Math.min(inventory.length,loot.length);i++){
+loot[i].found=true;
+scene.remove(loot[i].g);
 }
-function createPet(){
-const t=prompt("Create a Kitten, Puppy, Bird or Human:","Kitten");
-if(!t)return;
-const type=types.find(v=>v.toLowerCase()===t.trim().toLowerCase())||"Kitten";
-const name=(prompt("What is their name?","New Friend")||"New Friend").slice(0,24);
-const colors=["#e4b18d","#a8c6e5","#f0d18a","#c5afe0","#a4d3b5"];
-const pet=character(type,colors[party.length%colors.length],name,current().position.x+1.5,current().position.z+1.5);
-party.push(pet);active=party.length-1;
-say("✨ Meet "+name+"!");info();
+}catch(e){}
+}
+load();
+look();
+status();
+
+function swap(index=(selected+1)%party.length){
+selected=index;
+status();
+save();
+say('🐾 Playing as '+party[index].name);
 }
 function explore(){
-const p=current().position;
-let closest=null,best=2.8;
-for(const i of items){
-if(i.found)continue;
-const d=p.distanceTo(i.mesh.position);
-if(d<best){best=d;closest=i}
+const pos=actors[selected].position;
+let closest=null,d=2.7;
+for(const q of loot){
+const v=pos.distanceTo(q.g.position);
+if(!q.found&&v<d){closest=q;d=v}
 }
 if(closest){
-closest.found=true;scene.remove(closest.mesh);
+closest.found=true;
+scene.remove(closest.g);
 inventory.push(closest.name);
-say("🎁 Found "+closest.name+"! Artifacts: "+inventory.join(", "));
+say('🎁 Found '+closest.name+'!');
 }else{
-let near=villagers.find(v=>v.m.position.distanceTo(p)<3);
-if(near)say("💬 "+near.m.userData.name+": Welcome to our magical village!");
-else{wood++;food++;say("🌲 Gathered wood and berries! Wood: "+wood)}
+const v=villagers.find(v=>pos.distanceTo(v.model.position)<3);
+if(v)say('💬 '+v.model.userData.spec.name+': What a lovely day!');
+else{
+wood++;
+berries++;
+say('🌳 Gathered a log and some berries!');
 }
-info();
+}
+status();
+save();
 }
 function plant(){
 gardens++;
-const p=current().position;
-const g=new T.Group();
-g.add(box(.85,.16,.85,"#865f43",0,.08,0));
-g.add(cone(.36,.8,"#63b952",0,.6,0));
-g.position.set(p.x+1,0,p.z);
-scene.add(g);plants.push(g);
-say("🌱 You planted a garden!");
-info();
+const g=new THREE.Group(),a=actors[selected].position;
+g.position.set(a.x+1.4,0,a.z+1.3);
+block(g,p.wood,0,.07,0,1.25,.14,1);
+for(let i=0;i<3;i++){
+point(g,p.green,(i-1)*.32,.45,0,.17,.67);
+oval(g,p.pink,(i-1)*.32,.85,0,.13);
+}
+scene.add(g);
+say('🌷 Your flower garden is growing!');
+status();
+save();
 }
 function build(){
-if(wood<2){
-say("🪵 Explore to gather 2 wood before building!");
+if(wood<3){
+say('🪵 Gather 3 logs by exploring first.');
 return;
 }
-wood-=2;homes++;
-const p=current().position;
-const g=new T.Group();
-g.add(box(2,1.5,2,"#eed5a2",0,.75,0));
-g.add(cone(1.8,1.4,"#ba8572",0,2,0));
-g.position.set(p.x+3,0,p.z+3);scene.add(g);
-say("🏡 You built a cozy cottage!");
-info();
+wood-=3;
+homes++;
+const a=actors[selected].position;
+home(a.x+5,a.z+4,'#eac6bb');
+say('🏡 A new cozy cottage!');
+status();
+save();
 }
-let audio;
-function playNote(f,d=.18){
+function rest(){
+part=(part+1)%4;
+if(part===0){
+night++;
+if(night%8===1)season=(season+1)%4;
+}
+weather=Math.random()<.22?(season===3?3:1):Math.random()<.2?2:0;
+look();status();save();
+say(night>=99?'🏆 99 nights! You can keep exploring!':'✨ '+times[part]+' in '+seasons[season]);
+}
+
+let context,toneIndex=0;
+const tones=[392,440,523,659,587,523,440,392,349,392];
+function note(){
 if(!musicOn)return;
 try{
-audio??=new AudioContext();
-const o=audio.createOscillator(),v=audio.createGain();
-o.type="sine";o.frequency.value=f;
-v.gain.setValueAtTime(.035,audio.currentTime);
-v.gain.exponentialRampToValueAtTime(.001,audio.currentTime+d);
-o.connect(v);v.connect(audio.destination);
-o.start();o.stop(audio.currentTime+d);
+context??=new(window.AudioContext||window.webkitAudioContext)();
+context.resume();
+const osc=context.createOscillator(),vol=context.createGain();
+osc.type='sine';
+osc.frequency.value=tones[toneIndex++%tones.length];
+vol.gain.setValueAtTime(.025,context.currentTime);
+vol.gain.exponentialRampToValueAtTime(.001,context.currentTime+.3);
+osc.connect(vol);
+vol.connect(context.destination);
+osc.start();
+osc.stop(context.currentTime+.31);
 }catch(e){}
 }
-let notes=[392,440,523,659,523,440,392,330],note=0;
-setInterval(()=>{if(musicOn&&started)playNote(notes[note++%notes.length])},400);
-$("music").onclick=()=>{
+setInterval(()=>{if(started)note()},430);
+$('sound').onclick=()=>{
 musicOn=!musicOn;
-$("music").textContent=musicOn?"🔊 Music On":"🎵 Music";
-if(musicOn)playNote(523);
+$('sound').textContent=musicOn?'🔊 Music':'🎵 Music';
+note();
 };
-$("switch").onclick=switchPet;
-$("create").onclick=createPet;
-$("explore").onclick=explore;
-$("plant").onclick=plant;
-$("build").onclick=build;
-$("rest").onclick=nextTime;
-$("start").onclick=()=>{
-$("intro").style.display="none";started=true;
-say("🍁 Welcome to Maple's magical forest!");
+$('swap').onclick=()=>swap();
+$('explore').onclick=explore;
+$('plant').onclick=plant;
+$('build').onclick=build;
+$('rest').onclick=rest;
+
+function dialog(title,body,create=false){
+$('dialogTitle').textContent=title;
+$('dialogBody').innerHTML=body;
+$('confirm').style.display=create?'inline-block':'none';
+$('dialog').style.display='flex';
+dialogOpen=true;
+}
+function dismiss(){
+$('dialog').style.display='none';
+dialogOpen=false;
+}
+$('cancel').onclick=dismiss;
+$('make').onclick=()=>dialog('✨ Create a Friend',`
+<label>Name<input id="friendName" value="Clover" maxlength="18"></label>
+<label>Character<select id="friendKind">
+<option value="cat">Kitten</option>
+<option value="dog">Puppy</option>
+<option value="bird">Bird</option>
+<option value="person">Person</option>
+</select></label>
+<label>Fur / hair color<select id="friendColor">
+<option value="#e7b174">Golden</option>
+<option value="#eee4d8">Snow White</option>
+<option value="#8b6a57">Chocolate</option>
+<option value="#c9b5df">Lavender</option>
+<option value="#a7cad0">Blue</option>
+</select></label>`,true);
+$('confirm').onclick=()=>{
+if(party.length>=12){
+say('Your character party is full!');
+dismiss();
+return;
+}
+const a=actors[selected].position;
+add(
+$('friendName').value.trim()||'Friend',
+$('friendKind').value,
+$('friendColor').value,
+'#caa4d1',a.x+1.5,a.z+1
+);
+swap(party.length-1);
+dismiss();
 };
-let joyX=0,joyY=0;
-const pad=$("pad"),nub=$("nub");
-function moveStick(e){
+$('help').onclick=()=>dialog('📖 Village Guide',
+'<p>Move with the round joystick. Switch friends with the 🐾 button or tap your characters.</p><p>Explore near glowing keepsakes to collect them. Explore elsewhere to gather wood and berries. Plant flowers, build cottages and rest to change time and season.</p><p>This is a cozy, peaceful game. Progress saves on this device.</p>');
+$('start').onclick=()=>{
+$('overlay').style.display='none';
+started=true;
+say('🍁 Welcome to Honeybell Village!');
+};
+
+let vx=0,vy=0;
+const pad=$('stick'),nub=$('nub');
+function joystick(e){
+e.preventDefault();
 const r=pad.getBoundingClientRect();
-let x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2);
-const len=Math.hypot(x,y),max=48;
-if(len>max){x=x/len*max;y=y/len*max}
-joyX=x/max;joyY=y/max;
-nub.style.transform=`translate(${x}px,${y}px)`;
+let dx=e.clientX-r.left-r.width/2;
+let dy=e.clientY-r.top-r.height/2;
+const len=Math.hypot(dx,dy)||1,amount=Math.min(43,len);
+vx=dx/len*amount/43;
+vy=dy/len*amount/43;
+nub.style.transform=`translate(${vx*43}px,${vy*43}px)`;
 }
-pad.addEventListener("pointerdown",e=>{pad.setPointerCapture(e.pointerId);moveStick(e)});
-pad.addEventListener("pointermove",e=>{if(pad.hasPointerCapture(e.pointerId))moveStick(e)});
-function release(){joyX=joyY=0;nub.style.transform="translate(0,0)"}
-pad.addEventListener("pointerup",release);
-pad.addEventListener("pointercancel",release);
-const raycaster=new T.Raycaster(),mouse=new T.Vector2();
-renderer.domElement.addEventListener("pointerup",e=>{
-if(!started)return;
-mouse.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);
-raycaster.setFromCamera(mouse,camera);
-const hit=raycaster.intersectObjects(party,true);
-if(hit.length){
-let object=hit[0].object;
-while(object.parent&&!party.includes(object))object=object.parent;
-let i=party.indexOf(object);
-if(i>=0){active=i;info();say("🐾 Playing as "+object.userData.name)}
-}
+pad.addEventListener('pointerdown',e=>{
+pad.setPointerCapture(e.pointerId);
+joystick(e);
 });
-let last=performance.now(),timer=0;
-function animate(now){
+pad.addEventListener('pointermove',e=>{
+if(pad.hasPointerCapture(e.pointerId))joystick(e);
+});
+function release(){
+vx=vy=0;
+nub.style.transform='translate(0,0)';
+}
+pad.addEventListener('pointerup',release);
+pad.addEventListener('pointercancel',release);
+
+const ray=new THREE.Raycaster(),mouse=new THREE.Vector2();
+renderer.domElement.addEventListener('pointerup',e=>{
+if(!started||dialogOpen)return;
+mouse.set(e.clientX/innerWidth*2-1,1-e.clientY/innerHeight*2);
+ray.setFromCamera(mouse,camera);
+const hits=ray.intersectObjects(actors,true);
+if(!hits.length)return;
+let obj=hits[0].object;
+while(obj.parent&&!actors.includes(obj))obj=obj.parent;
+const index=actors.indexOf(obj);
+if(index>=0)swap(index);
+});
+
+const flakes=[];
+const flakeMat=new THREE.MeshBasicMaterial({color:'#ffffff'});
+for(let i=0;i<45;i++){
+const f=oval(scene,flakeMat,0,-100,0,.055,.13,.055);
+flakes.push(f);
+}
+let last=performance.now(),elapsed=0;
+camera.position.set(8,9,16);
+camera.lookAt(0,1,0);
+function animate(time){
 requestAnimationFrame(animate);
-let dt=Math.min((now-last)/1000,.05);last=now;
-if(started){
-const p=current().position;
-const len=Math.hypot(joyX,joyY);
-if(len>.08){
-p.x+=joyX*5*dt;p.z+=joyY*5*dt;
-p.x=T.MathUtils.clamp(p.x,-48,48);
-p.z=T.MathUtils.clamp(p.z,-48,48);
-current().rotation.y=Math.atan2(joyX,joyY);
+const dt=Math.min((time-last)/1000,.05);
+last=time;
+if(started&&!dialogOpen){
+const h=actors[selected],pos=h.position;
+if(Math.hypot(vx,vy)>.1){
+pos.x=THREE.MathUtils.clamp(pos.x+vx*4.4*dt,-43,43);
+pos.z=THREE.MathUtils.clamp(pos.z+vy*4.4*dt,-43,43);
+h.rotation.y=Math.atan2(vx,vy);
+h.userData.bob.position.y=Math.sin(time*.014)*.08;
+h.userData.head.rotation.z=Math.sin(time*.01)*.04;
+}else h.userData.bob.position.y*=.85;
+for(let i=0;i<actors.length;i++){
+if(i===selected)continue;
+const a=actors[i],ang=i*2.4;
+a.position.lerp(new THREE.Vector3(
+pos.x+Math.cos(ang)*1.8,0,
+pos.z+Math.sin(ang)*1.8
+),Math.min(1,dt*1.3));
+a.userData.bob.position.y=Math.sin(time*.005+i)*.025;
 }
-for(const v of villagers){
-v.angle+=(Math.random()-.5)*dt;
-v.m.position.x+=Math.sin(v.angle)*dt*.65;
-v.m.position.z+=Math.cos(v.angle)*dt*.65;
-v.m.position.x=T.MathUtils.clamp(v.m.position.x,-19,19);
-v.m.position.z=T.MathUtils.clamp(v.m.position.z,-19,19);
+for(let i=0;i<villagers.length;i++){
+const v=villagers[i],a=v.model;
+v.a+=Math.sin(time*.0007+i)*dt*.4;
+a.position.x+=Math.sin(v.a)*dt*.45;
+a.position.z+=Math.cos(v.a)*dt*.45;
+if(Math.hypot(a.position.x-v.x,a.position.z-v.z)>4)
+v.a+=Math.PI*dt;
+a.userData.bob.position.y=Math.sin(time*.006+i)*.035;
 }
-for(let i=0;i<party.length;i++){
-if(i===active)continue;
-party[i].position.lerp(new T.Vector3(p.x+(i%3-1)*1.5,0,p.z+2+Math.floor(i/3)),dt*.9);
+camera.position.lerp(new THREE.Vector3(
+pos.x+7.5,8,pos.z+12
+),Math.min(1,dt*3.8));
+camera.lookAt(pos.x,1.1,pos.z);
+elapsed+=dt;
+if(elapsed>=90){elapsed=0;rest()}
 }
-timer+=dt;
-if(timer>35){timer=0;nextTime()}
-const target=new T.Vector3(p.x+10,13,p.z+17);
-camera.position.lerp(target,.07);
-camera.lookAt(p.x,1,p.z);
+for(const q of loot){
+if(q.found)continue;
+q.g.rotation.y+=dt*.6;
+q.g.children[0].position.y=.55+Math.sin(time*.002)*.09;
 }
-for(const o of items)if(!o.found)o.mesh.rotation.y+=dt;
+for(const sw of sway)
+sw.crown.rotation.z=Math.sin(time*.0007+sw.phase)*.027;
+for(const f of flakes){
+f.visible=weather===1||weather===3;
+if(!f.visible)continue;
+const h=actors[selected].position;
+if(f.position.y<0)
+f.position.set(h.x+rand(-12,12),rand(6,16),h.z+rand(-12,12));
+f.position.y-=dt*(weather===3?1.6:9);
+f.position.x+=dt*(weather===3?.4:2);
+}
 renderer.render(scene,camera);
 }
-camera.position.set(11,14,20);
-camera.lookAt(0,0,0);
 requestAnimationFrame(animate);
-addEventListener("resize",()=>{
+addEventListener('resize',()=>{
 camera.aspect=innerWidth/innerHeight;
 camera.updateProjectionMatrix();
 renderer.setSize(innerWidth,innerHeight);
