@@ -4,1676 +4,1245 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#315a49">
-<title>Maple's 99 Nights — Wildflower Village V10</title>
+<title>Maple's 99 Nights - Build & Explore V8</title>
 <style>
-:root{
-  --pine:#224b3e;
-  --pine-light:#4d8368;
-  --gold:#f8e1a5;
-  --cream:#fff5db;
-  --safe-bottom:env(safe-area-inset-bottom,0px);
-  --safe-top:env(safe-area-inset-top,0px);
-}
 *{box-sizing:border-box}
-html,body{width:100%;height:100%;margin:0;overflow:hidden;touch-action:none}
-body{background:#92c6bd;color:white;font-family:system-ui,-apple-system,sans-serif}
-canvas{display:block;touch-action:none}
-button{font:700 12px system-ui;color:white;border:1.5px solid var(--gold);background:#2c604d;border-radius:14px;padding:10px;touch-action:none;cursor:pointer}
-button:disabled{opacity:.4;filter:grayscale(1)}
-button:active{filter:brightness(1.18)}
-#hud{
-  position:fixed;
-  z-index:2;
-  top:calc(8px + var(--safe-top));
-  left:8px;
-  max-width:59vw;
-  padding:9px 10px;
-  background:#1b4339df;
-  border:1px solid #f8dfa7;
-  border-radius:15px;
-  backdrop-filter:blur(7px);
-  box-shadow:0 5px 18px #133d3466;
-  pointer-events:none;
-}
-#hudTitle{font-size:12px;font-weight:900;color:#ffe0a4;letter-spacing:.02em}
-#stats{font-size:10.5px;line-height:1.55;margin-top:3px}
-#weatherTag{font-size:11px}
-#top{
-  position:fixed;
-  z-index:3;
-  right:7px;
-  top:calc(8px + var(--safe-top));
-  display:flex;
-  gap:5px;
-}
-#top button{width:40px;height:40px;border-radius:50%;padding:0;font-size:18px;background:#275847ed}
-#actions{
-  position:fixed;
-  z-index:5;
-  right:9px;
-  bottom:calc(159px + var(--safe-bottom));
-  display:flex;
-  gap:7px;
-  align-items:center;
-}
-#placeItem{font-size:13px;min-width:112px;background:linear-gradient(145deg,#4c936b,#276246);box-shadow:0 3px 11px #14372f88}
-#collectItem{background:#315c70e8}
-#restButton{background:#625476e8}
-#toast{
-  position:fixed;
-  z-index:12;
-  left:12%;
-  right:12%;
-  bottom:calc(216px + var(--safe-bottom));
-  text-align:center;
-  background:#1c4e3eea;
-  border:1px solid var(--gold);
-  border-radius:15px;
-  padding:10px;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .2s;
-  font-size:12px;
-}
-#toast.visible{opacity:1}
-.joystick{
-  position:fixed;
-  z-index:4;
-  bottom:calc(17px + var(--safe-bottom));
-  width:124px;
-  height:124px;
-  border:3px solid #fff0c7;
-  border-radius:50%;
-  background:#305c4b8f;
-  touch-action:none;
-  user-select:none;
-}
-#moveStick{left:12px}
-#lookStick{right:12px}
-.knob{
-  position:absolute;
-  left:34px;
-  top:34px;
-  height:50px;
-  width:50px;
-  border-radius:50%;
-  border:3px solid white;
-  background:#ffd59d;
-  pointer-events:none;
-}
-#lookStick .knob{background:#a7dbe8}
-.stickCaption{
-  position:fixed;
-  z-index:4;
-  bottom:calc(145px + var(--safe-bottom));
-  font-size:10px;
-  font-weight:900;
-  color:#194b3a;
-  text-shadow:0 1px 0 #fff1ca;
-}
-#moveCaption{left:51px}
-#lookCaption{right:44px}
-#radial{
-  display:none;
-  position:fixed;
-  z-index:15;
-  right:12px;
-  bottom:calc(221px + var(--safe-bottom));
-  width:268px;
-  height:268px;
-  border-radius:50%;
-  border:2px solid #ffe9ba;
-  background:radial-gradient(circle,#366d58ed,#173c32f9);
-  box-shadow:0 8px 35px #081e19ab;
-  touch-action:none;
-}
-.radialItem{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:80px;
-  min-height:56px;
-  padding:5px 3px;
-  border-radius:15px;
-  font-size:10px;
-  line-height:1.15;
-  white-space:normal;
-  background:#4e886bec;
-}
-.radialItem b{display:block;font-size:23px;margin-bottom:2px}
-.radialItem small{display:block;color:#fff5d6;font-size:9px}
-.radialItem.chosen{background:#dca75e;color:#163a2e}
-.radialItem.chosen small{color:#284f3b}
-#radialCenter{
-  position:absolute;
-  top:49%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  font-size:11px;
-  color:#ffebbd;
-  text-align:center;
-  font-weight:850;
-  pointer-events:none;
-}
-#radialClose{
-  position:absolute;
-  bottom:15%;
-  left:50%;
-  transform:translateX(-50%);
-  background:#884c49;
-  padding:4px 9px;
-}
-#placingBar{
-  display:none;
-  position:fixed;
-  z-index:11;
-  left:9px;
-  right:9px;
-  bottom:calc(162px + var(--safe-bottom));
-  border:1px solid var(--gold);
-  border-radius:17px;
-  text-align:center;
-  padding:10px;
-  background:#244c41f4;
-  box-shadow:0 6px 25px #142c24a8;
-}
-#placingBar strong{display:block;color:#ffe3a1;font-size:13px}
-#placingBar .hint{font-size:11px;margin:5px 0}
-#placingBar button{margin:2px}
-#intro,#modal{
-  position:fixed;
-  inset:0;
-  z-index:20;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:17px;
-  background:#143b30e8;
-}
-#modal{display:none;z-index:21}
-.sheet{
-  width:100%;
-  max-width:425px;
-  max-height:86dvh;
-  overflow:auto;
-  padding:21px;
-  border:2px solid #ffe0aa;
-  border-radius:24px;
-  background:linear-gradient(145deg,#51866f,#275848);
-  text-align:center;
-  box-shadow:0 16px 45px #0c241aaa;
-}
-.sheet h1,.sheet h2{margin:6px 0 12px;color:#ffe2a5}
-.sheet p{line-height:1.48}
-.sheet button{margin:4px}
-.sheet label{display:block;text-align:left;margin:10px 0}
-.sheet input,.sheet select{width:100%;border:0;border-radius:9px;padding:10px;margin-top:5px}
-.option{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:8px;
-  text-align:left;
-  padding:7px 9px;
-  margin:6px 0;
-  border-radius:12px;
-  background:#1b4d3d;
-}
-.option small{opacity:.8}
-#fatal{
-  display:none;
-  position:fixed;
-  z-index:99;
-  top:27%;
-  left:8%;
-  right:8%;
-  padding:20px;
-  background:#873d44;
-  border:2px solid white;
-  border-radius:15px;
-}
-@media(max-width:390px){
-  #actions{gap:4px;right:5px}
-  #actions button{padding:9px 7px}
-  #placeItem{min-width:97px}
-  #radial{width:247px;height:247px}
-  .radialItem{width:75px;min-height:53px}
-}
+html,body{height:100%;width:100%;margin:0;overflow:hidden;touch-action:none;background:#9ac8c0;color:#fff;font:13px system-ui,-apple-system,sans-serif}
+canvas{display:block}
+button,select,input{font:inherit}
+button{background:#28594c;border:1.5px solid #f6deb0;color:#fff;font-weight:750;border-radius:14px;padding:9px 11px}
+button:active{filter:brightness(1.25)}
+button:disabled{opacity:.45}
+#hud{position:fixed;top:max(8px,env(safe-area-inset-top));left:8px;max-width:65vw;padding:9px 11px;border:1px solid #f3d89e;border-radius:16px;background:#183d35db;pointer-events:none;backdrop-filter:blur(5px)}
+#hud strong{font-size:12px;color:#ffdfa0}
+#stats{font-size:11px;line-height:1.5}
+#topButtons{position:fixed;right:8px;top:max(8px,env(safe-area-inset-top));display:flex;gap:5px}
+#topButtons button{width:40px;height:40px;padding:0;border-radius:50%;font-size:17px}
+#actions{position:fixed;right:8px;bottom:calc(155px + env(safe-area-inset-bottom));display:flex;gap:6px}
+#actions button{font-size:12px}
+#message{position:fixed;left:10%;right:10%;bottom:calc(205px + env(safe-area-inset-bottom));padding:10px;text-align:center;background:#1e493de8;border:1px solid #f2dfb8;border-radius:15px;opacity:0;transition:opacity .3s;pointer-events:none}
+#message.show{opacity:1}
+.stick{position:fixed;bottom:calc(17px + env(safe-area-inset-bottom));height:122px;width:122px;border:3px solid #fff1d2;border-radius:50%;background:#3265549e;touch-action:none}
+.nub{position:absolute;left:33px;top:33px;width:50px;height:50px;background:#ffd69a;border:3px solid #fff5e0;border-radius:50%;pointer-events:none}
+#move{left:13px}
+#cameraStick{right:13px}
+#cameraStick .nub{background:#a7d8e9}
+#placement{display:none;position:fixed;left:8px;right:8px;bottom:calc(157px + env(safe-area-inset-bottom));padding:9px;background:#23483eea;border:1px solid #e9d5ad;border-radius:16px;text-align:center}
+#placement strong{display:block;color:#ffdd95;margin-bottom:6px}
+#placement button{margin:2px;font-size:12px}
+#intro,#sheet{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:#163b31e8;padding:18px}
+#sheet{display:none;z-index:12}
+.panel{background:linear-gradient(145deg,#427c69,#25594e);border:2px solid #f8dda9;border-radius:23px;padding:20px;width:100%;max-width:420px;max-height:85dvh;overflow:auto;text-align:center;box-shadow:0 15px 40px #10291b88}
+.panel h1,.panel h2{color:#ffe0a3;margin:5px 0 12px}
+.panel p{line-height:1.5}
+.panel button{margin:4px}
+.entry{display:flex;align-items:center;justify-content:space-between;text-align:left;gap:8px;padding:7px 9px;border-radius:12px;background:#1e5145;margin:6px 0}
+.entry small{opacity:.8}
+.panel label{display:block;text-align:left;margin:8px 0}
+.panel select,.panel input{width:100%;padding:9px;border:0;border-radius:8px;margin:4px 0}
+.hint{font-size:11px;color:#d9ebdd}
+#error{display:none;position:fixed;top:30%;left:8%;right:8%;padding:20px;background:#813c46;border:2px solid white;z-index:30;border-radius:16px}
 </style>
 </head>
 <body>
+
 <div id="hud">
-  <div id="hudTitle">🍁 MAPLE'S 99 NIGHTS · V10</div>
-  <div id="stats">Preparing Wildflower Hollow...</div>
+<strong>🍁 MAPLE'S 99 NIGHTS · V8</strong>
+<div id="stats">Growing the village...</div>
 </div>
-<div id="top">
-  <button id="friendsButton" title="Characters">🐾</button>
-  <button id="inventoryButton" title="Backpack">🎒</button>
-  <button id="musicButton" title="Turn music on or off">🔊</button>
-  <button id="settingsButton" title="Settings">☰</button>
+
+<div id="topButtons">
+<button id="friends">🐾</button>
+<button id="bag">🎒</button>
+<button id="buildButton">🔨</button>
+<button id="settings">☰</button>
 </div>
-<div id="toast"></div>
+
+<div id="message"></div>
+
 <div id="actions">
-  <button id="placeItem">🔨 Place Item</button>
-  <button id="collectItem">✨ Collect</button>
-  <button id="restButton">🌙 Rest</button>
+<button id="explore">✨ Collect</button>
+<button id="rest">🌙 Rest</button>
 </div>
-<div id="radial">
-  <div id="radialItems"></div>
-  <div id="radialCenter">CHOOSE<br>AN ITEM</div>
-  <button id="radialClose">✕</button>
+
+<div id="placement">
+<strong id="placeName">Place your item</strong>
+<span class="hint">Tap the ground to choose a spot</span>
+<div>
+<button id="rotate">↻ Rotate</button>
+<button id="confirmPlace">✓ Place</button>
+<button id="cancelPlace">✕ Cancel</button>
 </div>
-<div id="placingBar">
-  <strong id="placingTitle">Place item</strong>
-  <div class="hint">Tap the ground to move · Green = allowed · Red = blocked</div>
-  <button id="rotateItem">↻ Rotate</button>
-  <button id="confirmItem">✓ Place Here</button>
-  <button id="cancelItem">✕ Cancel</button>
 </div>
-<div id="moveStick" class="joystick"><div class="knob"></div></div>
-<div id="lookStick" class="joystick"><div class="knob"></div></div>
-<div id="moveCaption" class="stickCaption">MOVE</div>
-<div id="lookCaption" class="stickCaption">CAMERA</div>
+
+<div id="move" class="stick"><div class="nub"></div></div>
+<div id="cameraStick" class="stick"><div class="nub"></div></div>
+
 <div id="intro">
-  <div class="sheet">
-    <div style="font-size:42px">🐱 🌻 🐶 🏡</div>
-    <h1>Maple's 99 Nights</h1>
-    <b>WILDFLOWER HOLLOW · VERSION 10</b>
-    <p>Explore a richly decorated forest village. Collect treasures, design your neighborhood, and enjoy the changing weather and 99 magical nights.</p>
-    <p>Hold <b>Place Item</b> to open the circular building menu. Tap the world to choose exactly where to build.</p>
-    <p>🎵 Tap Play to begin the original forest soundtrack.</p>
-    <button id="playButton" style="font-size:16px;padding:12px 27px">▶ Play</button>
-  </div>
+<div class="panel">
+<div style="font-size:43px">🍁 🐱 🐶 🌻</div>
+<h1>Maple's 99 Nights</h1>
+<b>BUILD & EXPLORE · VERSION 8</b>
+<p>Choose exactly where to build cottages and gardens. Pick up objects from the forest floor. Watch sunrise turn into a starry night, with changing weather and whimsical music.</p>
+<p class="hint">Left joystick: walk · Right: look · 🔨: place items</p>
+<button id="start">▶ Play Maple's Game</button>
 </div>
-<div id="modal"><div class="sheet">
-  <h2 id="modalTitle">Menu</h2>
-  <div id="modalBody"></div>
-  <button id="closeModal">Close</button>
-</div></div>
-<div id="fatal"></div>
+</div>
+
+<div id="sheet">
+<div class="panel">
+<h2 id="sheetTitle"></h2>
+<div id="sheetBody"></div>
+<button id="closeSheet">Close</button>
+</div>
+</div>
+<div id="error"></div>
+
 <script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 
-// Helpers, materials, and geometry
-const $=id=>document.getElementById(id);
-const clamp=THREE.MathUtils.clamp;
-let randomSeed=105333;
-function random(){
-  randomSeed=(Math.imul(1664525,randomSeed)+1013904223)>>>0;
-  return randomSeed/4294967296;
+const $=s=>document.getElementById(s);
+const clamp=T.MathUtils.clamp;
+
+let seed=68317;
+function rng(){
+seed=(Math.imul(1664525,seed)+1013904223)>>>0;
+return seed/4294967296;
 }
-function range(a,b){return a+(b-a)*random();}
-function choice(a){return a[Math.floor(random()*a.length)];}
-function angleFor(i,n){return i*Math.PI*2/n;}
-const v3=(x,y,z)=>new THREE.Vector3(x,y,z);
+const rnd=(a,b)=>a+(b-a)*rng();
+const pick=a=>a[Math.floor(rng()*a.length)];
 
-const scene=new THREE.Scene();
-scene.background=new THREE.Color('#b7e4e7');
-scene.fog=new THREE.Fog('#b7e4e7',36,92);
-const camera=new THREE.PerspectiveCamera(54,innerWidth/innerHeight,.1,140);
+const scene=new T.Scene();
+scene.background=new T.Color('#b9e3ea');
+scene.fog=new T.Fog('#b9e3ea',38,83);
+
+const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,135);
 let renderer;
-try{
-  renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'default'});
-  renderer.setSize(innerWidth,innerHeight);
-  renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.2));
-  renderer.outputColorSpace=THREE.SRGBColorSpace;
-  renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=1.36;
-  renderer.shadowMap.enabled=true;
-  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-  document.body.prepend(renderer.domElement);
-}catch(error){
-  $('fatal').style.display='block';
-  $('fatal').textContent='Could not start the 3D world: '+error.message;
-  throw error;
-}
-const hemi=new THREE.HemisphereLight('#fff8df','#5a7a5f',2.1);
-scene.add(hemi);
-const sunlight=new THREE.DirectionalLight('#ffe4b9',2.4);
-sunlight.position.set(-13,23,13);
-sunlight.castShadow=true;
-sunlight.shadow.mapSize.set(512,512);
-sunlight.shadow.camera.left=-26;
-sunlight.shadow.camera.right=26;
-sunlight.shadow.camera.top=26;
-sunlight.shadow.camera.bottom=-26;
-sunlight.shadow.normalBias=.035;
-scene.add(sunlight);
-scene.add(sunlight.target);
 
-function basicMaterial(color){
-  return new THREE.MeshStandardMaterial({color,roughness:.84});
+try{
+renderer=new T.WebGLRenderer({antialias:true,powerPreference:'default'});
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.3));
+renderer.setSize(innerWidth,innerHeight);
+renderer.outputColorSpace=T.SRGBColorSpace;
+renderer.toneMapping=T.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.35;
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=T.PCFSoftShadowMap;
+document.body.prepend(renderer.domElement);
+}catch(e){
+$('error').style.display='block';
+$('error').textContent='3D cannot start: '+e.message;
+throw e;
 }
-function makeTexture(base,spots,mode){
-  const canvas=document.createElement('canvas');
-  canvas.width=canvas.height=256;
-  const ctx=canvas.getContext('2d');
-  ctx.fillStyle=base;
-  ctx.fillRect(0,0,256,256);
-  let s=12345;
-  function rnd(){
-    s=(Math.imul(1664525,s)+1013904223)>>>0;
-    return s/4294967296;
-  }
-  for(let i=0;i<1300;i++){
-    ctx.globalAlpha=.06+rnd()*.24;
-    ctx.fillStyle=spots[Math.floor(rnd()*spots.length)];
-    ctx.fillRect(rnd()*256,rnd()*256,1+rnd()*6,1+rnd()*6);
-  }
-  ctx.globalAlpha=.3;
-  ctx.strokeStyle='#453c31';
-  if(mode==='planks'){
-    for(let y=0;y<256;y+=28){
-      ctx.beginPath();
-      ctx.moveTo(0,y);
-      ctx.lineTo(256,y);
-      ctx.stroke();
-    }
-  }
-  if(mode==='stone'){
-    for(let y=0;y<256;y+=42){
-      ctx.beginPath();
-      ctx.moveTo(0,y);
-      ctx.lineTo(256,y);
-      ctx.stroke();
-    }
-  }
-  const t=new THREE.CanvasTexture(canvas);
-  t.colorSpace=THREE.SRGBColorSpace;
-  t.wrapS=t.wrapT=THREE.RepeatWrapping;
-  return t;
-}
-const materials={
-  grass:basicMaterial('#91b67f'),
-  soil:basicMaterial('#ae825f'),
-  path:basicMaterial('#ddc29a'),
-  white:basicMaterial('#f4e6d0'),
-  cream:basicMaterial('#ddc59f'),
-  wood:basicMaterial('#a2774b'),
-  darkWood:basicMaterial('#6a482f'),
-  stone:basicMaterial('#949d93'),
-  roof:basicMaterial('#b17962'),
-  slate:basicMaterial('#6c8497'),
-  green:basicMaterial('#498b57'),
-  lightGreen:basicMaterial('#86b76d'),
-  pink:basicMaterial('#eda5b2'),
-  yellow:basicMaterial('#f9d37b'),
-  red:basicMaterial('#c87257'),
-  blue:basicMaterial('#75bdca'),
-  purple:basicMaterial('#a291c8'),
-  black:basicMaterial('#253238'),
-  snow:basicMaterial('#e8f0f0'),
-  pumpkin:basicMaterial('#e7a04b')
+
+const hemi=new T.HemisphereLight('#fff9e8','#56745d',2.1);
+scene.add(hemi);
+
+const sun=new T.DirectionalLight('#ffead0',2.45);
+sun.position.set(-13,24,15);
+sun.castShadow=true;
+sun.shadow.mapSize.set(512,512);
+sun.shadow.camera.left=-23;
+sun.shadow.camera.right=23;
+sun.shadow.camera.top=23;
+sun.shadow.camera.bottom=-23;
+sun.shadow.normalBias=.04;
+scene.add(sun);
+scene.add(sun.target);
+
+const mat=c=>new T.MeshStandardMaterial({color:c,roughness:.85});
+
+const m={
+grass:mat('#84b474'),
+path:mat('#dfc5a0'),
+wood:mat('#88603b'),
+dark:mat('#63432d'),
+stone:mat('#9aa59c'),
+cream:mat('#fff0d7'),
+roof:mat('#9d625b'),
+leaf:mat('#4b8c56'),
+leaf2:mat('#86b776'),
+gold:mat('#ffd27d'),
+pink:mat('#e9a5ae'),
+red:mat('#c66e57'),
+blue:mat('#80bfc8'),
+eye:mat('#29333a'),
+earth:mat('#9e7554'),
+snow:mat('#e0ecee')
 };
-materials.grass.map=makeTexture('#8bae78',['#568c53','#c5d49a','#477f4d'],'grass');
-materials.grass.map.repeat.set(23,23);
-materials.soil.map=makeTexture('#a7805f',['#674a32','#ce9c71'],'stone');
-materials.path.map=makeTexture('#d9c6a6',['#a78966','#efdfc2'],'stone');
-materials.path.map.repeat.set(8,4);
-materials.wood.map=makeTexture('#aa8356',['#624329','#dfb184'],'planks');
-materials.slate.map=makeTexture('#7790a0',['#405b6d','#b7c0c0'],'stone');
 
 const geometries={
-  box:new THREE.BoxGeometry(1,1,1),
-  sphere:new THREE.SphereGeometry(1,12,9),
-  cone:new THREE.ConeGeometry(1,1,8),
-  cylinder:new THREE.CylinderGeometry(1,1,1,9),
-  torus:new THREE.TorusGeometry(1,.14,7,16),
-  icosa:new THREE.IcosahedronGeometry(1,0)
+box:new T.BoxGeometry(1,1,1),
+ball:new T.SphereGeometry(1,12,9),
+cone:new T.ConeGeometry(1,1,8),
+cyl:new T.CylinderGeometry(1,1,1,9),
+torus:new T.TorusGeometry(1,.14,6,14)
 };
-function mesh(p,type,mat,x,y,z,sx=1,sy=sx,sz=sx,shadow=false){
-  const o=new THREE.Mesh(geometries[type],mat);
-  o.position.set(x,y,z);
-  o.scale.set(sx,sy,sz);
-  o.castShadow=shadow;
-  o.receiveShadow=shadow;
-  p.add(o);
-  return o;
-}
-const box=(p,m,x,y,z,a,b,c,sh=false)=>mesh(p,'box',m,x,y,z,a,b,c,sh);
-const orb=(p,m,x,y,z,a,b=a,c=a,sh=false)=>mesh(p,'sphere',m,x,y,z,a,b,c,sh);
-const cone=(p,m,x,y,z,a,b,sh=false)=>mesh(p,'cone',m,x,y,z,a,b,a,sh);
-const pole=(p,m,x,y,z,a,b,sh=false)=>mesh(p,'cylinder',m,x,y,z,a,b,a,sh);
-function root(x=0,z=0){
-  const g=new THREE.Group();
-  g.position.set(x,0,z);
-  scene.add(g);
-  return g;
+
+function shape(parent,type,material,x,y,z,sx=1,sy=sx,sz=sx,shadow=false){
+let o=new T.Mesh(geometries[type],material);
+o.position.set(x,y,z);
+o.scale.set(sx,sy,sz);
+o.castShadow=shadow;
+o.receiveShadow=shadow;
+parent.add(o);
+return o;
 }
 
-// Scene construction
-const obstacles=[];
-const treeCanopies=[];
-const chimneySmoke=[];
-const lamplights=[];
-const spinning=[];
-const collectables=[];
-const fireworks=[];
-const waterMaterials=[];
+const box=(p,c,x,y,z,a,b,d,sh=false)=>shape(p,'box',c,x,y,z,a,b,d,sh);
+const orb=(p,c,x,y,z,a,b=a,d=a,sh=false)=>shape(p,'ball',c,x,y,z,a,b,d,sh);
+const pole=(p,c,x,y,z,a,b,sh=false)=>shape(p,'cyl',c,x,y,z,a,b,a,sh);
+const cone=(p,c,x,y,z,a,b,sh=false)=>shape(p,'cone',c,x,y,z,a,b,a,sh);
 
-box(scene,materials.grass,0,-.3,0,105,.6,105);
-box(scene,materials.path,0,.016,0,3.2,.04,59);
-box(scene,materials.path,0,.019,0,57,.04,3.2);
-box(scene,materials.path,0,.023,0,12,.05,12);
-for(let i=0;i<85;i++){
-  const x=range(-7,7);
-  const z=range(-7,7);
-  const s=box(scene,materials.stone,x,.065,z,range(.28,.55),.045,range(.25,.5));
-  s.rotation.y=range(-3,3);
-}
-function registerObstacle(x,z,r){
-  obstacles.push({x,z,r});
-}
-function flower(p,x,z,col=materials.pink){
-  const f=new THREE.Group();
-  f.position.set(x,0,z);
-  p.add(f);
-  pole(f,materials.green,0,.23,0,.035,.45);
-  for(let i=0;i<6;i++){
-    const a=angleFor(i,6);
-    orb(f,col,Math.cos(a)*.14,.49,Math.sin(a)*.14,.13,.1,.13);
-  }
-  orb(f,materials.yellow,0,.49,0,.075);
-  return f;
-}
-function bush(p,x,z){
-  const g=new THREE.Group();
-  g.position.set(x,0,z);
-  p.add(g);
-  orb(g,materials.green,0,.5,0,.58,.46,.53);
-  orb(g,materials.lightGreen,.37,.57,.15,.42,.36,.4);
-  for(let i=0;i<5;i++){
-    orb(g,materials.red,range(-.4,.4),range(.54,.85),range(-.38,.38),.08);
-  }
-}
-function leafyTree(x,z,s=1){
-  const g=root(x,z);
-  g.scale.setScalar(s);
-  pole(g,materials.wood,0,1.8,0,.32,3.6,true);
-  const crown=new THREE.Group();
-  g.add(crown);
-  for(let i=0;i<8;i++){
-    const a=angleFor(i,8);
-    orb(crown,i%3?materials.green:materials.lightGreen,
-      Math.cos(a)*.95,3.85+i%3*.24,Math.sin(a)*.82,
-      1.2,1.08,1.15);
-  }
-  orb(crown,materials.lightGreen,0,4.83,0,1.45,1.24,1.38);
-  treeCanopies.push({crown,phase:range(0,6)});
-}
-function pineTree(x,z,s=1){
-  const g=root(x,z);
-  g.scale.setScalar(s);
-  pole(g,materials.wood,0,1.45,0,.25,2.9);
-  for(let i=0;i<3;i++){
-    cone(g,i%2?materials.green:materials.lightGreen,
-      0,2.4+i*.84,0,1.65-i*.32,2.22);
-  }
-}
-function wildGrass(x,z){
-  const g=root(x,z);
-  for(let i=0;i<4;i++){
-    const blade=cone(g,materials.green,range(-.2,.2),.22,range(-.2,.2),.065,range(.3,.58));
-    blade.rotation.z=range(-.35,.35);
-  }
-}
-function rock(x,z,size=1){
-  const o=new THREE.Mesh(geometries.icosa,materials.stone);
-  o.position.set(x,.25*size,z);
-  o.scale.set(size,size*.58,size*.9);
-  scene.add(o);
-}
-function fence(p){
-  for(const x of [-.83,.83]){
-    pole(p,materials.wood,x,.57,0,.12,1.14);
-    cone(p,materials.darkWood,x,1.23,0,.17,.24);
-  }
-  box(p,materials.wood,0,.42,0,1.86,.12,.15);
-  box(p,materials.wood,0,.82,0,1.86,.12,.15);
-}
-function lantern(p){
-  pole(p,materials.darkWood,0,1.58,0,.1,3.16);
-  box(p,materials.darkWood,0,3.14,0,.59,.08,.59);
-  orb(p,materials.yellow,0,3.33,0,.29,.4,.29);
-  cone(p,materials.roof,0,3.72,0,.46,.46);
-  const lamp=new THREE.PointLight('#ffbb75',.15,7);
-  lamp.position.set(0,3.32,0);
-  p.add(lamp);
-  lamplights.push(lamp);
-}
-function flowerGarden(p){
-  box(p,materials.wood,0,.15,0,2.9,.3,2.0);
-  box(p,materials.soil,0,.31,0,2.62,.12,1.75);
-  for(let i=-1;i<=1;i++){
-    for(let z of [-.48,.48]){
-      flower(p,i*.73,z,i===0?materials.yellow:materials.pink);
-    }
-  }
-}
-function vegetablePatch(p){
-  box(p,materials.wood,0,.14,0,3,.27,2.2);
-  box(p,materials.soil,0,.29,0,2.8,.11,2);
-  for(let i=-2;i<=2;i++){
-    for(let z of [-.55,.55]){
-      cone(p,materials.red,i*.52,.48,z,.15,.38).rotation.z=Math.PI;
-      cone(p,materials.green,i*.52,.7,z,.14,.29);
-    }
-  }
-}
-function cozyCottage(p){
-  const accent=choice(['#cdbfa2','#bbd2c6','#dec6bb','#d8ceb2']);
-  const wall=basicMaterial(accent);
-  box(p,materials.stone,0,.17,0,7,.34,6.1,true);
-  box(p,wall,0,2,0,6.2,3.7,5.55,true);
-  for(const side of [-1,1]){
-    box(p,materials.darkWood,side*3.02,2,2.87,.22,3.8,.23);
-    box(p,materials.wood,side*3.08,3.49,0,.24,.24,5.9);
-    box(p,materials.wood,side*3.07,.57,0,.22,.2,5.9);
-    for(let j=0;j<3;j++){
-      box(p,materials.wood,side*3.1,1.4,-1.8+j*1.75,.18,.18,1.45);
-    }
-    const roof=box(p,materials.roof,side*1.73,4.43,0,3.95,.22,6.7,true);
-    roof.rotation.z=-side*.5;
-    for(let row=0;row<5;row++){
-      for(let col=0;col<10;col++){
-        const shingle=box(p,materials.slate,
-          side*(.35+row*.68),5.23-row*.375,
-          -2.66+col*.59,.73,.085,.58);
-        shingle.rotation.z=-side*.5;
-        shingle.position.y+=((row+col)%2)*.012;
-      }
-    }
-  }
-  for(let side of [-1,1]){
-    box(p,materials.darkWood,side*2.09,2.16,2.88,1.32,1.35,.16);
-    box(p,materials.blue,side*2.09,2.16,2.97,1.11,1.15,.09);
-    box(p,materials.white,side*2.09,2.16,3.05,.1,1.2,.1);
-    box(p,materials.white,side*2.09,2.16,3.06,1.18,.1,.1);
-    box(p,materials.wood,side*2.09,.91,3.12,1.5,.14,.35);
-    bush(p,side*2.78,3.17);
-  }
-  box(p,materials.wood,0,.24,3.36,7.2,.24,2.1,true);
-  box(p,materials.darkWood,0,1.27,2.91,1.24,2.28,.17);
-  orb(p,materials.yellow,.38,1.23,3.02,.08);
-  for(let side of [-1,1]){
-    pole(p,materials.wood,side*2.8,1.6,4.08,.15,2.65);
-    for(let z of [3.7,4.45]){
-      box(p,materials.wood,side*2.8,2.03,z,.16,.15,.72);
-    }
-  }
-  box(p,materials.stone,-1.82,5.48,-1.48,.89,1.65,.89,true);
-  box(p,materials.roof,-1.82,6.29,-1.48,1.03,.12,1.03);
-  for(let i=0;i<3;i++){
-    const cloud=orb(p,materials.white,-1.82,6.9+i*.42,-1.48,.23+i*.05,.18,.22);
-    chimneySmoke.push({mesh:cloud,base:6.9+i*.42,phase:range(0,5)});
-  }
-  box(p,materials.darkWood,-.9,.5,4.32,1,.42,.8);
-  flower(p,-2.4,4.48,materials.pink);
-  flower(p,2.5,4.39,materials.yellow);
-}
-function petBed(p){
-  box(p,materials.wood,0,.3,0,1.8,.38,1.25);
-  box(p,materials.blue,0,.49,.08,1.64,.15,1.03);
-  orb(p,materials.white,0,.66,-.32,.46,.15,.27);
-}
-function birdhouse(p){
-  pole(p,materials.wood,0,1.04,0,.13,2.08);
-  box(p,materials.cream,0,2.3,0,1,.87,.87);
-  cone(p,materials.roof,0,3.03,0,.85,.7);
-  orb(p,materials.darkWood,0,2.43,.48,.17,.17,.055);
-  box(p,materials.darkWood,0,2.14,.61,.21,.08,.26);
-}
-function signpost(p){
-  pole(p,materials.wood,0,1.05,0,.14,2.1);
-  box(p,materials.cream,0,1.86,.05,1.8,.68,.15);
-  box(p,materials.darkWood,-.22,1.87,.16,.75,.08,.05);
-  cone(p,materials.darkWood,.48,1.87,.16,.27,.4).rotation.z=-Math.PI/2;
-}
-function crate(p){
-  box(p,materials.darkWood,0,.43,0,1.1,.86,1.1);
-  for(const side of [-1,1]){
-    box(p,materials.wood,side*.45,.45,.57,.14,.78,.09);
-    box(p,materials.wood,.0,.45,side*.57,.93,.11,.1);
-  }
-  for(let i=0;i<3;i++){
-    orb(p,materials.red,-.25+i*.24,.95,range(-.24,.24),.16);
-  }
-}
-function bench(p){
-  box(p,materials.wood,0,.68,0,2.35,.16,.7);
-  box(p,materials.wood,0,1.21,-.3,2.35,.95,.16);
-  for(let side of [-1,1]){
-    box(p,materials.darkWood,side*.93,.35,0,.18,.7,.58);
-  }
-}
-function market(p){
-  box(p,materials.wood,0,1.06,0,4.6,.26,2.35,true);
-  for(let x of [-1.94,1.94]){
-    for(let z of [-.98,.98]){
-      pole(p,materials.wood,x,2.25,z,.13,4.3);
-    }
-  }
-  box(p,materials.roof,0,4.15,0,5.1,.25,3);
-  for(let i=0;i<9;i++){
-    box(p,i%2?materials.white:materials.red,
-      -2.24+i*.56,3.93,1.58,.56,.22,.19);
-  }
-  for(let i=0;i<7;i++){
-    orb(p,choice([materials.red,materials.yellow,materials.green]),
-      -1.65+i*.54,1.47,.46,.22,.2,.22);
-  }
-  crate(p);
-}
-function windmill(p){
-  box(p,materials.cream,0,2,0,4.2,3.9,4.1,true);
-  cone(p,materials.red,0,4.9,0,3.2,2.35);
-  box(p,materials.darkWood,0,1.25,2.13,1.1,2.1,.17);
-  const rotor=new THREE.Group();
-  rotor.position.set(0,3.03,2.34);
-  for(let i=0;i<4;i++){
-    const a=angleFor(i,4);
-    const blade=box(rotor,materials.white,0,1.5,0,.34,2.7,.12);
-    blade.position.set(-Math.sin(a)*1.55,Math.cos(a)*1.55,0);
-    blade.rotation.z=a;
-    for(let j=0;j<3;j++){
-      const slat=box(rotor,materials.wood,0,.7+j*.48,0,.7,.08,.14);
-      slat.position.set(-Math.sin(a)*(.7+j*.48),Math.cos(a)*(.7+j*.48),.05);
-      slat.rotation.z=a;
-    }
-  }
-  orb(rotor,materials.darkWood,0,0,.13,.3);
-  p.add(rotor);
-  spinning.push(rotor);
-}
-function pond(p){
-  const waterMaterial=new THREE.MeshStandardMaterial({color:'#5faec1',roughness:.18,metalness:.18,transparent:true,opacity:.92});
-  const water=new THREE.Mesh(new THREE.CircleGeometry(5.35,40),waterMaterial);
-  water.rotation.x=-Math.PI/2;
-  water.scale.y=.76;
-  water.position.y=.07;
-  p.add(water);
-  waterMaterials.push(waterMaterial);
-  for(let i=0;i<30;i++){
-    const a=angleFor(i,30);
-    orb(p,materials.stone,Math.cos(a)*5.32,.2,Math.sin(a)*4.05,.39,.24,.42);
-  }
-  for(let i=0;i<6;i++){
-    const x=2.7+i*.42;
-    box(p,materials.wood,x,.33,1.5,.39,.2,2.5);
-    pole(p,materials.darkWood,x,.31,.35,.07,.58);
-  }
-  for(let i=0;i<6;i++){
-    orb(p,materials.lightGreen,range(-3,3),.17,range(-2.8,2.8),.32,.05,.3);
-  }
-  for(let i=0;i<8;i++){
-    flower(p,range(-5.6,5.6),range(-5,5),materials.yellow);
-  }
-}
-function sunflowers(p){
-  for(let i=0;i<5;i++){
-    const x=i*.92;
-    pole(p,materials.green,x,.88,0,.09,1.75);
-    orb(p,materials.darkWood,x,1.93,.15,.3,.31,.12);
-    for(let j=0;j<8;j++){
-      const a=angleFor(j,8);
-      orb(p,materials.yellow,x+Math.cos(a)*.36,1.93+Math.sin(a)*.36,.15,.17,.17,.12);
-    }
-    orb(p,materials.green,x+.27,.92,.14,.23,.13,.13);
-  }
-}
-function farmhouse(p){
-  box(p,materials.soil,0,.13,0,9,.26,9);
-  for(let row=0;row<4;row++){
-    box(p,materials.wood,-3+row*1.4,.24,0,1.08,.22,7.7);
-    box(p,materials.soil,-3+row*1.4,.36,0,.9,.1,7.3);
-    for(let i=0;i<7;i++){
-      cone(p,materials.red,-3+row*1.4,.54,-3+i, .15,.35).rotation.z=Math.PI;
-      cone(p,materials.green,-3+row*1.4,.79,-3+i,.13,.31);
-    }
-  }
-  const flowers=new THREE.Group();
-  flowers.position.set(1.5,0,-2.7);
-  p.add(flowers);
-  sunflowers(flowers);
-  for(let x=-4.5;x<=4.5;x+=1.8){
-    const f=new THREE.Group();
-    f.position.set(x,0,-4.6);
-    p.add(f);
-    fence(f);
-  }
-  crateAt(p,3.4,3.2);
-}
-function crateAt(p,x,z){
-  const g=new THREE.Group();
-  g.position.set(x,0,z);
-  p.add(g);
-  crate(g);
+function group(x=0,z=0){
+const g=new T.Group();
+g.position.set(x,0,z);
+scene.add(g);
+return g;
 }
 
-// Permanent detailed village landmarks
-const homes=[[-12,-12],[12,-12],[-12,13],[12,13]];
-for(const [x,z] of homes){
-  const g=root(x,z);
-  cozyCottage(g);
-  registerObstacle(x,z,4.1);
-  for(let f=0;f<5;f++){
-    flower(g,range(-3.2,3.2),range(4.6,5.8),choice([materials.pink,materials.yellow]));
-  }
+// VILLAGE ENVIRONMENT
+box(scene,m.grass,0,-.27,0,100,.52,100);
+box(scene,m.path,0,.015,0,4,.035,55);
+box(scene,m.path,0,.018,0,53,.035,4);
+
+const obstacles=[],sway=[],lamps=[];
+
+function tree(x,z,s=1){
+const g=group(x,z),c=new T.Group();
+g.scale.setScalar(s);
+pole(g,m.wood,0,1.6,0,.3,3.2,true);
+g.add(c);
+for(let i=0;i<7;i++){
+let a=i*6.283/7;
+orb(c,i%2?m.leaf:m.leaf2,
+Math.cos(a)*.83,3.6+(i%3)*.21,
+Math.sin(a)*.8,1.13,1.06,1.1);
 }
-for(const [x,z] of [[-4,-7],[4,-7],[-4,8],[4,8]]){
-  lantern(root(x,z));
+orb(c,m.leaf2,0,4.55,0,1.27,1.18,1.2);
+sway.push([c,rnd(0,6)]);
 }
-for(let z of [-16,-14,-9,9,16]){
-  for(let x of [-6,6]){
-    const f=root(x,z);
-    fence(f);
-  }
+
+function pine(x,z,s=1){
+const g=group(x,z);
+g.scale.setScalar(s);
+pole(g,m.wood,0,1.6,0,.22,3.2);
+for(let i=0;i<3;i++)
+cone(g,i%2?m.leaf:m.leaf2,0,2.4+i*.8,0,1.6-i*.3,2.15);
 }
+
+function flower(x,z,c=m.pink){
+const g=group(x,z);
+pole(g,m.leaf,0,.2,0,.035,.4);
 for(let i=0;i<5;i++){
-  const g=root(-4+i*2,20);
-  fence(g);
+const a=i*6.283/5;
+orb(g,c,Math.cos(a)*.14,.45,Math.sin(a)*.14,.12,.1,.11);
 }
-const marketGroup=root(15,3);
-market(marketGroup);
-registerObstacle(15,3,2.6);
-const pondGroup=root(-21,10);
-pond(pondGroup);
-registerObstacle(-21,10,4.8);
-const farmGroup=root(23,-16);
-farmhouse(farmGroup);
-registerObstacle(26,-13,1.5);
-const windmillGroup=root(22,12);
-windmill(windmillGroup);
-registerObstacle(22,12,3.1);
-bench(root(-4,3));
-bench(root(4,-3));
-crateAt(marketGroup,2.1,1.8);
-for(let i=0;i<95;i++){
-  const x=range(-48,48);
-  const z=range(-48,48);
-  if(Math.abs(x)<26&&Math.abs(z)<23)continue;
-  if(i%3)leafyTree(x,z,range(.75,1.2));
-  else pineTree(x,z,range(.8,1.25));
-}
-for(let i=0;i<205;i++){
-  const x=range(-34,34);
-  const z=range(-34,34);
-  if(Math.abs(x)<2.3||Math.abs(z)<2.3)continue;
-  if(i%13===0)rock(x,z,range(.22,.7));
-  else if(i%6===0)bush(root(x,z),0,0);
-  else if(i%5===0)wildGrass(x,z);
-  else flower(root(x,z),0,0,choice([materials.pink,materials.yellow,materials.white]));
+orb(g,m.gold,0,.46,0,.075);
 }
 
-// Building catalog and persistent placement
-const catalog=[
-  {id:'cottage',name:'Cozy Cottage',icon:'🏡',cost:4,radius:4.1,build:cozyCottage},
-  {id:'garden',name:'Flower Garden',icon:'🌻',cost:0,radius:1.65,build:flowerGarden},
-  {id:'vegetables',name:'Veggie Garden',icon:'🥕',cost:0,radius:1.7,build:vegetablePatch},
-  {id:'fence',name:'Wooden Fence',icon:'🪵',cost:1,radius:.85,build:fence},
-  {id:'lantern',name:'Lantern',icon:'🏮',cost:1,radius:.7,build:lantern},
-  {id:'bed',name:'Pet Bed',icon:'🛏️',cost:1,radius:1,build:petBed},
-  {id:'birdhouse',name:'Birdhouse',icon:'🐦',cost:1,radius:.8,build:birdhouse},
-  {id:'sign',name:'Signpost',icon:'🪧',cost:1,radius:.75,build:signpost},
-  {id:'bench',name:'Bench',icon:'🪑',cost:2,radius:1.4,build:bench},
-  {id:'crate',name:'Fruit Crate',icon:'🍎',cost:1,radius:.9,build:crate}
+function rock(x,z){
+const o=new T.Mesh(new T.DodecahedronGeometry(.5,0),m.stone);
+o.position.set(x,.26,z);
+o.scale.set(1,.65,1.2);
+scene.add(o);
+}
+
+function house(parent,color='#d9b894'){
+const wall=mat(color);
+box(parent,m.stone,0,.13,0,5.7,.26,5.2,true);
+box(parent,wall,0,1.8,0,5.1,3.3,4.6,true);
+
+for(const s of [-1,1]){
+const roof=box(parent,m.roof,s*1.42,4.12,0,3.15,.21,5.8,true);
+roof.rotation.z=-s*.52;
+
+for(let row=0;row<4;row++)
+for(let col=0;col<9;col++){
+let tile=box(parent,m.roof,
+s*(.22+row*.68),4.8-row*.38,
+-2.32+col*.58,.69,.07,.57);
+tile.rotation.z=-s*.52;
+}
+box(parent,m.dark,s*2.35,1.9,2.38,.13,3.3,.15);
+}
+
+box(parent,m.dark,0,1.17,2.38,1.12,2,.16);
+orb(parent,m.gold,.3,1.13,2.51,.075);
+
+for(const s of [-1,1]){
+box(parent,m.cream,s*1.65,2.1,2.38,.95,1,.14);
+box(parent,m.dark,s*1.65,2.1,2.49,.08,1.03,.1);
+box(parent,m.dark,s*1.65,2.1,2.5,.97,.08,.1);
+}
+
+box(parent,m.stone,-1.3,4.97,-1,.65,1.12,.65);
+return parent;
+}
+
+function fence(parent){
+for(const s of [-.7,.7]){
+pole(parent,m.wood,s,.51,0,.11,1.05);
+cone(parent,m.wood,s,1.1,0,.16,.26);
+}
+box(parent,m.wood,0,.4,0,1.55,.13,.12);
+box(parent,m.wood,0,.75,0,1.55,.13,.12);
+return parent;
+}
+
+function garden(parent){
+box(parent,m.earth,0,.09,0,2.3,.18,1.65);
+box(parent,m.wood,0,.12,-.88,2.45,.2,.15);
+box(parent,m.wood,0,.12,.88,2.45,.2,.15);
+
+for(let i=-1;i<=1;i++){
+pole(parent,m.leaf,i*.6,.42,0,.08,.65);
+for(let j=0;j<5;j++){
+let a=j*6.283/5;
+orb(parent,m.pink,i*.6+Math.cos(a)*.22,.83,Math.sin(a)*.22,.15,.12,.14);
+}
+orb(parent,m.gold,i*.6,.83,0,.13);
+}
+return parent;
+}
+
+function lantern(parent){
+pole(parent,m.wood,0,1.45,0,.11,2.9);
+orb(parent,m.gold,0,2.98,0,.34,.4,.34);
+cone(parent,m.roof,0,3.38,0,.46,.41);
+const light=new T.PointLight('#ffc78e',.15,5.5);
+light.position.set(0,3,0);
+parent.add(light);
+lamps.push(light);
+return parent;
+}
+
+function bed(parent){
+box(parent,m.wood,0,.29,0,1.7,.34,1.1);
+box(parent,m.blue,0,.49,.12,1.5,.14,.82);
+orb(parent,m.cream,0,.61,-.33,.45,.14,.2);
+return parent;
+}
+
+function birdhouse(parent){
+pole(parent,m.wood,0,1.1,0,.12,2.2);
+box(parent,m.cream,0,2.35,0,.96,.85,.87);
+cone(parent,m.roof,0,3,0,.85,.65);
+orb(parent,m.dark,0,2.42,.46,.16,.16,.055);
+return parent;
+}
+
+function sign(parent){
+pole(parent,m.wood,0,1,0,.13,2);
+box(parent,m.cream,0,1.73,.08,1.55,.62,.13);
+box(parent,m.dark,-.24,1.73,.16,.57,.065,.04);
+return parent;
+}
+
+// PLACEABLE ITEMS
+const itemDefs={
+garden:{name:'Flower Garden',cost:0,make:garden,radius:1.5},
+cottage:{name:'Cozy Cottage',cost:4,make:house,radius:3.4},
+fence:{name:'Wooden Fence',cost:1,make:fence,radius:.7},
+lantern:{name:'Star Lantern',cost:1,make:lantern,radius:.6},
+bed:{name:'Pet Bed',cost:1,make:bed,radius:1},
+birdhouse:{name:'Birdhouse',cost:1,make:birdhouse,radius:.7},
+sign:{name:'Village Sign',cost:1,make:sign,radius:.6}
+};
+
+function builtObject(type,x,z,rotation=0,registerObstacle=true){
+const g=group(x,z);
+itemDefs[type].make(g);
+g.rotation.y=rotation;
+if(registerObstacle&&itemDefs[type].radius>1.7)
+obstacles.push({x,z,r:itemDefs[type].radius});
+return g;
+}
+
+for(const [x,z,c] of [
+[-11,-11,'#ddbd97'],
+[11,-11,'#c7d4cd'],
+[-11,12,'#e8cad5'],
+[11,12,'#e2d2aa']
+]){
+const o=group(x,z);
+house(o,c);
+obstacles.push({x,z,r:3.5});
+}
+
+for(const x of [-5,5])
+for(const z of [-15,-13,-8,8,13,15])
+fence(group(x,z));
+
+for(let i=0;i<93;i++){
+let x=rnd(-46,46),z=rnd(-46,46);
+if(Math.abs(x)<18&&Math.abs(z)<19)continue;
+i%3?tree(x,z,rnd(.75,1.2)):pine(x,z,rnd(.85,1.2));
+}
+
+for(let i=0;i<120;i++){
+let x=rnd(-29,29),z=rnd(-29,29);
+if(Math.abs(x)<2.3||Math.abs(z)<2.3)continue;
+i%9===0?rock(x,z):flower(x,z,pick([m.pink,m.gold,m.cream]));
+}
+
+const pond=group(-19,10);
+orb(pond,m.blue,0,.025,0,4.6,.075,3.15);
+for(let i=0;i<25;i++){
+let a=i*6.283/25;
+orb(pond,m.stone,Math.cos(a)*4.6,.16,Math.sin(a)*3.12,.38,.22,.42);
+}
+obstacles.push({x:-19,z:10,r:4});
+
+const market=group(16,3);
+box(market,m.wood,0,1,0,4,.2,2.1);
+for(const x of [-1.6,1.6])
+for(const z of [-.8,.8])
+pole(market,m.wood,x,2,z,.1,3.7);
+box(market,m.red,0,3.72,0,4.5,.25,2.7);
+for(let i=0;i<7;i++)
+orb(market,pick([m.red,m.gold,m.leaf]),(i-3)*.48,1.4,.42,.22);
+obstacles.push({x:16,z:3,r:2.3});
+
+for(const [x,z] of [[-4,-7],[4,-7],[-4,8],[4,8]])
+lantern(group(x,z));
+
+// ANIMAL AND HUMAN CHARACTERS
+const party=[],actors=[],villagers=[];
+
+function makeCharacter(s){
+const root=group(s.x||0,s.z||0),rig=new T.Group();
+root.add(rig);
+const fur=mat(s.color);
+const shirt=mat(s.shirt||'#c9a1c7');
+const skin=mat('#f8e2ca');
+
+orb(rig,shirt,0,.98,0,.46,.55,.43);
+orb(rig,skin,0,.95,.36,.3,.34,.15);
+
+const legs=[],arms=[];
+for(const side of [-1,1]){
+const leg=new T.Group();
+leg.position.set(side*.28,.55,0);
+orb(leg,fur,0,-.24,.13,.2,.31,.21);
+rig.add(leg);
+legs.push(leg);
+
+const arm=new T.Group();
+arm.position.set(side*.44,1.15,0);
+orb(arm,fur,0,-.2,.14,.18,.29,.19);
+rig.add(arm);
+arms.push(arm);
+}
+
+const head=new T.Group();
+head.position.y=1.79;
+rig.add(head);
+orb(head,s.kind==='person'?skin:fur,0,0,0,.65,.61,.55);
+
+if(s.kind==='cat'){
+for(const side of [-1,1]){
+const ear=cone(head,fur,side*.42,.55,0,.27,.56);
+ear.rotation.z=-side*.2;
+cone(head,m.pink,side*.42,.57,.16,.12,.28);
+}
+}
+if(s.kind==='dog'){
+for(const side of [-1,1]){
+const ear=orb(head,fur,side*.65,.08,-.06,.24,.44,.21);
+ear.rotation.z=side*.25;
+}
+orb(head,skin,0,-.22,.43,.39,.25,.29);
+}
+if(s.kind==='bird'){
+for(const side of [-1,1])
+orb(rig,fur,side*.47,1.05,-.06,.24,.34,.25);
+const beak=cone(head,m.gold,0,-.12,.56,.19,.32);
+beak.rotation.x=Math.PI/2;
+}
+if(s.kind==='person'){
+orb(head,fur,0,.42,-.1,.63,.22,.44);
+orb(head,fur,0,.23,-.33,.51,.3,.24);
+}
+
+for(const side of [-1,1]){
+orb(head,m.cream,side*.23,.07,.47,.19,.21,.085);
+orb(head,m.eye,side*.23,.07,.55,.092,.13,.04);
+orb(head,m.cream,side*.26,.14,.58,.034);
+orb(head,m.pink,side*.42,-.21,.4,.14,.07,.05);
+}
+if(s.kind!=='bird')orb(head,m.eye,0,-.19,.58,.1,.075,.08);
+
+const tail=new T.Group();
+tail.position.set(.45,1,-.42);
+rig.add(tail);
+orb(tail,fur,0,0,-.24,.15,.16,.42);
+root.userData={rig,head,legs,arms,tail,s};
+return root;
+}
+
+function makeAgent(s){
+return{
+obj:makeCharacter(s),
+home:new T.Vector3(s.x,0,s.z),
+goal:new T.Vector3(s.x,0,s.z),
+pause:rnd(.5,3)
+};
+}
+function addCharacter(s){
+party.push(s);
+actors.push(makeAgent(s));
+}
+
+addCharacter({name:'Maple',kind:'cat',color:'#e9ad74',shirt:'#d9a7b8',x:0,z:2});
+addCharacter({name:'Biscuit',kind:'dog',color:'#d5b79b',shirt:'#88beb5',x:2,z:4});
+addCharacter({name:'Pip',kind:'bird',color:'#91c4d2',shirt:'#edc77d',x:-2,z:4});
+addCharacter({name:'Robin',kind:'person',color:'#93705a',shirt:'#aab5da',x:3,z:4});
+
+const neighborNames=['Clover','Mochi','Willow','Sunny','Juniper','Peanut','Milo','Poppy'];
+for(let i=0;i<neighborNames.length;i++){
+villagers.push(makeAgent({
+name:neighborNames[i],
+kind:['cat','dog','bird','person'][i%4],
+color:pick(['#e4c3a3','#af9ac3','#b9d0ba','#d49d8a']),
+shirt:pick(['#d2afbe','#8bb5ae','#c6afe2']),
+x:rnd(-16,16),
+z:rnd(-16,16)
+}));
+}
+
+// GROUND COLLECTIBLES
+const collectTypes=[
+'Wood Log','Carrot','Berry Basket','Cat Collar',
+'Rope','Little Axe','Flashlight','Bird Cage',
+'Magic Acorn','Star Crystal'
 ];
-function getCatalog(id){return catalog.find(item=>item.id===id);}
-function spawnBuilding(id,x,z,rotation=0,collision=true){
-  const item=getCatalog(id);
-  if(!item)return null;
-  const g=root(x,z);
-  item.build(g);
-  g.rotation.y=rotation;
-  if(collision&&item.radius>1.7)registerObstacle(x,z,item.radius);
-  return g;
+const collectibles=[];
+
+function itemModel(g,type){
+if(type==='Wood Log'){
+const log=pole(g,m.wood,0,.32,0,.25,.9);
+log.rotation.z=Math.PI/2;
+orb(g,m.cream,-.46,.32,0,.22,.23,.23);
+}else if(type==='Carrot'){
+const carrot=cone(g,m.red,0,.34,0,.23,.65);
+carrot.rotation.z=Math.PI;
+cone(g,m.leaf2,0,.77,0,.24,.42);
+}else if(type==='Berry Basket'){
+box(g,m.wood,0,.25,0,.75,.46,.65);
+for(let i=0;i<5;i++)
+orb(g,m.red,rnd(-.28,.28),.55,rnd(-.2,.2),.14);
+}else if(type==='Cat Collar'){
+let ring=shape(g,'torus',m.gold,0,.3,0,.4,.4,.4);
+ring.rotation.x=Math.PI/2;
+orb(g,m.pink,0,.2,.4,.12);
+}else if(type==='Rope'){
+const ring=shape(g,'torus',m.wood,0,.18,0,.38,.38,.38);
+ring.rotation.x=Math.PI/2;
+}else if(type==='Little Axe'){
+const handle=pole(g,m.wood,0,.53,0,.07,.86);
+handle.rotation.z=.55;
+box(g,m.stone,.27,.84,0,.42,.24,.13);
+}else if(type==='Flashlight'){
+const body=pole(g,m.dark,0,.35,0,.15,.7);
+body.rotation.z=Math.PI/2;
+orb(g,m.gold,.4,.35,0,.18,.18,.16);
+}else if(type==='Bird Cage'){
+pole(g,m.gold,0,.45,0,.42,.85);
+orb(g,m.cream,0,.92,0,.44,.13,.44);
+for(const x of [-.25,.25])
+pole(g,m.dark,x,.45,0,.025,.7);
+}else if(type==='Magic Acorn'){
+orb(g,m.wood,0,.34,0,.27,.33,.25);
+cone(g,m.gold,0,.65,0,.28,.32);
+}else{
+orb(g,m.blue,0,.43,0,.29,.42,.29);
+orb(g,m.cream,0,.8,0,.12);
+}
 }
 
-// Detailed animal avatars and autonomous villagers
-const playable=[];
-const villagers=[];
-function createCharacter(data){
-  const g=root(data.x,data.z);
-  const rig=new THREE.Group();
-  g.add(rig);
-  const fur=basicMaterial(data.color);
-  const outfit=basicMaterial(data.shirt||'#bda4cd');
-  const face=basicMaterial('#f7dfc4');
-  orb(rig,outfit,0,1.02,0,.46,.56,.42,true);
-  orb(rig,face,0,.91,.35,.28,.29,.13);
-  const legs=[];
-  const arms=[];
-  for(const side of [-1,1]){
-    const leg=new THREE.Group();
-    leg.position.set(side*.29,.55,0);
-    orb(leg,fur,0,-.27,.17,.2,.32,.21);
-    rig.add(leg);
-    legs.push(leg);
-    const arm=new THREE.Group();
-    arm.position.set(side*.44,1.2,0);
-    orb(arm,fur,0,-.2,.15,.18,.28,.19);
-    rig.add(arm);
-    arms.push(arm);
-  }
-  const head=new THREE.Group();
-  head.position.y=1.82;
-  rig.add(head);
-  orb(head,data.kind==='person'?face:fur,0,0,0,.66,.62,.57,true);
-  if(data.kind==='cat'){
-    for(const side of [-1,1]){
-      const ear=cone(head,fur,side*.43,.57,0,.3,.58);
-      ear.rotation.z=-side*.18;
-      cone(head,materials.pink,side*.43,.57,.18,.15,.29);
-      orb(head,face,side*.19,-.2,.45,.26,.18,.16);
-    }
-  }
-  if(data.kind==='dog'){
-    for(const side of [-1,1]){
-      const ear=orb(head,fur,side*.66,.05,-.06,.24,.45,.23);
-      ear.rotation.z=side*.28;
-    }
-    orb(head,face,0,-.19,.45,.41,.29,.29);
-  }
-  if(data.kind==='bird'){
-    const beak=cone(head,materials.yellow,0,-.12,.56,.2,.34);
-    beak.rotation.x=Math.PI/2;
-    for(const side of [-1,1]){
-      orb(rig,fur,side*.5,1.09,-.06,.26,.37,.25);
-    }
-  }
-  if(data.kind==='person'){
-    orb(head,fur,0,.43,-.08,.63,.23,.47);
-    orb(head,fur,0,.2,-.32,.54,.3,.27);
-  }
-  const eyes=[];
-  for(const side of [-1,1]){
-    orb(head,materials.white,side*.24,.075,.47,.19,.22,.09);
-    eyes.push(orb(head,materials.black,side*.24,.07,.55,.087,.13,.045));
-    orb(head,materials.white,side*.27,.15,.595,.037);
-    orb(head,materials.pink,side*.44,-.21,.39,.14,.08,.055);
-  }
-  if(data.kind!=='bird'){
-    orb(head,materials.black,0,-.19,.58,.1,.08,.065);
-  }
-  const tail=new THREE.Group();
-  tail.position.set(.46,1,-.45);
-  rig.add(tail);
-  orb(tail,fur,0,0,-.25,.16,.16,.42);
-  const collar=mesh(rig,'torus',materials.yellow,0,1.44,.15,.22,.22,.22);
-  collar.rotation.x=Math.PI/2;
-  g.userData={data,rig,head,legs,arms,eyes,tail};
-  return {
-    obj:g,
-    home:v3(data.x,0,data.z),
-    goal:v3(data.x,0,data.z),
-    pause:range(.5,3)
-  };
+function spawnCollectible(i,x,z,type,found=false){
+const g=group(x,z);
+itemModel(g,type);
+g.visible=!found;
+collectibles.push({i,g,x,z,type,found});
 }
-function addPlayable(data){playable.push(createCharacter(data));}
-addPlayable({name:'Maple',kind:'cat',color:'#e8ad7a',shirt:'#d9a8b9',x:0,z:3});
-addPlayable({name:'Biscuit',kind:'dog',color:'#d5b79a',shirt:'#8dc3b1',x:2.7,z:4});
-addPlayable({name:'Pip',kind:'bird',color:'#91c4d1',shirt:'#e7c879',x:-2,z:4});
-addPlayable({name:'Robin',kind:'person',color:'#947058',shirt:'#abb9d8',x:3.7,z:4});
-const npcNames=['Clover','Mochi','Peanut','Sunny','Juniper','Willow','Poppy','Milo','Wren'];
-for(let i=0;i<npcNames.length;i++){
-  villagers.push(createCharacter({
-    name:npcNames[i],
-    kind:['cat','dog','bird','person'][i%4],
-    color:choice(['#c7ab91','#a99cc5','#e2be9c','#9dbcb1']),
-    shirt:choice(['#d3a8b9','#8dbaac','#a5aed2']),
-    x:range(-16,16),
-    z:range(-16,16)
-  }));
+for(let i=0;i<55;i++){
+let x=rnd(-38,38),z=rnd(-38,38);
+if(i<12){x=rnd(-13,13);z=rnd(-12,13)}
+spawnCollectible(i,x,z,collectTypes[i%collectTypes.length]);
 }
 
-// Ground objects: recognizable shape and pickup behavior
-const itemNames=[
-  'Wood Log','Carrot','Berry Basket','Cat Collar',
-  'Rope','Little Axe','Flashlight','Bird Cage',
-  'Magic Acorn','Star Crystal','Mushroom','Flower Seeds'
-];
-function drawCollectable(p,name){
-  if(name==='Wood Log'){
-    const log=pole(p,materials.wood,0,.33,0,.26,1.12);
-    log.rotation.z=Math.PI/2;
-    orb(p,materials.cream,-.56,.33,0,.26,.26,.26);
-  }else if(name==='Carrot'){
-    cone(p,materials.pumpkin,0,.38,0,.23,.7).rotation.z=Math.PI;
-    cone(p,materials.green,0,.79,0,.25,.35);
-  }else if(name==='Berry Basket'){
-    box(p,materials.wood,0,.26,0,.73,.46,.69);
-    for(let i=0;i<6;i++){
-      orb(p,materials.red,range(-.25,.25),.58,range(-.25,.25),.14);
-    }
-  }else if(name==='Cat Collar'||name==='Rope'){
-    const ring=mesh(p,'torus',name==='Rope'?materials.wood:materials.yellow,0,.26,0,.35,.35,.35);
-    ring.rotation.x=Math.PI/2;
-  }else if(name==='Little Axe'){
-    const h=pole(p,materials.wood,0,.51,0,.09,.85);
-    h.rotation.z=.52;
-    box(p,materials.stone,.25,.81,0,.43,.25,.17);
-  }else if(name==='Flashlight'){
-    const h=pole(p,materials.darkWood,0,.31,0,.15,.66);
-    h.rotation.z=Math.PI/2;
-    orb(p,materials.yellow,.4,.31,0,.19);
-  }else if(name==='Bird Cage'){
-    pole(p,materials.yellow,0,.43,0,.41,.84);
-    orb(p,materials.white,0,.91,0,.45,.14,.45);
-    for(let x of [-.28,.28])pole(p,materials.darkWood,x,.45,0,.03,.72);
-  }else if(name==='Magic Acorn'){
-    orb(p,materials.wood,0,.33,0,.27,.31,.25);
-    cone(p,materials.yellow,0,.64,0,.29,.34);
-  }else if(name==='Star Crystal'){
-    cone(p,materials.blue,0,.48,0,.3,.9);
-    orb(p,materials.white,0,.93,0,.13);
-  }else if(name==='Mushroom'){
-    pole(p,materials.white,0,.27,0,.13,.45);
-    orb(p,materials.red,0,.52,0,.43,.2,.4);
-    for(let i=0;i<5;i++)orb(p,materials.white,range(-.3,.3),.68,range(-.25,.25),.055);
-  }else{
-    box(p,materials.cream,0,.18,0,.5,.22,.42);
-    cone(p,materials.green,0,.49,0,.16,.42);
-  }
-}
-function makeCollectable(i,name,x,z,found=false){
-  const g=root(x,z);
-  drawCollectable(g,name);
-  g.visible=!found;
-  collectables.push({i,name,x,z,g,found});
-}
-for(let i=0;i<74;i++){
-  const x=i<20?range(-16,16):range(-39,39);
-  const z=i<20?range(-15,16):range(-39,39);
-  makeCollectable(i,itemNames[i%itemNames.length],x,z);
-}
+// GAME STATE
+const times=['Morning','Afternoon','Evening','Night'];
+const seasons=['Spring','Summer','Autumn','Winter'];
+const weatherNames=['Sunny','Rain','Breezy','Snow'];
 
-// Game state, days, seasons, weather, inventory
-const SAVE_KEY='maple-v10-wildflower';
-const phases=['Morning','Afternoon','Evening','Night'];
-const seasonNames=['Spring','Summer','Autumn','Winter'];
-const weatherNames=['Sunny','Rain','Windy','Snow'];
-let night=1;
-let phaseIndex=0;
-let seasonIndex=0;
-let weatherIndex=0;
-let phaseClock=0;
-let selected=0;
-let woodCount=3;
-let carrotCount=0;
-let berryCount=0;
-let inventory=[];
-let placedBuildings=[];
-let musicEnabled=true;
-let playing=false;
-let paused=false;
-let placement=null;
-let toastTimer=0;
-const PHASE_DURATION=72;
+let night=1,phase=0,season=0,weather=0,phaseElapsed=0;
+let selected=0,wood=2,carrots=0,berries=0;
+let inventory=[],placements=[],musicOn=true,playing=false,panelOpen=false;
+let placing=null,noticeTimer=0;
+
+const STORAGE='maple-v8-placement';
+const rainDrops=[];
+const rainMaterial=new T.MeshBasicMaterial({color:'#d7efff'});
+for(let i=0;i<65;i++)
+rainDrops.push(orb(scene,rainMaterial,0,-100,0,.04,.17,.04));
+
 function toast(message){
-  $('toast').textContent=message;
-  $('toast').classList.add('visible');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>$('toast').classList.remove('visible'),4500);
-}
-function updateHud(){
-  const who=playable[selected].obj.userData.data.name;
-  $('stats').textContent=`🌙 ${Math.min(night,99)}/99 · ${phases[phaseIndex]} · ${seasonNames[seasonIndex]} · ${weatherNames[weatherIndex]} · 🐾 ${who} · 🪵 ${woodCount} · 🥕 ${carrotCount}`;
-}
-function saveGame(){
-  try{
-    localStorage.setItem(SAVE_KEY,JSON.stringify({
-      night,phaseIndex,seasonIndex,weatherIndex,phaseClock,
-      selected,woodCount,carrotCount,berryCount,inventory,
-      placedBuildings,musicEnabled,
-      found:collectables.filter(x=>x.found).map(x=>x.i),
-      extra:playable.slice(4).map(x=>x.obj.userData.data),
-      characterPositions:playable.map(x=>({x:x.obj.position.x,z:x.obj.position.z}))
-    }));
-  }catch(e){}
-}
-function loadGame(){
-  try{
-    const state=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');
-    if(!state)return;
-    night=state.night||1;
-    phaseIndex=state.phaseIndex||0;
-    seasonIndex=state.seasonIndex||0;
-    weatherIndex=state.weatherIndex||0;
-    phaseClock=state.phaseClock||0;
-    woodCount=state.woodCount??3;
-    carrotCount=state.carrotCount||0;
-    berryCount=state.berryCount||0;
-    inventory=state.inventory||[];
-    musicEnabled=state.musicEnabled!==false;
-    for(const data of (state.extra||[]).slice(0,8))addPlayable(data);
-    selected=clamp(state.selected||0,0,playable.length-1);
-    (state.characterPositions||[]).forEach((point,i)=>{
-      if(playable[i]&&Number.isFinite(point.x)&&Number.isFinite(point.z)){
-        playable[i].obj.position.set(point.x,0,point.z);
-      }
-    });
-    for(const index of state.found||[]){
-      if(collectables[index]){
-        collectables[index].found=true;
-        collectables[index].g.visible=false;
-      }
-    }
-    for(const object of state.placedBuildings||[]){
-      if(!getCatalog(object.id))continue;
-      spawnBuilding(object.id,object.x,object.z,object.rotation||0);
-      placedBuildings.push(object);
-    }
-  }catch(e){console.warn('Save could not be loaded',e);}
-}
-function setAtmosphere(){
-  const skies=['#b7e5ea','#a5d8de','#e4b38f','#2e4268'];
-  const color=skies[phaseIndex];
-  scene.background.set(color);
-  scene.fog.color.set(color);
-  sunlight.intensity=[2.5,2.65,1.35,.18][phaseIndex];
-  sunlight.color.set(phaseIndex===2?'#ffb985':'#ffe4c1');
-  hemi.intensity=[2.1,2.15,1.45,.78][phaseIndex];
-  lamplights.forEach(light=>light.intensity=phaseIndex===3?1.45:.12);
-  materials.grass.color.set(['#90b77f','#78ad73','#c4a879','#dce9ea'][seasonIndex]);
-  materials.green.color.set(['#498b57','#44804b','#b57e49','#b9d4d5'][seasonIndex]);
-  materials.lightGreen.color.set(['#86b76d','#6d9f59','#d4a164','#d1e1e1'][seasonIndex]);
-  scene.fog.far=weatherIndex===1?63:92;
-  $('musicButton').textContent=musicEnabled?'🔊':'🔇';
-}
-function advancePhase(){
-  phaseIndex=(phaseIndex+1)%4;
-  phaseClock=0;
-  if(phaseIndex===0){
-    night++;
-    if(night>1&&night%8===1)seasonIndex=(seasonIndex+1)%4;
-  }
-  const roll=random();
-  weatherIndex=roll<.31?(seasonIndex===3?3:1):roll<.49?2:0;
-  setAtmosphere();
-  updateHud();
-  saveGame();
-  toast('🌤️ '+phases[phaseIndex]+' · '+weatherNames[weatherIndex]);
-}
-function collectNearest(){
-  const point=playable[selected].obj.position;
-  let nearest=null;
-  let min=3.25;
-  for(const item of collectables){
-    if(item.found)continue;
-    const distance=Math.hypot(item.x-point.x,item.z-point.z);
-    if(distance<min){nearest=item;min=distance;}
-  }
-  if(!nearest){
-    const npc=villagers.find(a=>a.obj.position.distanceTo(point)<3.4);
-    toast(npc?'💬 '+npc.obj.userData.data.name+': Welcome to the village!':'Find an object on the ground and walk closer.');
-    return;
-  }
-  nearest.found=true;
-  nearest.g.visible=false;
-  if(nearest.name==='Wood Log')woodCount+=2;
-  else if(nearest.name==='Carrot')carrotCount++;
-  else if(nearest.name==='Berry Basket')berryCount+=3;
-  else inventory.push(nearest.name);
-  toast('🎁 Collected '+nearest.name+'!');
-  updateHud();
-  saveGame();
+$('message').textContent=message;
+$('message').classList.add('show');
+clearTimeout(noticeTimer);
+noticeTimer=setTimeout(()=>$('message').classList.remove('show'),5000);
 }
 
-// Accessible modal menus
-function openModal(title,html){
-  $('modalTitle').textContent=title;
-  $('modalBody').innerHTML=html;
-  $('modal').style.display='flex';
-  paused=true;
+function stats(){
+$('stats').textContent=
+`🌙 ${night}/99 · ${times[phase]} · ${seasons[season]} · ${weatherNames[weather]} | 🐾 ${party[selected].name} · 🪵 ${wood} · 🥕 ${carrots} · 🎒 ${inventory.length}`;
 }
-function closeModal(){
-  $('modal').style.display='none';
-  paused=false;
-}
-$('closeModal').onclick=closeModal;
-function selectCharacter(i){
-  selected=i;
-  updateHud();
-  saveGame();
-  toast('🐾 Playing as '+playable[i].obj.userData.data.name);
-}
-$('friendsButton').onclick=()=>{
-  openModal('🐾 Choose a Friend',
-    playable.map((a,i)=>{
-      const s=a.obj.userData.data;
-      return `<div class="option"><span>${i===selected?'⭐ ':''}${s.name} · ${s.kind}</span><button data-friend="${i}">Play</button></div>`;
-    }).join('')+'<button id="createFriend">✨ Create a Friend</button>');
-  $('modalBody').querySelectorAll('[data-friend]').forEach(btn=>{
-    btn.onclick=()=>{selectCharacter(+btn.dataset.friend);closeModal();};
-  });
-  $('createFriend').onclick=()=>{
-    openModal('✨ Create Your Character',`
-      <label>Name<input id="friendName" value="Clover" maxlength="18"></label>
-      <label>Character<select id="friendKind">
-        <option value="cat">Kitten</option>
-        <option value="dog">Puppy</option>
-        <option value="bird">Bird</option>
-        <option value="person">Person</option>
-      </select></label>
-      <label>Color<select id="friendColor">
-        <option value="#e8ad7a">Golden</option>
-        <option value="#f3e7da">Snow White</option>
-        <option value="#8f6d59">Chocolate</option>
-        <option value="#b9a3db">Lavender</option>
-        <option value="#92c6d3">Sky Blue</option>
-      </select></label>
-      <button id="makeFriend">Create Character</button>`);
-    $('makeFriend').onclick=()=>{
-      if(playable.length>=12){closeModal();toast('Your character family is full.');return;}
-      const p=playable[selected].obj.position;
-      addPlayable({
-        name:$('friendName').value.trim()||'Friend',
-        kind:$('friendKind').value,
-        color:$('friendColor').value,
-        shirt:'#bda8d1',
-        x:p.x+2,z:p.z+1
-      });
-      selectCharacter(playable.length-1);
-      closeModal();
-    };
-  };
-};
-$('inventoryButton').onclick=()=>{
-  openModal('🎒 Your Backpack',`
-    <p>🪵 ${woodCount} wood · 🥕 ${carrotCount} carrots · 🫐 ${berryCount} berries</p>
-    <p>${inventory.length?inventory.join(' · '):'Explore the forest to collect treasures.'}</p>
-    <button id="backpackBuild">🔨 Place Item</button>`);
-  $('backpackBuild').onclick=()=>{closeModal();openRadial();};
-};
-$('settingsButton').onclick=()=>{
-  openModal('⚙️ Game Settings',`
-    <p>Long hold <b>Place Item</b> to choose something to build. Tap the ground to move it, then tap <b>Place Here</b>.</p>
-    <p>Time of day changes automatically every 72 seconds. Weather and seasons change as you explore.</p>
-    <button id="toggleMusic">🎵 Music ${musicEnabled?'On':'Off'}</button>
-    <button id="resetCam">📷 Reset Camera</button>`);
-  $('toggleMusic').onclick=()=>{
-    musicEnabled=!musicEnabled;
-    $('toggleMusic').textContent='🎵 Music '+(musicEnabled?'On':'Off');
-    $('musicButton').textContent=musicEnabled?'🔊':'🔇';
-    if(musicEnabled)unlockAudio();
-    saveGame();
-  };
-  $('resetCam').onclick=()=>{yaw=.65;pitch=.6;camDistance=13;closeModal();};
-};
-$('collectItem').onclick=collectNearest;
-$('restButton').onclick=advancePhase;
 
-// Circular item selection: tap or press and hold Place Item
-let wheelOpen=false;
-let holdTimer=null;
-let openedOnHold=false;
-const RADIAL_RADIUS=38;
-function openRadial(){
-  if(placement)cancelPlacement();
-  wheelOpen=true;
-  $('radial').style.display='block';
-  $('radialItems').innerHTML='';
-  catalog.forEach((item,i)=>{
-    const a=-Math.PI/2+angleFor(i,catalog.length);
-    const x=50+RADIAL_RADIUS*Math.cos(a);
-    const y=50+RADIAL_RADIUS*Math.sin(a);
-    const button=document.createElement('button');
-    button.className='radialItem';
-    button.style.left=x+'%';
-    button.style.top=y+'%';
-    button.innerHTML=`<b>${item.icon}</b>${item.name}<small>${item.cost?item.cost+' wood':'Free'}</small>`;
-    button.disabled=woodCount<item.cost;
-    button.addEventListener('pointerdown',event=>event.stopPropagation());
-    button.onclick=event=>{
-      event.stopPropagation();
-      startPlacement(item.id);
-    };
-    $('radialItems').appendChild(button);
-  });
+function atmosphere(){
+const sky=['#c0e7eb','#a4dbe7','#e7b991','#30466f'][phase];
+scene.background.set(sky);
+scene.fog.color.set(sky);
+sun.intensity=[2.4,2.7,1.3,.32][phase];
+hemi.intensity=[2.1,2.2,1.5,.85][phase];
+m.grass.color.set(['#84b474','#72ab69','#c2a171','#d8e5e9'][season]);
+m.leaf.color.set(['#4b8c56','#45814b','#be8753','#a7c6c9'][season]);
+m.leaf2.color.set(['#86b776','#70a566','#d4a262','#ccdee0'][season]);
+lamps.forEach(l=>l.intensity=phase===3?1.35:.1);
+scene.fog.far=weather===1?61:83;
 }
-function closeRadial(){
-  wheelOpen=false;
-  $('radial').style.display='none';
+
+function save(){
+try{
+localStorage.setItem(STORAGE,JSON.stringify({
+night,phase,season,weather,phaseElapsed,selected,
+wood,carrots,berries,inventory,placements,
+collected:collectibles.filter(c=>c.found).map(c=>c.i),
+extras:party.slice(4)
+}));
+}catch(e){}
 }
-const placeButton=$('placeItem');
-placeButton.addEventListener('contextmenu',event=>event.preventDefault());
-placeButton.addEventListener('pointerdown',event=>{
-  event.preventDefault();
-  openedOnHold=false;
-  clearTimeout(holdTimer);
-  try{placeButton.setPointerCapture(event.pointerId);}catch(e){}
-  holdTimer=setTimeout(()=>{
-    openedOnHold=true;
-    openRadial();
-  },380);
+
+function load(){
+try{
+const s=JSON.parse(localStorage.getItem(STORAGE)||'null');
+if(!s)return;
+
+night=s.night||1;
+phase=s.phase||0;
+season=s.season||0;
+weather=s.weather||0;
+phaseElapsed=Math.min(s.phaseElapsed||0,85);
+wood=s.wood??2;
+carrots=s.carrots||0;
+berries=s.berries||0;
+inventory=s.inventory||[];
+
+for(const x of (s.extras||[]).slice(0,8))
+addCharacter(x);
+selected=clamp(s.selected||0,0,party.length-1);
+
+for(const i of (s.collected||[])){
+if(collectibles[i]){
+collectibles[i].found=true;
+collectibles[i].g.visible=false;
+}
+}
+
+for(const p of (s.placements||[])){
+if(itemDefs[p.type]){
+builtObject(p.type,p.x,p.z,p.rotation);
+placements.push(p);
+}
+}
+}catch(e){}
+}
+
+function changePhase(){
+phase=(phase+1)%4;
+if(phase===0){
+night++;
+if(night>1&&night%8===1)season=(season+1)%4;
+}
+weather=rng()<.32?(season===3?3:1):rng()<.2?2:0;
+atmosphere();
+stats();
+save();
+toast(phase===3
+?'🌙 The stars are coming out.'
+:`☀️ ${times[phase]} in ${seasons[season]}`);
+}
+
+function rest(){
+phaseElapsed=0;
+changePhase();
+}
+
+function collect(){
+const p=actors[selected].obj.position;
+let best=null,d=3.2;
+
+for(const c of collectibles){
+if(c.found)continue;
+const dist=Math.hypot(p.x-c.x,p.z-c.z);
+if(dist<d){best=c;d=dist}
+}
+
+if(best){
+best.found=true;
+best.g.visible=false;
+switch(best.type){
+case 'Wood Log':wood+=2;break;
+case 'Carrot':carrots++;break;
+case 'Berry Basket':berries+=3;break;
+default:inventory.push(best.type);
+}
+toast('🎁 Picked up '+best.type+'!');
+save();
+}else{
+const n=villagers.find(v=>v.obj.position.distanceTo(p)<3);
+toast(n
+?'💬 '+n.obj.userData.s.name+': Have a lovely day!'
+:'🔎 Walk closer to an object on the ground and tap Collect.');
+}
+stats();
+}
+
+function switchTo(i){
+selected=i;
+stats();
+save();
+toast('🐾 Playing as '+party[i].name);
+}
+
+// MENUS
+function openPanel(title,html){
+$('sheetTitle').textContent=title;
+$('sheetBody').innerHTML=html;
+$('sheet').style.display='flex';
+panelOpen=true;
+}
+function closePanel(){
+$('sheet').style.display='none';
+panelOpen=false;
+}
+$('closeSheet').onclick=closePanel;
+
+function friendsMenu(){
+openPanel('🐾 Playable Friends',
+party.map((p,i)=>
+`<div class="entry"><span>${i===selected?'⭐ ':''}${p.name} · ${p.kind}</span><button data-friend="${i}">Play</button></div>`
+).join('')+'<button id="createFriend">✨ Create Friend</button>');
+
+$('sheetBody').querySelectorAll('[data-friend]').forEach(b=>
+b.onclick=()=>{
+switchTo(+b.dataset.friend);
+closePanel();
 });
-placeButton.addEventListener('pointerup',event=>{
-  event.preventDefault();
-  clearTimeout(holdTimer);
-  if(!openedOnHold){
-    if(wheelOpen)closeRadial();else openRadial();
-  }
-});
-placeButton.addEventListener('pointercancel',()=>clearTimeout(holdTimer));
-$('radialClose').onclick=closeRadial;
 
-// Preview: choose, reposition by tapping the ground, rotate, commit
-let preview=null;
-let placementRotation=0;
-let validPlacement=false;
-function clearPreview(){
-  if(!preview)return;
-  scene.remove(preview);
-  preview.traverse(o=>{
-    if(o.isMesh&&o.material&&o.material.userData.preview)o.material.dispose();
-  });
-  preview=null;
+$('createFriend').onclick=()=>{
+openPanel('✨ Create a Friend',`
+<label>Name<input id="newName" value="Clover" maxlength="20"></label>
+<label>Type<select id="newKind">
+<option value="cat">Kitten</option>
+<option value="dog">Puppy</option>
+<option value="bird">Bird</option>
+<option value="person">Person</option>
+</select></label>
+<label>Color<select id="newColor">
+<option value="#e3aa76">Golden</option>
+<option value="#eee3d5">White</option>
+<option value="#9d7960">Brown</option>
+<option value="#bda9db">Purple</option>
+<option value="#92c9d1">Blue</option>
+</select></label>
+<button id="finishFriend">Create</button>`);
+
+$('finishFriend').onclick=()=>{
+if(party.length>=12){
+closePanel();
+toast('Character limit reached.');
+return;
 }
-function startPlacement(id){
-  closeRadial();
-  clearPreview();
-  const item=getCatalog(id);
-  if(!item)return;
-  placement=id;
-  placementRotation=0;
-  preview=new THREE.Group();
-  item.build(preview);
-  preview.traverse(o=>{
-    if(!o.isMesh)return;
-    const material=new THREE.MeshBasicMaterial({
-      color:'#9effce',
-      transparent:true,
-      opacity:.48,
-      depthWrite:false
-    });
-    material.userData.preview=true;
-    o.material=material;
-  });
-  const p=playable[selected].obj.position;
-  preview.position.set(clamp(p.x+3,-44,44),0,clamp(p.z+3,-44,44));
-  scene.add(preview);
-  $('placingTitle').textContent=item.icon+' '+item.name+' · '+(item.cost?item.cost+' wood':'Free');
-  $('placingBar').style.display='block';
-  $('actions').style.display='none';
-  validatePlacement();
-  toast('📍 Tap the ground to choose exactly where to place '+item.name+'.');
+const p=actors[selected].obj.position;
+addCharacter({
+name:$('newName').value.trim()||'Friend',
+kind:$('newKind').value,
+color:$('newColor').value,
+shirt:'#b7a4d4',
+x:p.x+2,z:p.z+1
+});
+switchTo(party.length-1);
+closePanel();
+};
+};
 }
+
+function inventoryMenu(){
+openPanel('🎒 Collected Objects',`
+<p>🪵 Wood: ${wood} · 🥕 Carrots: ${carrots} · 🫐 Berries: ${berries}</p>
+<p>${inventory.length?inventory.join(' · '):'Look for different objects on the ground and collect them!'}</p>
+<button id="goBuild">🔨 Place and Build</button>`);
+$('goBuild').onclick=buildMenu;
+}
+
+function buildMenu(){
+openPanel('🔨 Choose What to Place',
+'<p>Choose an item, then tap a spot in the world. Rotate it or move it before confirming.</p>'+
+Object.entries(itemDefs).map(([id,o])=>
+`<div class="entry"><span>${o.name}<br><small>${o.cost===0?'Free':o.cost+' wood'}</small></span><button data-build="${id}" ${wood<o.cost?'disabled':''}>Choose</button></div>`
+).join(''));
+
+$('sheetBody').querySelectorAll('[data-build]').forEach(b=>
+b.onclick=()=>startPlacement(b.dataset.build));
+}
+
+// BUILD PLACEMENT PREVIEW
+let placementPreview=null,placementRotation=0,validSpot=false;
+
+function destroyPreview(){
+if(!placementPreview)return;
+scene.remove(placementPreview);
+placementPreview.traverse(o=>{
+if(o.isMesh&&o.material&&o.material.userData.preview)
+o.material.dispose();
+});
+placementPreview=null;
+}
+
+function previewMaterialize(g){
+g.traverse(o=>{
+if(o.isMesh){
+const orig=o.material;
+o.material=new T.MeshBasicMaterial({
+color:'#8bfbce',
+transparent:true,
+opacity:.45,
+depthWrite:false
+});
+o.material.userData.preview=true;
+o.userData.originalMaterial=orig;
+}
+});
+}
+
+function startPlacement(type){
+closePanel();
+destroyPreview();
+placing=type;
+placementRotation=0;
+validSpot=false;
+
+const p=actors[selected].obj.position;
+placementPreview=new T.Group();
+itemDefs[type].make(placementPreview);
+previewMaterialize(placementPreview);
+scene.add(placementPreview);
+
+placementPreview.position.set(
+clamp(p.x+3,-43,43),0,clamp(p.z+3,-43,43));
+
+$('placeName').textContent='Place: '+itemDefs[type].name;
+$('placement').style.display='block';
+$('actions').style.display='none';
+
+toast('📍 Tap anywhere on the ground to move the preview.');
+validatePlacement();
+}
+
 function validatePlacement(){
-  if(!preview||!placement)return;
-  const x=preview.position.x;
-  const z=preview.position.z;
-  const item=getCatalog(placement);
-  const hero=playable[selected].obj.position;
-  validPlacement=Math.abs(x)<44&&Math.abs(z)<44;
-  validPlacement=validPlacement&&Math.hypot(x-hero.x,z-hero.z)<24;
-  validPlacement=validPlacement&&!obstacles.some(o=>
-    Math.hypot(x-o.x,z-o.z)<o.r+item.radius*.83
-  );
-  validPlacement=validPlacement&&Math.hypot(x-hero.x,z-hero.z)>1.1;
-  preview.traverse(o=>{
-    if(o.isMesh&&o.material.userData.preview){
-      o.material.color.set(validPlacement?'#9effce':'#ff858a');
-    }
-  });
-  $('confirmItem').disabled=!validPlacement||woodCount<item.cost;
+if(!placementPreview)return;
+
+const p=placementPreview.position;
+const r=itemDefs[placing].radius;
+
+validSpot=
+Math.abs(p.x)<44&&Math.abs(p.z)<44&&
+!obstacles.some(o=>Math.hypot(p.x-o.x,p.z-o.z)<o.r+r*.75);
+
+const hero=actors[selected].obj.position;
+validSpot=validSpot&&Math.hypot(p.x-hero.x,p.z-hero.z)<22;
+
+placementPreview.traverse(o=>{
+if(o.isMesh&&o.material.userData.preview)
+o.material.color.set(validSpot?'#8bfbce':'#ff7777');
+});
+
+$('confirmPlace').disabled=!validSpot||wood<itemDefs[placing].cost;
 }
+
 function cancelPlacement(){
-  placement=null;
-  clearPreview();
-  $('placingBar').style.display='none';
-  $('actions').style.display='flex';
+placing=null;
+destroyPreview();
+$('placement').style.display='none';
+$('actions').style.display='flex';
 }
+
 function confirmPlacement(){
-  if(!preview||!placement||!validPlacement)return;
-  const item=getCatalog(placement);
-  if(woodCount<item.cost){toast('You need more wood.');return;}
-  const x=preview.position.x;
-  const z=preview.position.z;
-  const rotation=placementRotation;
-  woodCount-=item.cost;
-  spawnBuilding(placement,x,z,rotation);
-  placedBuildings.push({id:placement,x,z,rotation});
-  cancelPlacement();
-  saveGame();
-  updateHud();
-  toast('✨ '+item.name+' placed exactly where you chose!');
-}
-$('rotateItem').onclick=()=>{
-  if(!preview)return;
-  placementRotation+=Math.PI/4;
-  preview.rotation.y=placementRotation;
-};
-$('confirmItem').onclick=confirmPlacement;
-$('cancelItem').onclick=cancelPlacement;
+if(!placing||!validSpot)return;
 
-// Two mobile joysticks, camera pan, pinch zoom, and tap ground
-function joystick(id){
-  const el=$(id);
-  const knob=el.querySelector('.knob');
-  const value={x:0,y:0};
-  function movePointer(event){
-    event.preventDefault();
-    const b=el.getBoundingClientRect();
-    const dx=event.clientX-b.left-b.width/2;
-    const dy=event.clientY-b.top-b.height/2;
-    const length=Math.hypot(dx,dy)||1;
-    const limit=Math.min(length,39);
-    value.x=dx/length*limit/39;
-    value.y=dy/length*limit/39;
-    knob.style.transform=`translate(${value.x*39}px,${value.y*39}px)`;
-  }
-  el.addEventListener('pointerdown',event=>{
-    el.setPointerCapture(event.pointerId);
-    movePointer(event);
-  });
-  el.addEventListener('pointermove',event=>{
-    if(el.hasPointerCapture(event.pointerId))movePointer(event);
-  });
-  function clear(){
-    value.x=0;
-    value.y=0;
-    knob.style.transform='translate(0,0)';
-  }
-  el.addEventListener('pointerup',clear);
-  el.addEventListener('pointercancel',clear);
-  return value;
+const type=placing;
+const position=placementPreview.position.clone();
+const rotation=placementRotation;
+const cost=itemDefs[type].cost;
+
+if(wood<cost){
+toast('Not enough wood!');
+return;
 }
-const moveInput=joystick('moveStick');
-const cameraInput=joystick('lookStick');
-let yaw=.65;
-let pitch=.6;
-let camDistance=13;
+
+wood-=cost;
+builtObject(type,position.x,position.z,rotation);
+placements.push({type,x:position.x,z:position.z,rotation});
+
+cancelPlacement();
+stats();
+save();
+toast('🏡 '+itemDefs[type].name+' placed!');
+}
+
+$('rotate').onclick=()=>{
+if(placementPreview){
+placementRotation+=Math.PI/4;
+placementPreview.rotation.y=placementRotation;
+}
+};
+$('cancelPlace').onclick=cancelPlacement;
+$('confirmPlace').onclick=confirmPlacement;
+
+$('friends').onclick=friendsMenu;
+$('bag').onclick=inventoryMenu;
+$('buildButton').onclick=buildMenu;
+$('explore').onclick=collect;
+$('rest').onclick=rest;
+
+$('settings').onclick=()=>{
+openPanel('⚙️ Settings',`
+<p>Morning → Afternoon → Evening → Night advances automatically. Seasons change every 8 nights. Rain and snow happen naturally.</p>
+<p>Use the left joystick to move and the right joystick to rotate the camera. Tap the ground in building mode to position an item.</p>
+<button id="musicToggle">🎵 Music ${musicOn?'On':'Off'}</button>
+<button id="cameraReset">📷 Reset Camera</button>`);
+
+$('musicToggle').onclick=()=>{
+musicOn=!musicOn;
+$('musicToggle').textContent='🎵 Music '+(musicOn?'On':'Off');
+if(musicOn)startMusic();
+};
+
+$('cameraReset').onclick=()=>{
+yaw=.65;
+pitch=.55;
+distance=13;
+closePanel();
+};
+};
+
+// JOYSTICKS
+function stick(id){
+const el=$(id),nub=el.querySelector('.nub'),v={x:0,y:0};
+
+function update(e){
+e.preventDefault();
+const rect=el.getBoundingClientRect();
+const dx=e.clientX-rect.left-rect.width/2;
+const dy=e.clientY-rect.top-rect.height/2;
+const len=Math.hypot(dx,dy)||1;
+const mag=Math.min(len,38);
+v.x=dx/len*mag/38;
+v.y=dy/len*mag/38;
+nub.style.transform=`translate(${v.x*38}px,${v.y*38}px)`;
+}
+
+el.addEventListener('pointerdown',e=>{
+el.setPointerCapture(e.pointerId);
+update(e);
+});
+el.addEventListener('pointermove',e=>{
+if(el.hasPointerCapture(e.pointerId))update(e);
+});
+function reset(){
+v.x=v.y=0;
+nub.style.transform='translate(0,0)';
+}
+el.addEventListener('pointerup',reset);
+el.addEventListener('pointercancel',reset);
+return v;
+}
+
+const move=stick('move'),look=stick('cameraStick');
+let yaw=.65,pitch=.55,distance=13,drag=null,pinch=0;
 const pointers=new Map();
-let gesture=null;
-let pinchDistance=0;
-const raycaster=new THREE.Raycaster();
-const pointerNDC=new THREE.Vector2();
-const floorPlane=new THREE.Plane(v3(0,1,0),0);
-function screenRay(x,y){
-  pointerNDC.set(x/innerWidth*2-1,1-y/innerHeight*2);
-  raycaster.setFromCamera(pointerNDC,camera);
-}
-renderer.domElement.addEventListener('pointerdown',event=>{
-  pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
-  if(pointers.size===1){
-    gesture={x:event.clientX,y:event.clientY,originX:event.clientX,originY:event.clientY,moved:false,time:performance.now()};
-  }else gesture=null;
-});
-renderer.domElement.addEventListener('pointermove',event=>{
-  if(!pointers.has(event.pointerId))return;
-  pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
-  if(pointers.size===2){
-    const values=[...pointers.values()];
-    const dist=Math.hypot(values[0].x-values[1].x,values[0].y-values[1].y);
-    if(pinchDistance)camDistance=clamp(camDistance+(pinchDistance-dist)*.035,6,23);
-    pinchDistance=dist;
-    gesture=null;
-  }else if(gesture){
-    const dx=event.clientX-gesture.x;
-    const dy=event.clientY-gesture.y;
-    if(Math.hypot(event.clientX-gesture.originX,event.clientY-gesture.originY)>9)gesture.moved=true;
-    if(!placement){
-      yaw-=dx*.006;
-      pitch=clamp(pitch+dy*.004,.25,1.13);
-    }
-    gesture.x=event.clientX;
-    gesture.y=event.clientY;
-  }
-});
-renderer.domElement.addEventListener('pointerup',event=>{
-  pointers.delete(event.pointerId);
-  pinchDistance=0;
-  if(gesture&&!gesture.moved&&playing&&!paused&&performance.now()-gesture.time<350){
-    screenRay(event.clientX,event.clientY);
-    if(placement&&preview){
-      const point=v3(0,0,0);
-      if(raycaster.ray.intersectPlane(floorPlane,point)){
-        preview.position.set(clamp(point.x,-46,46),0,clamp(point.z,-46,46));
-        validatePlacement();
-      }
-    }else{
-      const hits=raycaster.intersectObjects(playable.map(a=>a.obj),true);
-      if(hits.length){
-        let o=hits[0].object;
-        while(o.parent&&!playable.some(a=>a.obj===o))o=o.parent;
-        const index=playable.findIndex(a=>a.obj===o);
-        if(index>=0)selectCharacter(index);
-      }
-    }
-  }
-  gesture=null;
-});
-renderer.domElement.addEventListener('pointercancel',event=>{
-  pointers.delete(event.pointerId);
-  gesture=null;
-  pinchDistance=0;
+const ray=new T.Raycaster(),mouse=new T.Vector2();
+const groundPlane=new T.Plane(new T.Vector3(0,1,0),0);
+
+renderer.domElement.addEventListener('pointerdown',e=>{
+pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+drag=pointers.size===1?{
+x:e.clientX,y:e.clientY,
+startX:e.clientX,startY:e.clientY,
+time:performance.now(),moved:false
+}:null;
 });
 
-// NPC goal selection and animation
-const destinations=[[0,0],[15,3],[23,-16],[-21,10],[22,12],[-12,-12],[12,13]];
-function chooseDestination(a){
-  const place=phaseIndex===3&&random()<.8
-    ?[a.home.x,a.home.z]
-    :choice(destinations);
-  a.goal.set(place[0]+range(-2,2),0,place[1]+range(-2,2));
-  a.pause=range(.3,2);
-}
-function animateCharacter(a,t,i,moving){
-  const u=a.obj.userData;
-  const f=moving?1:0;
-  u.rig.position.y=Math.sin(t*.013+i)*.055*f;
-  u.head.rotation.z=Math.sin(t*.004+i)*.037;
-  u.legs.forEach((leg,k)=>{
-    leg.rotation.x=Math.sin(t*.013+i+k*Math.PI)*.36*f;
-  });
-  u.arms.forEach((arm,k)=>{
-    arm.rotation.x=Math.sin(t*.013+i+(1-k)*Math.PI)*.24*f;
-  });
-  u.tail.rotation.y=Math.sin(t*.006+i)*.32;
-  const blink=Math.sin(t*.0017+i*8)>.992;
-  u.eyes.forEach(eye=>eye.scale.y=blink?.02:.13);
-}
-function wander(a,dt,t,i){
-  if(a.pause>0){
-    a.pause-=dt;
-    animateCharacter(a,t,i,false);
-    return;
-  }
-  const direction=a.goal.clone().sub(a.obj.position);
-  direction.y=0;
-  if(direction.lengthSq()<.6){chooseDestination(a);return;}
-  direction.normalize();
-  const previous=a.obj.position.clone();
-  a.obj.position.addScaledVector(direction,dt*(phaseIndex===3?.67:1.12));
-  if(obstacles.some(o=>Math.hypot(a.obj.position.x-o.x,a.obj.position.z-o.z)<o.r)){
-    a.obj.position.copy(previous);
-    a.pause=.25;
-    a.goal.set(range(-17,17),0,range(-17,17));
-    return;
-  }
-  a.obj.rotation.y=Math.atan2(direction.x,direction.z);
-  animateCharacter(a,t,i,true);
-}
+renderer.domElement.addEventListener('pointermove',e=>{
+if(!pointers.has(e.pointerId))return;
+pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
 
-// Original music: explicit tap-to-start sound unlock for iPhone
-let audioContext=null;
-let nextNote=0;
-let noteStep=0;
-const musicMelody=[
-  392,440,523.25,587.33,659.25,587.33,523.25,440,
-  392,349.23,392,440,523.25,440,392,329.63,
-  349.23,392,440,523.25,587.33,523.25,440,392,
-  329.63,349.23,392,440,392,349.23,329.63,293.66
+if(pointers.size===2){
+const a=[...pointers.values()];
+const d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
+if(pinch)distance=clamp(distance+(pinch-d)*.03,6,23);
+pinch=d;
+drag=null;
+}else if(drag){
+const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)>9)
+drag.moved=true;
+
+if(!placing){
+yaw-=dx*.006;
+pitch=clamp(pitch+dy*.004,.23,1.13);
+}
+drag.x=e.clientX;
+drag.y=e.clientY;
+}
+});
+
+renderer.domElement.addEventListener('pointerup',e=>{
+pointers.delete(e.pointerId);
+pinch=0;
+
+if(drag&&!drag.moved&&performance.now()-drag.time<350&&playing&&!panelOpen){
+mouse.set(e.clientX/innerWidth*2-1,1-e.clientY/innerHeight*2);
+ray.setFromCamera(mouse,camera);
+
+if(placing&&placementPreview){
+const point=new T.Vector3();
+if(ray.ray.intersectPlane(groundPlane,point)){
+placementPreview.position.set(
+clamp(point.x,-45,45),0,clamp(point.z,-45,45));
+validatePlacement();
+}
+}else{
+const hits=ray.intersectObjects(actors.map(a=>a.obj),true);
+
+if(hits.length){
+let o=hits[0].object;
+while(o.parent&&!actors.some(a=>a.obj===o))o=o.parent;
+const i=actors.findIndex(a=>a.obj===o);
+if(i>=0)switchTo(i);
+}else{
+const collectibleMeshes=collectibles.filter(c=>!c.found).map(c=>c.g);
+const hit=ray.intersectObjects(collectibleMeshes,true);
+if(hit.length){
+let o=hit[0].object;
+while(o.parent&&!collectibles.some(c=>c.g===o))o=o.parent;
+const found=collectibles.find(c=>c.g===o);
+if(found){
+const hero=actors[selected].obj.position;
+if(Math.hypot(found.x-hero.x,found.z-hero.z)<3.2)
+collect();
+else toast('👣 Walk closer, then collect '+found.type);
+}
+}
+}
+}
+}
+drag=null;
+});
+
+renderer.domElement.addEventListener('pointercancel',e=>{
+pointers.delete(e.pointerId);
+drag=null;
+pinch=0;
+});
+
+// INDEPENDENT VILLAGERS
+const waypoints=[
+[0,0],[-11,-11],[11,-11],[-11,12],
+[11,12],[16,3],[-19,10]
 ];
-const musicBass=[196,174.61,220,196,164.81,174.61,196,146.83];
-function playTone(frequency,time,duration,volume,type='sine'){
-  if(!audioContext)return;
-  const osc=audioContext.createOscillator();
-  const gain=audioContext.createGain();
-  osc.type=type;
-  osc.frequency.setValueAtTime(frequency,time);
-  gain.gain.setValueAtTime(.0001,time);
-  gain.gain.exponentialRampToValueAtTime(volume,time+.025);
-  gain.gain.exponentialRampToValueAtTime(.0001,time+duration);
-  osc.connect(gain);
-  gain.connect(audioContext.destination);
-  osc.start(time);
-  osc.stop(time+duration+.035);
+
+function chooseGoal(a){
+const p=phase===3&&rng()<.8
+?[a.home.x,a.home.z]
+:pick(waypoints);
+a.goal.set(p[0]+rnd(-2,2),0,p[1]+rnd(-2,2));
+a.pause=rnd(.5,2);
 }
-function unlockAudio(){
-  try{
-    audioContext??=new(window.AudioContext||window.webkitAudioContext)();
-    const result=audioContext.resume();
-    if(result&&typeof result.catch==='function')result.catch(()=>{});
-    nextNote=audioContext.currentTime+.16;
-    playTone(523.25,audioContext.currentTime+.05,.22,.14);
-    playTone(659.25,audioContext.currentTime+.21,.3,.12,'triangle');
-    $('musicButton').textContent=musicEnabled?'🔊':'🔇';
-  }catch(error){
-    toast('Audio unavailable. Open in Safari and tap 🔊.');
-  }
+
+function animateGait(a,t,i,isMoving){
+const u=a.obj.userData;
+const f=isMoving?1:0;
+u.rig.position.y=Math.sin(t*.012+i)*.05*f;
+u.head.rotation.z=Math.sin(t*.004+i)*.035;
+u.legs.forEach((l,k)=>
+l.rotation.x=Math.sin(t*.012+i+k*Math.PI)*.33*f);
+u.arms.forEach((l,k)=>
+l.rotation.x=Math.sin(t*.012+i+(1-k)*Math.PI)*.2*f);
+u.tail.rotation.y=Math.sin(t*.006+i)*.3;
 }
+
+function wander(a,dt,t,i){
+if(a.pause>0){
+a.pause-=dt;
+animateGait(a,t,i,false);
+return;
+}
+const v=a.goal.clone().sub(a.obj.position);
+v.y=0;
+if(v.lengthSq()<.5){chooseGoal(a);return}
+v.normalize();
+const old=a.obj.position.clone();
+a.obj.position.addScaledVector(v,dt*(phase===3?.65:1.1));
+if(obstacles.some(o=>Math.hypot(a.obj.position.x-o.x,a.obj.position.z-o.z)<o.r)){
+a.obj.position.copy(old);
+chooseGoal(a);
+return;
+}
+a.obj.rotation.y=Math.atan2(v.x,v.z);
+animateGait(a,t,i,true);
+}
+
+// ORIGINAL WHIMSICAL MUSIC
+let audio=null,nextNote=0,step=0;
+const melody=[392,440,523,659,587,523,440,392,349,392,440,523,440,392,330,349];
+const bass=[196,174.61,220,196];
+
+function startMusic(){
+try{
+audio??=new(window.AudioContext||window.webkitAudioContext)();
+audio.resume();
+}catch(e){}
+}
+
+function playTone(freq,when,length,volume,type='sine'){
+const o=audio.createOscillator(),g=audio.createGain();
+o.type=type;
+o.frequency.setValueAtTime(freq,when);
+g.gain.setValueAtTime(.0001,when);
+g.gain.exponentialRampToValueAtTime(volume,when+.018);
+g.gain.exponentialRampToValueAtTime(.0001,when+length);
+o.connect(g);
+g.connect(audio.destination);
+o.start(when);
+o.stop(when+length+.02);
+}
+
 function updateMusic(){
-  if(!playing||!musicEnabled||!audioContext||audioContext.state!=='running')return;
-  if(nextNote<audioContext.currentTime-.4)nextNote=audioContext.currentTime+.04;
-  let scheduled=0;
-  while(nextNote<audioContext.currentTime+.32&&scheduled<3){
-    const idx=noteStep%musicMelody.length;
-    playTone(musicMelody[idx],nextNote,.3,.066,'sine');
-    if(noteStep%4===0){
-      playTone(musicBass[Math.floor(noteStep/4)%musicBass.length],nextNote,.78,.035,'triangle');
-    }
-    if(noteStep%2===0){
-      playTone(musicMelody[(idx+8)%musicMelody.length]/2,nextNote,.32,.017,'sine');
-    }
-    noteStep++;
-    nextNote+=.35;
-    scheduled++;
-  }
-}
-$('musicButton').onclick=()=>{
-  musicEnabled=!musicEnabled;
-  $('musicButton').textContent=musicEnabled?'🔊':'🔇';
-  if(musicEnabled){
-    unlockAudio();
-    toast('🎵 Forest music ON');
-  }else toast('🔇 Music OFF');
-  saveGame();
-};
-$('playButton').onclick=()=>{
-  $('intro').style.display='none';
-  playing=true;
-  if(musicEnabled)unlockAudio();
-  toast('🍁 Welcome! Hold Place Item to build your village.');
-};
+if(!musicOn||!playing||!audio||audio.state!=='running')return;
+if(nextNote<audio.currentTime-.5)nextNote=audio.currentTime+.05;
 
-// Visible weather: rain streaks and gently falling snow
-const weatherParticles=[];
-const rainMaterial=new THREE.MeshBasicMaterial({color:'#cce9f5',transparent:true,opacity:.8});
-const snowMaterial=new THREE.MeshBasicMaterial({color:'#f7fbff',transparent:true,opacity:.95});
-for(let i=0;i<82;i++){
-  const drop=orb(scene,rainMaterial,0,-100,0,.045,.17,.045);
-  weatherParticles.push(drop);
+while(nextNote<audio.currentTime+.35){
+playTone(melody[step%melody.length],nextNote,.3,.025);
+if(step%4===0)
+playTone(bass[Math.floor(step/4)%4],nextNote,.75,.014,'triangle');
+if(step%2===0)
+playTone(melody[(step+4)%16]/2,nextNote,.25,.007);
+nextNote+=.34;
+step++;
 }
-function weatherFrame(dt,t){
-  const hero=playable[selected].obj.position;
-  const isRain=weatherIndex===1;
-  const isSnow=weatherIndex===3;
-  for(let i=0;i<weatherParticles.length;i++){
-    const particle=weatherParticles[i];
-    particle.visible=isRain||isSnow;
-    if(!particle.visible)continue;
-    particle.material=isSnow?snowMaterial:rainMaterial;
-    particle.scale.set(isSnow?.095:.035,isSnow?.095:.19,isSnow?.095:.035);
-    if(particle.position.y<0){
-      particle.position.set(hero.x+range(-13,13),range(7,17),hero.z+range(-13,13));
-    }
-    particle.position.y-=dt*(isSnow?1.7:11);
-    if(isSnow){
-      particle.position.x+=Math.sin(t*.001+i)*dt*.35;
-      particle.position.z+=Math.cos(t*.001+i)*dt*.2;
-    }
-  }
 }
 
-// Main update loop, optimized for mobile
-const followTarget=v3(0,0,0);
-const movement=v3(0,0,0);
-const forward=v3(0,0,0);
-const sideways=v3(0,0,0);
-let last=performance.now();
-let autosave=0;
+$('start').onclick=()=>{
+$('intro').style.display='none';
+playing=true;
+startMusic();
+nextNote=audio?audio.currentTime+.08:0;
+toast('🍁 Welcome! Find objects on the ground and build your village.');
+};
+
+// MAIN GAME LOOP
+const velocity=new T.Vector3(),target=new T.Vector3();
+camera.position.set(8,9,14);
+let last=performance.now(),autosave=0;
+
 function frame(t){
-  requestAnimationFrame(frame);
-  const dt=Math.min((t-last)/1000,.05);
-  last=t;
-  if(playing&&!paused){
-    const hero=playable[selected];
-    const position=hero.obj.position;
-    yaw-=cameraInput.x*dt*1.48;
-    pitch=clamp(pitch+cameraInput.y*dt*.8,.25,1.13);
-    const power=Math.hypot(moveInput.x,moveInput.y);
-    if(power>.08&&!placement){
-      forward.set(-Math.sin(yaw),0,-Math.cos(yaw));
-      sideways.set(Math.cos(yaw),0,-Math.sin(yaw));
-      movement.copy(sideways).multiplyScalar(moveInput.x);
-      movement.addScaledVector(forward,-moveInput.y).normalize();
-      const old=position.clone();
-      position.addScaledVector(movement,dt*4.55);
-      position.x=clamp(position.x,-47,47);
-      position.z=clamp(position.z,-47,47);
-      if(obstacles.some(o=>Math.hypot(position.x-o.x,position.z-o.z)<o.r)){
-        position.copy(old);
-      }
-      hero.obj.rotation.y=Math.atan2(movement.x,movement.z);
-    }
-    animateCharacter(hero,t,0,power>.08&&!placement);
-    for(let i=0;i<playable.length;i++){
-      if(i!==selected)wander(playable[i],dt,t,i);
-    }
-    villagers.forEach((v,i)=>wander(v,dt,t,i+20));
-    followTarget.set(
-      position.x+Math.sin(yaw)*camDistance*Math.cos(pitch),
-      1.25+camDistance*Math.sin(pitch),
-      position.z+Math.cos(yaw)*camDistance*Math.cos(pitch)
-    );
-    camera.position.lerp(followTarget,Math.min(1,dt*4.7));
-    camera.lookAt(position.x,1.23,position.z);
-    sunlight.position.set(position.x-13,23,position.z+13);
-    sunlight.target.position.set(position.x,0,position.z);
-    phaseClock+=dt;
-    if(phaseClock>=PHASE_DURATION)advancePhase();
-    autosave+=dt;
-    if(autosave>=12){autosave=0;saveGame();}
-  }
-  for(const tree of treeCanopies){
-    tree.crown.rotation.z=Math.sin(t*.0007+tree.phase)*.024;
-  }
-  for(const rotor of spinning)rotor.rotation.z+=dt*.48;
-  for(const cloud of chimneySmoke){
-    cloud.mesh.position.y=cloud.base+((t*.0003+cloud.phase)%1.35);
-  }
-  for(const item of collectables){
-    if(!item.found){
-      item.g.rotation.y+=dt*.26;
-      item.g.position.y=Math.sin(t*.0018+item.i)*.05;
-    }
-  }
-  weatherFrame(dt,t);
-  updateMusic();
-  renderer.render(scene,camera);
-}
-loadGame();
-setAtmosphere();
-updateHud();
-camera.position.set(8,10,14);
 requestAnimationFrame(frame);
+const dt=Math.min((t-last)/1000,.05);
+last=t;
+
+if(playing&&!panelOpen){
+const hero=actors[selected],p=hero.obj.position;
+yaw-=look.x*1.55*dt;
+pitch=clamp(pitch+look.y*.8*dt,.23,1.13);
+const power=Math.hypot(move.x,move.y);
+
+if(power>.08&&!placing){
+const fw=new T.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
+const rt=new T.Vector3(Math.cos(yaw),0,-Math.sin(yaw));
+velocity.copy(rt).multiplyScalar(move.x)
+.addScaledVector(fw,-move.y).normalize();
+
+const old=p.clone();
+p.addScaledVector(velocity,dt*4.6);
+p.x=clamp(p.x,-46,46);
+p.z=clamp(p.z,-46,46);
+
+if(obstacles.some(o=>Math.hypot(o.x-p.x,o.z-p.z)<o.r))
+p.copy(old);
+
+hero.obj.rotation.y=Math.atan2(velocity.x,velocity.z);
+}
+
+animateGait(hero,t,0,power>.08&&!placing);
+actors.forEach((a,i)=>{if(i!==selected)wander(a,dt,t,i)});
+villagers.forEach((a,i)=>wander(a,dt,t,i+20));
+
+target.set(
+p.x+Math.sin(yaw)*distance*Math.cos(pitch),
+1.2+distance*Math.sin(pitch),
+p.z+Math.cos(yaw)*distance*Math.cos(pitch)
+);
+
+camera.position.lerp(target,Math.min(1,dt*4.5));
+camera.lookAt(p.x,1.2,p.z);
+sun.position.set(p.x-13,24,p.z+15);
+sun.target.position.set(p.x,0,p.z);
+
+phaseElapsed+=dt;
+if(phaseElapsed>=70){
+phaseElapsed=0;
+changePhase();
+}
+autosave+=dt;
+if(autosave>=12){
+autosave=0;
+save();
+}
+}
+
+for(const [c,ph] of sway)
+c.rotation.z=Math.sin(t*.0008+ph)*.025;
+
+for(const c of collectibles){
+if(!c.found)c.g.rotation.y+=dt*.3;
+}
+
+for(const d of rainDrops){
+d.visible=weather===1||weather===3;
+if(!d.visible)continue;
+const p=actors[selected].obj.position;
+if(d.position.y<0)
+d.position.set(p.x+rnd(-14,14),rnd(7,17),p.z+rnd(-14,14));
+d.position.y-=dt*(weather===3?1.7:10);
+}
+
+updateMusic();
+renderer.render(scene,camera);
+}
+
+load();
+atmosphere();
+stats();
+requestAnimationFrame(frame);
+
 window.addEventListener('resize',()=>{
-  camera.aspect=innerWidth/innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth,innerHeight);
+camera.aspect=innerWidth/innerHeight;
+camera.updateProjectionMatrix();
+renderer.setSize(innerWidth,innerHeight);
 });
 </script>
 </body>
