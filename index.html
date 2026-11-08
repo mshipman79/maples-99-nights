@@ -4,973 +4,868 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Maple's 99 Nights - Living Village</title>
+<title>Maple's 99 Nights - Bloomwood Valley V5</title>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;touch-action:none;font:14px system-ui,-apple-system,sans-serif;background:#abd9e5;color:#fff}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;touch-action:none;background:#95c9d8;color:#fff;font:13px system-ui,-apple-system,sans-serif}
 canvas{display:block}
 button,input,select{font:inherit}
-button{cursor:pointer;background:#31685f;color:#fff;border:2px solid #ffebc5;border-radius:14px;padding:10px;font-weight:700}
+button{border:2px solid #ffe9c5;background:#2f7169ed;border-radius:16px;color:white;font-weight:750;padding:9px 12px}
 button:active{background:#529b82}
-#top{position:absolute;top:max(8px,env(safe-area-inset-top));left:9px;right:9px;display:flex;gap:7px;align-items:start;justify-content:space-between;pointer-events:none}
-#status{padding:9px 12px;background:#214b45e8;border:2px solid #ffe5aa;border-radius:17px;max-width:65%;font-size:12px;line-height:1.5}
-#status b{color:#ffdf9d}
-#topActions{display:flex;gap:5px;pointer-events:auto}
-#topActions button{padding:9px;border-radius:50%;width:43px;height:43px;font-size:18px}
-#toast{position:absolute;bottom:190px;left:12%;right:12%;background:#254f48e8;border:1px solid #ffe3b1;border-radius:15px;text-align:center;padding:10px;opacity:0;transition:opacity .35s;pointer-events:none}
-#toast.show{opacity:1}
-.joy{position:absolute;bottom:calc(23px + env(safe-area-inset-bottom));height:126px;width:126px;border:3px solid #fff4d4;background:#316e66a8;border-radius:50%;touch-action:none}
-.joy .nub{width:54px;height:54px;position:absolute;top:33px;left:33px;border:3px solid #fff8e7;border-radius:50%;background:#ffd58f;pointer-events:none}
-#move{left:16px}
-#look{right:16px}
-#look .nub{background:#a5d5ec}
-#middleActions{position:absolute;right:14px;bottom:calc(164px + env(safe-area-inset-bottom));display:flex;gap:7px}
-#middleActions button{font-size:12px;padding:10px 12px}
-#cameraHint{position:absolute;bottom:calc(152px + env(safe-area-inset-bottom));right:33px;color:#214b45;font-size:11px;font-weight:800;pointer-events:none}
-#moveHint{position:absolute;bottom:calc(152px + env(safe-area-inset-bottom));left:55px;color:#214b45;font-size:11px;font-weight:800;pointer-events:none}
-#panel,#welcome{position:absolute;inset:0;background:#133b40d9;z-index:6;display:none;align-items:center;justify-content:center;padding:20px}
-#welcome{display:flex;z-index:7}
-.sheet{background:#356f63;border:2px solid #ffe6ac;padding:20px;border-radius:24px;max-width:390px;width:100%;max-height:85vh;overflow:auto;text-align:center;box-shadow:0 16px 45px #102d365c}
-.sheet h1,.sheet h2{color:#ffdea0;margin:0 0 12px}
-.sheet p{line-height:1.5}
-.sheet button{margin:4px}
-.sheet label{text-align:left;display:block;margin-top:10px}
-.sheet input,.sheet select{display:block;width:100%;padding:10px;margin:5px 0 10px;border:0;border-radius:10px}
-.sheet .entry{display:flex;justify-content:space-between;align-items:center;background:#225449;padding:7px 10px;border-radius:12px;margin:6px 0;text-align:left}
-.sheet .entry button{padding:7px}
-#error{display:none;position:absolute;inset:30% 8% auto;background:#783f4c;border:2px solid white;padding:18px;z-index:10;border-radius:15px}
+#hud{position:fixed;top:max(env(safe-area-inset-top),9px);left:10px;max-width:64%;background:#173f3bbf;border:2px solid #ffdfac;border-radius:16px;padding:8px 11px;pointer-events:none;backdrop-filter:blur(6px)}
+#hud strong{color:#ffe5ad;font-size:12px}
+#stats{line-height:1.5;font-size:11px;margin-top:3px}
+#toolbar{position:fixed;top:max(env(safe-area-inset-top),9px);right:9px;display:flex;gap:6px}
+#toolbar button{width:43px;height:43px;border-radius:50%;padding:0;font-size:20px}
+#actions{position:fixed;bottom:calc(162px + env(safe-area-inset-bottom));right:12px;display:flex;gap:8px}
+#actions button{min-width:79px}
+#toast{position:fixed;bottom:calc(180px + env(safe-area-inset-bottom));left:15%;right:15%;text-align:center;padding:9px 14px;border:1px solid #ffe6b9;background:#18473ddc;border-radius:16px;opacity:0;transition:opacity .3s;pointer-events:none}
+#toast.on{opacity:1}
+.stick{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom));width:124px;height:124px;border-radius:50%;background:#285d568a;border:3px solid #ffefd2;touch-action:none}
+.stick .nub{position:absolute;top:34px;left:34px;width:52px;height:52px;background:#f9d396;border:3px solid #fff4dc;border-radius:50%;pointer-events:none}
+#move{left:15px}
+#cameraStick{right:15px}
+#cameraStick .nub{background:#a4d4e5}
+.stick-label{position:fixed;bottom:calc(148px + env(safe-area-inset-bottom));color:#1d4a41;font-size:11px;font-weight:800}
+#moveLabel{left:54px}
+#lookLabel{right:45px}
+#screen,#intro{position:fixed;inset:0;z-index:10;background:#153d40db;display:none;justify-content:center;align-items:center;padding:20px}
+#intro{display:flex;z-index:11}
+.panel{width:100%;max-width:420px;max-height:85dvh;overflow:auto;background:linear-gradient(150deg,#337467,#245d58);border:2px solid #ffe3ae;border-radius:23px;padding:20px;text-align:center}
+.panel h1,.panel h2{color:#ffe6b0;margin:5px 0 10px}
+.panel p{line-height:1.5}
+.panel button{margin:4px}
+.entry{display:flex;justify-content:space-between;align-items:center;gap:7px;padding:7px 9px;margin:6px 0;background:#1d514c;border-radius:12px}
+.entry span{text-align:left}
+.panel label{text-align:left;display:block;margin:9px 0}
+.panel input,.panel select{width:100%;border:0;border-radius:10px;padding:10px;margin-top:5px}
+.hint{font-size:11px;color:#d6e9de}
+#fatal{position:fixed;z-index:50;top:25%;left:8%;right:8%;display:none;background:#783d43;border:2px solid white;padding:16px;border-radius:15px}
 </style>
 </head>
 <body>
-
-<div id="top">
-  <div id="status">
-    <b>🍁 MAPLE'S 99 NIGHTS</b>
-    <div id="stats">Growing your village...</div>
-  </div>
-  <div id="topActions">
-    <button id="people" title="Characters">🐾</button>
-    <button id="bag" title="Backpack">🎒</button>
-    <button id="options" title="Menu">☰</button>
-  </div>
+<div id="hud">
+<strong>🍁 MAPLE'S 99 NIGHTS</strong>
+<div id="stats">Loading Bloomwood Valley...</div>
 </div>
-
-<div id="toast" aria-live="polite"></div>
-<div id="middleActions">
-  <button id="interact">✨ Explore</button>
-  <button id="rest">🌙 Rest</button>
+<div id="toolbar">
+<button id="characters">🐾</button>
+<button id="inventory">🎒</button>
+<button id="menu">☰</button>
 </div>
-
-<div id="move" class="joy"><div class="nub"></div></div>
-<span id="moveHint">MOVE</span>
-<div id="look" class="joy"><div class="nub"></div></div>
-<span id="cameraHint">CAMERA</span>
-
-<div id="welcome">
-  <div class="sheet">
-    <div style="font-size:42px">🍁 🐱 🐶 🏡</div>
-    <h1>Maple's 99 Nights</h1>
-    <b>LIVING VILLAGE · VERSION 4</b>
-    <p>A peaceful world of independent villagers, animal friends, cozy cottages, gardens, seasons and treasure.</p>
-    <p><b>Left circle</b> moves your character. <b>Right circle</b> changes your camera. Choose any character in 🐾.</p>
-    <button id="start">▶ Explore the Village</button>
-  </div>
+<div id="toast"></div>
+<div id="actions">
+<button id="action">✨ Explore</button>
+<button id="sleep">🌙 Rest</button>
 </div>
-
-<div id="panel">
-  <div class="sheet">
-    <h2 id="panelTitle">Village</h2>
-    <div id="panelBody"></div>
-    <button id="close">Close</button>
-  </div>
+<div class="stick" id="move"><div class="nub"></div></div>
+<div class="stick-label" id="moveLabel">MOVE</div>
+<div class="stick" id="cameraStick"><div class="nub"></div></div>
+<div class="stick-label" id="lookLabel">CAMERA</div>
+<div id="intro">
+<div class="panel">
+<div style="font-size:46px">🍁 🐱 🐶 🌸</div>
+<h1>Maple's 99 Nights</h1>
+<b>BLOOMWOOD VALLEY · VERSION 5</b>
+<p>Meet your neighbors, explore an enchanted 3D village, create new animal friends, find treasures and enjoy 99 peaceful nights.</p>
+<p class="hint">Left circle: walk · Right circle: look · Pinch: zoom</p>
+<button id="start">▶ Enter Bloomwood Valley</button>
 </div>
-
-<div id="error"></div>
+</div>
+<div id="screen">
+<div class="panel">
+<h2 id="screenTitle"></h2>
+<div id="screenBody"></div>
+<button id="close">Close</button>
+</div>
+</div>
+<div id="fatal"></div>
 
 <script type="module">
 import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 
-const $ = s => document.getElementById(s);
-const rnd = (a,b) => a + Math.random()*(b-a);
-const choice = a => a[Math.floor(Math.random()*a.length)];
+const $=id=>document.getElementById(id);
+const clamp=T.MathUtils.clamp;
+let rngState=19431;
 
-let seed=9731;
 function rng(){
-  seed=(1664525*seed+1013904223)>>>0;
-  return seed/4294967296;
+rngState=(1664525*rngState+1013904223)>>>0;
+return rngState/4294967296;
 }
-function rr(a,b){return a+rng()*(b-a)}
+const rand=(a,b)=>a+rng()*(b-a);
+const pick=a=>a[Math.floor(rng()*a.length)];
 
 const scene=new T.Scene();
-scene.background=new T.Color('#b7e4ed');
-scene.fog=new T.Fog('#b7e4ed',37,94);
+scene.background=new T.Color('#a7dfef');
+scene.fog=new T.FogExp2('#a7dfef',.010);
 
 const camera=new T.PerspectiveCamera(52,innerWidth/innerHeight,.1,150);
-const renderer=new T.WebGLRenderer({
-  antialias:true,
-  powerPreference:'default'
-});
-renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.4));
+let renderer;
+
+try{
+renderer=new T.WebGLRenderer({antialias:true,powerPreference:'default'});
 renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.35));
 renderer.outputColorSpace=T.SRGBColorSpace;
 renderer.toneMapping=T.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.25;
+renderer.toneMappingExposure=1.45;
 document.body.prepend(renderer.domElement);
+}catch(e){
+$('fatal').style.display='block';
+$('fatal').textContent='3D cannot start: '+e.message;
+throw e;
+}
 
-scene.add(new T.HemisphereLight(0xfff7df,0x78937d,2.3));
-
-const sun=new T.DirectionalLight(0xffeed1,2.6);
-sun.position.set(15,25,12);
+const hemi=new T.HemisphereLight('#fff6df','#617d70',2.05);
+scene.add(hemi);
+const sun=new T.DirectionalLight('#ffe6ba',2.7);
+sun.position.set(20,30,15);
 scene.add(sun);
 
-const mat=c=>new T.MeshStandardMaterial({color:c,roughness:.87});
-
-const m={
-  grass:mat('#7fb87a'),
-  path:mat('#dfc8a1'),
-  dark:mat('#333f44'),
-  wood:mat('#906a4e'),
-  cream:mat('#fff2d9'),
-  leaf:mat('#60a36c'),
-  leaf2:mat('#8dc987'),
-  roof:mat('#ba7771'),
-  stone:mat('#aab5ad'),
-  gold:mat('#ffd078'),
-  pink:mat('#efaab1'),
-  water:mat('#72c3d6')
+const M=(c,r=.82)=>new T.MeshStandardMaterial({color:c,roughness:r});
+const mat={
+grass:M('#79b96e'),
+dirt:M('#d4b18b'),
+stone:M('#9da6a5'),
+trim:M('#f9ebd1'),
+wood:M('#936b49'),
+woodDark:M('#67452e'),
+leaf:M('#6cac68'),
+leafLight:M('#91c783'),
+roof:M('#b76f6e'),
+dark:M('#282d37'),
+cream:M('#fff2df'),
+pink:M('#eeb0b6'),
+gold:M('#f8d18a'),
+water:new T.MeshStandardMaterial({color:'#5faec5',roughness:.23,transparent:true,opacity:.9})
 };
 
-const G={
-  ball:new T.SphereGeometry(1,14,12),
-  box:new T.BoxGeometry(1,1,1),
-  cone:new T.ConeGeometry(1,1,9),
-  cyl:new T.CylinderGeometry(1,1,1,10)
+const geo={
+sphere:new T.SphereGeometry(1,20,14),
+cube:new T.BoxGeometry(1,1,1),
+cone:new T.ConeGeometry(1,1,10),
+cyl:new T.CylinderGeometry(1,1,1,12),
+torus:new T.TorusGeometry(1,.12,6,20)
 };
 
-function part(parent,type,material,x,y,z,sx=1,sy=sx,sz=sx){
-  const o=new T.Mesh(G[type],material);
-  o.position.set(x,y,z);
-  o.scale.set(sx,sy,sz);
-  parent.add(o);
-  return o;
+function mesh(p,g,m,x,y,z,sx=1,sy=sx,sz=sx){
+const o=new T.Mesh(geo[g],m);
+o.position.set(x,y,z);
+o.scale.set(sx,sy,sz);
+p.add(o);
+return o;
 }
-const b=(p,c,x,y,z,a,d=a,e=a)=>part(p,'ball',c,x,y,z,a,d,e);
-const box=(p,c,x,y,z,a,d,e)=>part(p,'box',c,x,y,z,a,d,e);
-const cone=(p,c,x,y,z,a,d)=>part(p,'cone',c,x,y,z,a,d,a);
-const pole=(p,c,x,y,z,a,d)=>part(p,'cyl',c,x,y,z,a,d,a);
+const ball=(p,m,x,y,z,sx,sy=sx,sz=sx)=>mesh(p,'sphere',m,x,y,z,sx,sy,sz);
+const box=(p,m,x,y,z,sx,sy,sz)=>mesh(p,'cube',m,x,y,z,sx,sy,sz);
+const cone=(p,m,x,y,z,r,h)=>mesh(p,'cone',m,x,y,z,r,h,r);
+const pole=(p,m,x,y,z,r,h)=>mesh(p,'cyl',m,x,y,z,r,h,r);
 
-// VILLAGE
-box(scene,m.grass,0,-.3,0,100,.6,100);
-box(scene,m.path,0,.02,0,4,.04,57);
-box(scene,m.path,0,.025,0,54,.04,3.5);
-
-const canopy=[];
-
-function tree(x,z,s=1){
-  const g=new T.Group(),c=new T.Group();
-  g.position.set(x,0,z);
-  g.scale.setScalar(s);
-  pole(g,m.wood,0,1.5,0,.27,3);
-  g.add(c);
-  for(let i=0;i<5;i++){
-    const a=i*6.283/5;
-    b(c,i%2?m.leaf:m.leaf2,
-      Math.cos(a)*.75,3.3+(i%2)*.3,
-      Math.sin(a)*.75,1.13,1.05,1.1);
-  }
-  b(c,m.leaf2,0,4.2,0,1.3,1.1,1.3);
-  scene.add(g);
-  canopy.push([c,rr(0,6)]);
+function noiseTexture(type){
+const c=document.createElement('canvas');
+c.width=c.height=128;
+const ctx=c.getContext('2d');
+const base=type==='grass'?'#78b46b':type==='path'?'#d9bb8d':'#b77870';
+ctx.fillStyle=base;
+ctx.fillRect(0,0,128,128);
+let s=type.length*737;
+function v(){
+s=(1664525*s+1013904223)>>>0;
+return s/4294967296;
 }
-
-function pine(x,z,s=1){
-  const g=new T.Group();
-  g.position.set(x,0,z);
-  g.scale.setScalar(s);
-  pole(g,m.wood,0,1.5,0,.25,3);
-  for(let i=0;i<3;i++)
-    cone(g,i%2?m.leaf:m.leaf2,
-      0,2.1+i*.88,0,1.7-i*.3,2.2);
-  scene.add(g);
+for(let i=0;i<600;i++){
+ctx.fillStyle=type==='grass'?(v()>.5?'#94c780':'#5ba162'):type==='roof'?(v()>.5?'#d08c7b':'#9e5b58'):(v()>.5?'#e9cda3':'#bca078');
+ctx.globalAlpha=.08+v()*.16;
+ctx.fillRect(v()*128,v()*128,1+v()*5,1+v()*5);
 }
-
-function bloom(x,z,c=m.pink){
-  const g=new T.Group();
-  g.position.set(x,0,z);
-  pole(g,m.leaf,0,.24,0,.035,.48);
-  for(let i=0;i<5;i++){
-    const a=i*6.283/5;
-    b(g,c,Math.cos(a)*.15,.51,Math.sin(a)*.15,.13,.12,.13);
-  }
-  b(g,m.gold,0,.51,0,.08);
-  scene.add(g);
+ctx.globalAlpha=1;
+if(type==='roof'){
+ctx.strokeStyle='#804b49';
+ctx.globalAlpha=.18;
+for(let y=16;y<128;y+=22){
+ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(128,y);ctx.stroke();
 }
+}
+const tex=new T.CanvasTexture(c);
+tex.colorSpace=T.SRGBColorSpace;
+tex.wrapS=tex.wrapT=T.RepeatWrapping;
+tex.repeat.set(type==='grass'?18:3,type==='grass'?18:3);
+return tex;
+}
+mat.grass.map=noiseTexture('grass');
+mat.dirt.map=noiseTexture('path');
+mat.roof.map=noiseTexture('roof');
 
-function picket(x,z){
-  const g=new T.Group();
-  g.position.set(x,0,z);
-  for(const v of [-.7,.7]){
-    box(g,m.cream,v,.52,0,.18,1.05,.18);
-    cone(g,m.cream,v,1.12,0,.17,.32);
-  }
-  box(g,m.cream,0,.35,0,1.7,.13,.14);
-  box(g,m.cream,0,.72,0,1.7,.13,.14);
-  scene.add(g);
+box(scene,mat.grass,0,-.32,0,108,.64,108);
+box(scene,mat.dirt,0,.012,0,4,.025,56);
+box(scene,mat.dirt,0,.014,0,55,.025,4);
+
+for(let i=0;i<85;i++){
+const x=rand(-25,25),z=rand(-25,25);
+if(Math.abs(x)<2.2||Math.abs(z)<2.2)continue;
+const stone=ball(scene,mat.stone,x,.026,z,rand(.12,.28),.03,rand(.1,.24));
+stone.rotation.y=rand(0,6);
 }
 
-function house(x,z,color){
-  const g=new T.Group();
-  g.position.set(x,0,z);
-  box(g,m.stone,0,.15,0,5,.3,5);
-  box(g,mat(color),0,1.82,0,4.4,3.3,4.2);
-  const roof=cone(g,m.roof,0,4.4,0,3.5,2.4);
-  roof.rotation.y=Math.PI/4;
-  box(g,m.wood,0,1.15,2.16,1.05,2.03,.16);
-  b(g,m.gold,.32,1.15,2.3,.07);
-  for(const v of [-1,1]){
-    box(g,m.cream,v*1.35,2.07,2.17,.86,.95,.15);
-    box(g,m.wood,v*1.35,2.07,2.28,.09,.95,.12);
-    box(g,m.wood,v*1.35,2.07,2.29,.86,.09,.12);
-    b(g,m.leaf,v*1.9,.48,2.1,.49,.45,.43);
-  }
-  scene.add(g);
-  return g;
+const wind=[];
+function tree(x,z,sc=1){
+const g=new T.Group(),crown=new T.Group();
+g.position.set(x,0,z);
+g.scale.setScalar(sc);
+pole(g,mat.wood,0,1.65,0,.3,3.3);
+g.add(crown);
+for(let j=0;j<7;j++){
+const a=j*Math.PI*2/7;
+ball(crown,j%2?mat.leaf:mat.leafLight,
+Math.cos(a)*.78,3.65+(j%3)*.25,
+Math.sin(a)*.78,1.15,1.06,1.1);
+}
+ball(crown,mat.leafLight,0,4.65,0,1.25,1.12,1.18);
+scene.add(g);
+wind.push([crown,rand(0,6)]);
+}
+function pine(x,z,sc=1){
+const g=new T.Group();
+g.position.set(x,0,z);
+g.scale.setScalar(sc);
+pole(g,mat.wood,0,1.6,0,.25,3.2);
+for(let j=0;j<3;j++)
+cone(g,j%2?mat.leaf:mat.leafLight,0,2.4+j*.82,0,1.55-j*.22,2.15);
+scene.add(g);
+}
+function rock(x,z,s=.5){
+const o=new T.Mesh(new T.DodecahedronGeometry(1,0),mat.stone);
+o.position.set(x,s*.36,z);
+o.scale.set(s,s*.65,s*.8);
+scene.add(o);
+}
+function flower(x,z,color=mat.pink){
+const g=new T.Group();
+g.position.set(x,0,z);
+pole(g,mat.leaf,0,.23,0,.035,.46);
+for(let i=0;i<5;i++){
+const a=i*6.28/5;
+ball(g,color,Math.cos(a)*.17,.49,Math.sin(a)*.17,.13,.1,.13);
+}
+ball(g,mat.gold,0,.49,0,.085);
+scene.add(g);
+}
+function fence(x,z){
+const g=new T.Group();
+g.position.set(x,0,z);
+for(const s of [-.68,.68]){
+box(g,mat.trim,s,.52,0,.18,1,.16);
+cone(g,mat.trim,s,1.08,0,.17,.26);
+}
+box(g,mat.trim,0,.43,0,1.55,.12,.14);
+box(g,mat.trim,0,.76,0,1.55,.12,.14);
+scene.add(g);
 }
 
-for(const [x,z,c] of [
-  [-10,-10,'#f1d5af'],
-  [10,-10,'#b9d1de'],
-  [-10,12,'#ddbdd9'],
-  [11,12,'#f1c4bc']
-])house(x,z,c);
+const obstacles=[];
+function cottage(x,z,wallColor,roofColor='#c87871'){
+const g=new T.Group();
+g.position.set(x,0,z);
+const wall=M(wallColor),roof=M(roofColor);
+box(g,mat.stone,0,.17,0,5.15,.34,4.85);
+box(g,wall,0,1.75,0,4.4,3.15,4.15);
+const cap=cone(g,roof,0,4.3,0,3.4,2.35);
+cap.rotation.y=Math.PI/4;
+box(g,mat.woodDark,0,1.15,2.13,1.05,2,.14);
+ball(g,mat.gold,.28,1.12,2.24,.07);
+for(const s of [-1,1]){
+box(g,mat.trim,s*1.32,2.04,2.14,.88,1.02,.14);
+box(g,mat.wood,s*1.32,2.05,2.23,.075,1.02,.13);
+box(g,mat.wood,s*1.32,2.05,2.23,.88,.075,.13);
+box(g,mat.trim,s*1.33,.43,2.12,1.45,.23,.38);
+ball(g,mat.leaf,s*2,.53,2.1,.46,.45,.45);
+}
+box(g,mat.stone,-1.35,4.75,-.5,.55,1.2,.55);
+box(g,mat.wood,0,2.9,2.17,1.9,.31,.16);
+scene.add(g);
+obstacles.push({x,z,r:3.1});
+}
+cottage(-10,-9,'#e4c7a5');
+cottage(10,-9,'#bfd3dc','#a66b85');
+cottage(-10,11,'#dbbad1','#b36a82');
+cottage(10,11,'#ead6ae','#a97668');
 
-for(const z of [-16,-13,-7,8,13,16])
-  for(const x of [-5,5])picket(x,z);
+for(let z of [-15,-12,-5,6,14,17])
+for(let x of [-5,5])fence(x,z);
 
-for(let i=0;i<110;i++){
-  const x=rr(-46,46),z=rr(-46,46);
-  if(Math.abs(x)<17&&Math.abs(z)<19)continue;
-  i%4===0
-    ? pine(x,z,rr(.75,1.25))
-    : tree(x,z,rr(.7,1.2));
+for(let i=0;i<112;i++){
+const x=rand(-48,48),z=rand(-48,48);
+if(Math.abs(x)<18&&Math.abs(z)<20)continue;
+i%4===0?pine(x,z,rand(.8,1.3)):tree(x,z,rand(.78,1.25));
 }
 
-for(let i=0;i<170;i++){
-  const x=rr(-32,32),z=rr(-32,32);
-  if(Math.abs(x)<2||Math.abs(z)<2)continue;
-  bloom(x,z,choice([m.pink,m.cream,m.gold]));
+for(let i=0;i<190;i++){
+const x=rand(-35,35),z=rand(-35,35);
+if(Math.abs(x)<2.4||Math.abs(z)<2.4)continue;
+if(i%7===0)rock(x,z,rand(.18,.48));
+else flower(x,z,pick([mat.pink,mat.trim,mat.gold]));
 }
 
 const pond=new T.Group();
-pond.position.set(-18,.03,9);
-b(pond,m.water,0,0,0,5.1,.065,3.3);
-for(let i=0;i<24;i++){
-  const a=i*6.283/24;
-  b(pond,m.stone,Math.cos(a)*5,.12,Math.sin(a)*3.4,.38,.2,.4);
+pond.position.set(-20,.01,9);
+ball(pond,mat.water,0,.02,0,5.3,.085,3.6);
+for(let i=0;i<27;i++){
+const a=i*2*Math.PI/27;
+ball(pond,mat.stone,Math.cos(a)*5.2,.14,Math.sin(a)*3.5,.4,.22,.45);
 }
 scene.add(pond);
+obstacles.push({x:-20,z:9,r:4.8});
 
-function lamp(x,z){
-  const g=new T.Group();
-  g.position.set(x,0,z);
-  pole(g,m.wood,0,1.5,0,.12,3);
-  b(g,m.gold,0,3.1,0,.37,.42,.34);
-  cone(g,m.roof,0,3.52,0,.48,.46);
-  scene.add(g);
+function lantern(x,z){
+const g=new T.Group();
+g.position.set(x,0,z);
+pole(g,mat.wood,0,1.55,0,.11,3.1);
+ball(g,mat.gold,0,3.05,0,.34,.41,.35);
+cone(g,mat.roof,0,3.51,0,.48,.47);
+scene.add(g);
 }
-for(const p of [[-4,-8],[4,-8],[-4,8],[4,8],[16,3]])
-  lamp(...p);
+for(const q of [[-4,-8],[4,-8],[-4,8],[4,8],[17,3]])lantern(...q);
 
 function market(){
-  const g=new T.Group();
-  g.position.set(17,0,3);
-  box(g,m.wood,0,1,0,4,.25,2.3);
-  for(const x of [-1.7,1.7])
-    for(const z of [-.9,.9])
-      pole(g,m.wood,x,2,z,.1,3.8);
-  box(g,m.roof,0,3.8,0,4.8,.25,3);
-  for(let i=0;i<6;i++)
-    b(g,choice([m.pink,m.gold,m.leaf2]),
-      (i-2.5)*.6,1.4,.2,.25,.24,.25);
-  scene.add(g);
+const g=new T.Group();
+g.position.set(17,0,3);
+box(g,mat.wood,0,.96,0,4.6,.21,2.5);
+for(const x of [-1.9,1.9])
+for(const z of [-.9,.9])pole(g,mat.wood,x,2,z,.1,3.8);
+box(g,mat.roof,0,3.8,0,5,.2,3);
+for(let i=0;i<7;i++)
+ball(g,pick([mat.pink,mat.gold,mat.leaf]),(i-3)*.5,1.38,.4,.25,.26,.25);
+scene.add(g);
+obstacles.push({x:17,z:3,r:2.7});
 }
 market();
 
 // CHARACTERS
-const party=[],actors=[],neighbors=[];
+const characters=[],villagers=[];
 
-function character(s){
-  const root=new T.Group(),body=new T.Group();
-  root.add(body);
-  const fur=mat(s.color);
-  const shirt=mat(s.shirt||'#b79cda');
-  const skin=mat('#f2dbb8');
+function character(spec){
+const root=new T.Group(),rig=new T.Group();
+root.add(rig);
+const fur=M(spec.color);
+const accent=M(spec.accent||'#f7e3c8');
+const outfit=M(spec.outfit||'#b9a1d3');
+const eye=M('#252b37');
 
-  b(body,shirt,0,.93,0,.48,.56,.45);
-  b(body,m.cream,0,.92,.35,.3,.4,.17);
+ball(rig,outfit,0,.96,0,.47,.57,.43);
+ball(rig,accent,0,.93,.38,.31,.35,.15);
 
-  for(const v of [-1,1]){
-    b(body,fur,v*.3,.29,.15,.22,.29,.22);
-    b(body,fur,v*.43,1.03,.14,.19,.29,.19);
-  }
+const legs=[],arms=[];
+for(const s of [-1,1]){
+const leg=new T.Group();
+leg.position.set(s*.29,.51,0);
+ball(leg,fur,0,-.19,.16,.22,.3,.23);
+rig.add(leg);legs.push(leg);
+const arm=new T.Group();
+arm.position.set(s*.43,1.15,0);
+ball(arm,fur,0,-.16,.17,.18,.3,.19);
+rig.add(arm);arms.push(arm);
+}
+const head=new T.Group();
+head.position.y=1.78;
+rig.add(head);
 
-  const face=new T.Group();
-  face.position.y=1.78;
-  body.add(face);
-  b(face,s.kind==='person'?skin:fur,0,0,0,.66,.6,.57);
+const isHuman=spec.kind==='person';
+ball(head,isHuman?accent:fur,0,0,0,.67,.61,.55);
 
-  if(s.kind==='cat'){
-    for(const v of [-1,1]){
-      const ear=cone(face,fur,v*.43,.54,0,.27,.6);
-      ear.rotation.z=-v*.2;
-      cone(face,m.pink,v*.43,.56,.16,.13,.25);
-    }
-    b(body,fur,-.54,1,-.55,.14,.17,.45);
-  }
-
-  if(s.kind==='dog'){
-    for(const v of [-1,1]){
-      const ear=b(face,fur,v*.63,.1,-.02,.25,.45,.23);
-      ear.rotation.z=v*.32;
-    }
-    b(face,m.cream,0,-.21,.42,.42,.28,.3);
-    b(body,fur,.53,1,-.45,.16,.16,.41);
-  }
-
-  if(s.kind==='bird'){
-    for(const v of [-1,1])
-      b(body,fur,v*.47,.98,0,.25,.34,.28);
-    const beak=cone(face,m.gold,0,-.13,.57,.19,.33);
-    beak.rotation.x=Math.PI/2;
-  }
-
-  if(s.kind==='person'){
-    b(face,fur,0,.47,-.1,.66,.23,.45);
-    b(face,fur,0,.25,-.37,.52,.37,.19);
-  }
-
-  for(const v of [-1,1]){
-    b(face,m.cream,v*.24,.05,.48,.19,.23,.09);
-    b(face,m.dark,v*.24,.05,.56,.095,.14,.042);
-    b(face,m.cream,v*.275,.13,.6,.033);
-    b(face,m.pink,v*.44,-.22,.39,.16,.08,.06);
-  }
-  if(s.kind!=='bird')
-    b(face,m.dark,0,-.18,.59,.1,.07,.09);
-
-  root.position.set(s.x||0,0,s.z||0);
-  root.userData={s,body,face};
-  scene.add(root);
-  return root;
+if(spec.kind==='cat'){
+for(const s of [-1,1]){
+const e=cone(head,fur,s*.43,.52,-.03,.28,.56);
+e.rotation.z=-s*.22;
+cone(head,mat.pink,s*.43,.55,.12,.14,.3);
+}
+for(const s of [-1,1])
+ball(head,accent,s*.21,-.2,.47,.26,.2,.17);
+}else if(spec.kind==='dog'){
+for(const s of [-1,1]){
+const e=ball(head,fur,s*.66,.04,-.08,.22,.42,.2);
+e.rotation.z=s*.3;
+}
+ball(head,accent,0,-.21,.45,.4,.28,.31);
+}else if(spec.kind==='bird'){
+for(const s of [-1,1]){
+const wing=ball(rig,fur,s*.51,1.02,-.06,.23,.32,.31);
+wing.rotation.z=s*.2;
+}
+const beak=cone(head,mat.gold,0,-.13,.57,.19,.33);
+beak.rotation.x=Math.PI/2;
+}else{
+ball(head,fur,0,.42,-.08,.67,.23,.49);
+ball(head,fur,0,.3,-.37,.53,.31,.25);
 }
 
-function add(name,kind,color,shirt,x,z){
-  const s={name,kind,color,shirt,x,z};
-  party.push(s);
-  actors.push({
-    obj:character(s),
-    home:new T.Vector3(x,0,z),
-    goal:new T.Vector3(x,0,z),
-    pause:0
-  });
+for(const s of [-1,1]){
+ball(head,mat.trim,s*.245,.08,.46,.195,.245,.095);
+ball(head,eye,s*.245,.065,.542,.104,.155,.045);
+ball(head,mat.trim,s*.28,.15,.58,.037,.043,.02);
+ball(head,mat.pink,s*.45,-.22,.38,.16,.085,.06);
+}
+if(spec.kind!=='bird')
+ball(head,eye,0,-.2,.58,.11,.084,.08);
+
+const tail=new T.Group();
+tail.position.set(spec.kind==='cat'?-.46:.46,1,-.41);
+rig.add(tail);
+const tailMesh=ball(tail,fur,0,0,-.22,.14,.15,.46);
+tailMesh.rotation.y=.2;
+
+if(spec.kind==='cat'||spec.kind==='dog'){
+const collar=mesh(rig,'torus',mat.gold,0,1.36,.05,.4,.4,.4);
+collar.rotation.x=Math.PI/2;
+ball(rig,mat.gold,0,1.29,.41,.1);
+}else{
+box(rig,outfit,0,1.25,-.38,.56,.55,.12);
 }
 
-add('Maple','cat','#eab46f','#d78dac',0,2);
-add('Biscuit','dog','#ddbea1','#91bdaf',2,4);
-add('Pip','bird','#97c8dc','#f1c56e',-2,4);
-add('Robin','person','#a57960','#98b4dd',4,3);
+root.position.set(spec.x||0,0,spec.z||0);
+root.userData={spec,rig,head,arms,legs,tail};
+scene.add(root);
+return root;
+}
 
-const names=[
-  'Clover','Mochi','Poppy','Juniper','Willow',
-  'Sunny','Peanut','Wren','Milo','Pebble'
+function agent(spec,playable){
+const model=character(spec);
+return{
+model,
+home:new T.Vector3(spec.x,0,spec.z),
+goal:new T.Vector3(spec.x,0,spec.z),
+pause:rand(.4,2),
+playable
+};
+}
+
+const party=[
+{name:'Maple',kind:'cat',color:'#e8ac69',accent:'#ffe9cc',outfit:'#d89eb5',x:0,z:2},
+{name:'Biscuit',kind:'dog',color:'#d0ac90',accent:'#fff4db',outfit:'#8fc5b6',x:3,z:3},
+{name:'Pip',kind:'bird',color:'#8ac5d6',accent:'#f2ebd3',outfit:'#f1c883',x:-2,z:4},
+{name:'Robin',kind:'person',color:'#9f795f',accent:'#eec9aa',outfit:'#9db5d9',x:3,z:5}
 ];
 
-for(let i=0;i<10;i++){
-  const x=rr(-17,17),z=rr(-17,17);
-  const s={
-    name:names[i],
-    kind:['cat','dog','person','bird'][i%4],
-    color:choice(['#e8cfaa','#ae98c8','#dba78c','#a5c7c5']),
-    shirt:choice(['#bc9bd7','#a2cfaf','#f0c58f']),
-    x,z
-  };
-  neighbors.push({
-    obj:character(s),
-    home:new T.Vector3(x,0,z),
-    goal:new T.Vector3(x,0,z),
-    pause:0
-  });
+party.forEach(s=>characters.push(agent(s,true)));
+
+const names=['Clover','Poppy','Mochi','Peanut','Sunny','Milo','Wren','Willow','Pebble','Juniper'];
+for(let i=0;i<names.length;i++){
+const s={
+name:names[i],
+kind:['cat','dog','bird','person'][i%4],
+color:pick(['#dfc19b','#b9a6cb','#a8d2c8','#d5a48a']),
+accent:'#f4dfc9',
+outfit:pick(['#b7a1d8','#e8b694','#9cbeab']),
+x:rand(-16,16),z:rand(-16,16)
+};
+villagers.push(agent(s,false));
 }
 
-// COLLECTIBLES
-const treasureNames=[
-  'Cat collar','Dog bed','Bird cage','Little axe',
-  'Rope','Ladder','Flashlight','Magic acorn',
-  'Star compass','Silver bell'
-];
+const artifactNames=['Cat collar','Dog bed','Birdhouse','Small axe','Rope','Ladder','Flashlight','Moonstone','Star map','Silver bell'];
 const treasures=[];
-
-for(let i=0;i<28;i++){
-  const g=new T.Group();
-  g.position.set(rr(-29,29),0,rr(-29,29));
-  b(g,m.gold,0,.57,0,.28,.35,.28);
-  b(g,m.cream,0,.94,0,.13);
-  scene.add(g);
-  treasures.push({
-    g,
-    name:treasureNames[i%10],
-    found:false
-  });
+for(let i=0;i<26;i++){
+const g=new T.Group();
+g.position.set(rand(-31,31),0,rand(-31,31));
+ball(g,mat.gold,0,.65,0,.27,.37,.27);
+ball(g,mat.trim,0,1.03,0,.13);
+scene.add(g);
+treasures.push({g,name:artifactNames[i%artifactNames.length],found:false});
 }
 
-// GAME STATE
-const seasons=['Spring','Summer','Autumn','Winter'];
-const times=['Morning','Afternoon','Evening','Night'];
-const weatherNames=['Sunny','Rainy','Breezy','Snowy'];
+const seasonNames=['Spring','Summer','Autumn','Winter'];
+const timeNames=['Morning','Afternoon','Evening','Night'];
+const weatherNames=['Sunny','Rain','Breezy','Snow'];
+let selected=0,night=1,time=0,season=0,weather=0;
+let wood=0,berries=0,gardens=0,homes=0,inventory=[];
+let playing=false,paused=false,music=false;
+const saveKey='maples-bloomwood-v5';
 
-let night=1,time=0,season=0,weather=0;
-let wood=0,berries=0,gardens=0,homes=0;
-let inventory=[],selected=0;
-let playing=false,panelOpen=false,music=false,elapsed=0;
+function save(){
+try{
+localStorage.setItem(saveKey,JSON.stringify({
+selected,night,time,season,wood,berries,gardens,homes,inventory,extras:party.slice(4)
+}));
+}catch(e){}
+}
+function load(){
+try{
+const s=JSON.parse(localStorage.getItem(saveKey)||'null');
+if(!s)return;
+night=s.night||1;
+time=s.time||0;
+season=s.season||0;
+wood=s.wood||0;
+berries=s.berries||0;
+gardens=s.gardens||0;
+homes=s.homes||0;
+inventory=s.inventory||[];
+for(const p of (s.extras||[]).slice(0,8)){
+party.push(p);
+characters.push(agent({...p,x:p.x||2,z:p.z||2},true));
+}
+selected=clamp(s.selected||0,0,party.length-1);
+for(let i=0;i<Math.min(inventory.length,treasures.length);i++){
+treasures[i].found=true;
+scene.remove(treasures[i].g);
+}
+}catch(e){}
+}
 
-let toastTimer;
-function toast(text){
-  $('toast').textContent=text;
-  $('toast').classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>{
-    $('toast').classList.remove('show');
-  },5000);
+let toastTimeout;
+function toast(s){
+$('toast').textContent=s;
+$('toast').classList.add('on');
+clearTimeout(toastTimeout);
+toastTimeout=setTimeout(()=>$('toast').classList.remove('on'),5000);
 }
 
 function stats(){
-  $('stats').textContent=
-    `🌙 ${night}/99 · ${times[time]} · ${seasons[season]} · ${weatherNames[weather]} | 🐾 ${party[selected].name} | 🎒 ${inventory.length} · 🪵 ${wood} · 🍓 ${berries} · 🌱 ${gardens} · 🏡 ${homes}`;
+$('stats').textContent=`🌙 ${night}/99 · ${timeNames[time]} · ${seasonNames[season]} · ${weatherNames[weather]} | 🐾 ${party[selected].name} · 🎒 ${inventory.length} · 🪵 ${wood} · 🍓 ${berries} · 🏡 ${homes}`;
 }
-
 function ambience(){
-  const sky=['#b7e4ed','#a9dbe7','#ecc69f','#3a5279'][time];
-  scene.background.set(sky);
-  scene.fog.color.set(sky);
-  sun.intensity=[2.4,2.7,1.5,.45][time];
-  m.grass.color.set(['#7fb87a','#70b56b','#b9a271','#dae7e7'][season]);
-  m.leaf.color.set(['#60a36c','#4c985a','#bc8954','#a9c5c7'][season]);
-  m.leaf2.color.set(['#8dc987','#76bb6b','#d4a05a','#c5d5d6'][season]);
+const sky=['#b7e4ef','#a7dce8','#e7b88f','#344d78'][time];
+scene.background.set(sky);
+scene.fog.color.set(sky);
+sun.intensity=[2.2,2.65,1.25,.3][time];
+hemi.intensity=[2.05,2.1,1.45,.8][time];
+mat.grass.color.set(['#7cb977','#72b96d','#c8ab77','#d6e5e5'][season]);
+mat.leaf.color.set(['#6cac68','#59a764','#bf9258','#a8c3c5'][season]);
+mat.leafLight.color.set(['#91c783','#7abb70','#deb16b','#bfd4d5'][season]);
 }
-
-const key='maples-living-v4';
-
-function save(){
-  try{
-    localStorage.setItem(key,JSON.stringify({
-      night,time,season,wood,berries,gardens,
-      homes,inventory,selected,extra:party.slice(4)
-    }));
-  }catch(e){}
-}
-
-function load(){
-  try{
-    const o=JSON.parse(localStorage.getItem(key)||'null');
-    if(!o)return;
-    night=o.night||1;
-    time=o.time||0;
-    season=o.season||0;
-    wood=o.wood||0;
-    berries=o.berries||0;
-    gardens=o.gardens||0;
-    homes=o.homes||0;
-    inventory=o.inventory||[];
-    for(const s of (o.extra||[]).slice(0,8))
-      add(s.name,s.kind,s.color,s.shirt,s.x||2,s.z||3);
-    selected=Math.min(o.selected||0,party.length-1);
-    for(let i=0;i<Math.min(inventory.length,treasures.length);i++){
-      treasures[i].found=true;
-      scene.remove(treasures[i].g);
-    }
-  }catch(e){}
-}
-
-load();
-ambience();
-stats();
+load();ambience();stats();
 
 function switchTo(i){
-  selected=i;
-  stats();
-  save();
-  toast('🐾 Playing as '+party[i].name);
+selected=i;stats();save();toast('🐾 Playing as '+party[i].name);
 }
-
 function explore(){
-  const p=actors[selected].obj.position;
-  let near=null,dist=2.8;
-
-  for(const t of treasures){
-    const d=p.distanceTo(t.g.position);
-    if(!t.found&&d<dist){
-      dist=d;
-      near=t;
-    }
-  }
-
-  if(near){
-    near.found=true;
-    scene.remove(near.g);
-    inventory.push(near.name);
-    toast('🎁 Discovered '+near.name+'!');
-  }else{
-    const person=neighbors.find(n=>n.obj.position.distanceTo(p)<3);
-    if(person){
-      toast('💬 '+person.obj.userData.s.name+': Welcome to our village!');
-    }else{
-      wood++;
-      berries++;
-      toast('🌲 Gathered a log and berries!');
-    }
-  }
-  stats();
-  save();
+const p=characters[selected].model.position;
+let found=null,d=3;
+for(const t of treasures){
+const r=p.distanceTo(t.g.position);
+if(!t.found&&r<d){d=r;found=t}
 }
-
+if(found){
+found.found=true;
+scene.remove(found.g);
+inventory.push(found.name);
+toast('🎁 Found '+found.name+'!');
+}else{
+const n=villagers.find(a=>a.model.position.distanceTo(p)<3);
+if(n)toast('💬 '+n.model.userData.spec.name+': Let’s explore the village!');
+else{wood++;berries++;toast('🌳 Gathered wood and berries!')}
+}
+stats();save();
+}
 function plant(){
-  gardens++;
-  const p=actors[selected].obj.position;
-  const g=new T.Group();
-  g.position.set(p.x+1.6,0,p.z+1);
-  box(g,m.wood,0,.08,0,1.4,.16,1);
-  for(let i=-1;i<=1;i++){
-    cone(g,m.leaf,i*.35,.48,0,.2,.68);
-    b(g,m.pink,i*.35,.88,0,.18);
-  }
-  scene.add(g);
-  stats();
-  save();
-  toast('🌷 You planted a flower garden!');
+const p=characters[selected].model.position,g=new T.Group();
+g.position.set(p.x+1.5,0,p.z+1);
+box(g,mat.wood,0,.1,0,1.5,.2,1.1);
+for(let i=-1;i<=1;i++){
+cone(g,mat.leaf,i*.36,.48,0,.19,.65);
+ball(g,mat.pink,i*.36,.84,0,.18);
 }
-
+scene.add(g);
+gardens++;
+toast('🌸 A new flower garden!');
+stats();save();
+}
 function build(){
-  if(wood<3){
-    toast('🪵 Gather 3 wood to build a cottage.');
-    return;
-  }
-  wood-=3;
-  homes++;
-  const p=actors[selected].obj.position;
-  house(p.x+6,p.z+5,'#f0c5b7');
-  stats();
-  save();
-  toast('🏡 A new cottage!');
+if(wood<3){toast('🪵 Gather three logs to build.');return}
+const p=characters[selected].model.position;
+wood-=3;homes++;
+cottage(clamp(p.x+6,-42,42),clamp(p.z+5,-42,42),'#efd4b5');
+toast('🏡 A cozy cottage is ready!');
+stats();save();
 }
-
 function rest(){
-  time=(time+1)%4;
-  if(time===0){
-    night++;
-    if(night%8===1)season=(season+1)%4;
-  }
-  weather=Math.random()<.2
-    ?(season===3?3:1)
-    :Math.random()<.25?2:0;
-  ambience();
-  stats();
-  save();
-  toast(night>=99
-    ?'🏆 99 cozy nights! Keep exploring!'
-    :'✨ '+times[time]+' in '+seasons[season]);
+time=(time+1)%4;
+if(time===0){
+night++;
+if(night%8===1)season=(season+1)%4;
+}
+weather=rng()<.24?(season===3?3:1):rng()<.2?2:0;
+ambience();stats();save();
+toast(night>=99?'🏆 You reached 99 nights! Keep exploring!':'✨ '+timeNames[time]+' in '+seasonNames[season]);
 }
 
-// INTERFACE
 function panel(title,html){
-  $('panelTitle').textContent=title;
-  $('panelBody').innerHTML=html;
-  $('panel').style.display='flex';
-  panelOpen=true;
+$('screenTitle').textContent=title;
+$('screenBody').innerHTML=html;
+$('screen').style.display='flex';
+paused=true;
 }
-
-function close(){
-  $('panel').style.display='none';
-  panelOpen=false;
+function closePanel(){
+$('screen').style.display='none';
+paused=false;
 }
-$('close').onclick=close;
+$('close').onclick=closePanel;
 
-function characterMenu(){
-  panel('🐾 Village Characters',
-    '<p>Choose anyone to play as. Everyone else continues their own routine.</p>'+
-    party.map((p,i)=>
-      `<div class="entry"><span>${i===selected?'⭐ ':''}${p.name} · ${p.kind}</span><button data-char="${i}">Play</button></div>`
-    ).join('')+
-    '<button id="newCharacter">✨ Create a Friend</button>'
-  );
-  $('panelBody').querySelectorAll('[data-char]').forEach(x=>{
-    x.onclick=()=>{
-      switchTo(+x.dataset.char);
-      close();
-    };
-  });
-  $('newCharacter').onclick=createMenu;
+function characterList(){
+panel('🐾 Your Characters',
+'<p>Everyone else continues living independently.</p>'+
+party.map((s,i)=>`<div class="entry"><span>${i===selected?'⭐ ':''}${s.name} · ${s.kind}</span><button data-i="${i}">Play</button></div>`).join('')+
+'<button id="create">✨ Make a Character</button>');
+$('screenBody').querySelectorAll('[data-i]').forEach(el=>el.onclick=()=>{
+switchTo(+el.dataset.i);closePanel();
+});
+$('create').onclick=characterCreator;
 }
-
-function createMenu(){
-  panel('✨ Create a Friend',`
-    <label>Name
-      <input id="friendName" value="Clover" maxlength="18">
-    </label>
-    <label>Type
-      <select id="friendKind">
-        <option value="cat">Kitten</option>
-        <option value="dog">Puppy</option>
-        <option value="bird">Bird</option>
-        <option value="person">Person</option>
-      </select>
-    </label>
-    <label>Color
-      <select id="friendColor">
-        <option value="#e7b174">Golden</option>
-        <option value="#eee4d8">Snow White</option>
-        <option value="#8b6a57">Chocolate</option>
-        <option value="#c9b5df">Lavender</option>
-        <option value="#a7cad0">Blue</option>
-      </select>
-    </label>
-    <button id="makeFriend">Create Friend</button>
-  `);
-
-  $('makeFriend').onclick=()=>{
-    if(party.length>=12){
-      toast('Your character family is full!');
-      return;
-    }
-    const a=actors[selected].obj.position;
-    add(
-      $('friendName').value.trim()||'Friend',
-      $('friendKind').value,
-      $('friendColor').value,
-      '#baa7d9',a.x+2,a.z+2
-    );
-    switchTo(party.length-1);
-    close();
-  };
-}
-
-$('people').onclick=characterMenu;
-
-$('bag').onclick=()=>{
-  panel('🎒 Backpack',`
-    <p>${inventory.length
-      ?inventory.join(' · ')
-      :'Explore to discover magical keepsakes.'}</p>
-    <p>🪵 Wood: ${wood} · 🍓 Berries: ${berries}</p>
-    <button id="garden">🌱 Plant flowers</button>
-    <button id="cottage">🏡 Build cottage (3 wood)</button>
-  `);
-  $('garden').onclick=()=>{
-    plant();
-    close();
-  };
-  $('cottage').onclick=()=>{
-    build();
-    close();
-  };
+function characterCreator(){
+panel('✨ Create a Friend',`
+<label>Name<input id="newName" maxlength="18" value="Clover"></label>
+<label>Character<select id="newKind">
+<option value="cat">Kitten</option>
+<option value="dog">Puppy</option>
+<option value="bird">Bird</option>
+<option value="person">Person</option>
+</select></label>
+<label>Fur or hair<select id="newColor">
+<option value="#eab374">Golden</option>
+<option value="#eee6d9">Snow</option>
+<option value="#96765e">Chocolate</option>
+<option value="#b6a4d6">Lavender</option>
+<option value="#9ecad6">Blue</option>
+</select></label>
+<button id="makeNow">Create</button>`);
+$('makeNow').onclick=()=>{
+if(party.length>=12){toast('Maximum 12 playable characters.');closePanel();return}
+const p=characters[selected].model.position;
+const s={
+name:$('newName').value.trim()||'Friend',
+kind:$('newKind').value,
+color:$('newColor').value,
+accent:'#f6e4cc',outfit:'#b5a2d8',x:p.x+2,z:p.z+1
 };
-
-$('options').onclick=()=>{
-  panel('📖 Village Guide',`
-    <p><b>Left joystick:</b> Move in the camera direction.</p>
-    <p><b>Right joystick:</b> Rotate the camera.</p>
-    <p><b>Drag the world:</b> Look around.</p>
-    <p><b>🐾:</b> Change or create characters.</p>
-    <p><b>🎒:</b> Collectibles, planting and building.</p>
-    <p>Characters wander independently. Rain, snow, seasons and time change as you rest or explore.</p>
-    <p>Messages vanish after five seconds. Progress saves on this iPhone.</p>
-    <button id="musicToggle">🎵 Music Off</button>
-  `);
-  const toggle=$('musicToggle');
-  toggle.textContent='🎵 '+(music?'Music On':'Music Off');
-  toggle.onclick=()=>{
-    music=!music;
-    toggle.textContent='🎵 '+(music?'Music On':'Music Off');
-    if(music){
-      try{
-        audio??=new(window.AudioContext||window.webkitAudioContext)();
-        audio.resume();
-      }catch(e){}
-    }
-  };
+party.push(s);
+characters.push(agent(s,true));
+switchTo(party.length-1);
+closePanel();
 };
-
-$('interact').onclick=explore;
-$('rest').onclick=rest;
+}
+$('characters').onclick=characterList;
+$('inventory').onclick=()=>{
+panel('🎒 Keepsakes & Supplies',`
+<p>${inventory.length?inventory.join(' · '):'Search for glowing artifacts around the forest!'}</p>
+<p>🪵 ${wood} wood · 🍓 ${berries} berries · 🌷 ${gardens} gardens · 🏡 ${homes} cottages</p>
+<button id="plantNow">🌷 Plant flowers</button>
+<button id="buildNow">🏡 Build cottage (3 wood)</button>`);
+$('plantNow').onclick=()=>{plant();closePanel()};
+$('buildNow').onclick=()=>{build();closePanel()};
+};
+$('menu').onclick=()=>{
+panel('📖 Village Guide',`
+<p>Use the left circle to move. Use the right circle or drag the background to rotate the camera. Pinch to zoom.</p>
+<p>Tap 🐾 to switch characters or create a new kitten, puppy, bird or person. Other characters wander independently.</p>
+<p>Explore for artifacts and wood. Plant flowers, build cottages, and rest to change the time of day.</p>
+<button id="musicButton">🎵 ${music?'Music On':'Music Off'}</button>`);
+$('musicButton').onclick=()=>{
+music=!music;
+$('musicButton').textContent='🎵 '+(music?'Music On':'Music Off');
+if(music)startAudio();
+};
+};
+$('action').onclick=explore;
+$('sleep').onclick=rest;
 $('start').onclick=()=>{
-  $('welcome').style.display='none';
-  playing=true;
-  toast('🍁 Welcome to Honeybell Village!');
+$('intro').style.display='none';
+playing=true;
+toast('🍁 Welcome to Bloomwood Valley!');
 };
 
-// DUAL JOYSTICK CONTROL
-function stick(el){
-  const nub=el.querySelector('.nub');
-  const state={x:0,y:0};
-
-  function update(e){
-    e.preventDefault();
-    const r=el.getBoundingClientRect();
-    const x=e.clientX-r.left-r.width/2;
-    const y=e.clientY-r.top-r.height/2;
-    const len=Math.hypot(x,y)||1;
-    const amount=Math.min(40,len);
-    state.x=x/len*amount/40;
-    state.y=y/len*amount/40;
-    nub.style.transform=
-      `translate(${state.x*40}px,${state.y*40}px)`;
-  }
-
-  el.addEventListener('pointerdown',e=>{
-    el.setPointerCapture(e.pointerId);
-    update(e);
-  });
-  el.addEventListener('pointermove',e=>{
-    if(el.hasPointerCapture(e.pointerId))update(e);
-  });
-
-  function reset(){
-    state.x=0;
-    state.y=0;
-    nub.style.transform='translate(0,0)';
-  }
-
-  el.addEventListener('pointerup',reset);
-  el.addEventListener('pointercancel',reset);
-  return state;
+function joystick(id){
+const el=$(id),nub=el.querySelector('.nub'),state={x:0,y:0};
+function update(e){
+e.preventDefault();
+const r=el.getBoundingClientRect();
+const dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2;
+const l=Math.hypot(dx,dy)||1,k=Math.min(37,l);
+state.x=dx/l*k/37;state.y=dy/l*k/37;
+nub.style.transform=`translate(${state.x*37}px,${state.y*37}px)`;
 }
-
-const move=stick($('move'));
-const look=stick($('look'));
-
-let yaw=.45,pitch=.62,distance=15;
-let drag=null;
-
+el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);update(e)});
+el.addEventListener('pointermove',e=>{if(el.hasPointerCapture(e.pointerId))update(e)});
+function reset(){state.x=state.y=0;nub.style.transform='translate(0,0)'}
+el.addEventListener('pointerup',reset);
+el.addEventListener('pointercancel',reset);
+return state;
+}
+const move=joystick('move'),look=joystick('cameraStick');
+let yaw=.55,pitch=.52,distance=13.5,drag=null,pinchDistance=0;
+const pointers=new Map();
 renderer.domElement.addEventListener('pointerdown',e=>{
-  drag={x:e.clientX,y:e.clientY,t:performance.now()};
+pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+if(pointers.size===1)drag={x:e.clientX,y:e.clientY,t:performance.now(),moved:false};
 });
-
 renderer.domElement.addEventListener('pointermove',e=>{
-  if(drag){
-    yaw-=(e.clientX-drag.x)*.006;
-    pitch=T.MathUtils.clamp(
-      pitch+(e.clientY-drag.y)*.004,.25,1.12
-    );
-    drag.x=e.clientX;
-    drag.y=e.clientY;
-  }
+if(!pointers.has(e.pointerId))return;
+pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+if(pointers.size===2){
+const p=[...pointers.values()];
+const d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
+if(pinchDistance)distance=clamp(distance+(pinchDistance-d)*.035,7,23);
+pinchDistance=d;drag=null;return;
+}
+if(drag){
+const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+if(Math.abs(dx)+Math.abs(dy)>3)drag.moved=true;
+yaw-=dx*.006;pitch=clamp(pitch+dy*.004,.22,1.1);
+drag.x=e.clientX;drag.y=e.clientY;
+}
 });
-
+const ray=new T.Raycaster(),pointer=new T.Vector2();
 renderer.domElement.addEventListener('pointerup',e=>{
-  if(!drag)return;
-  const tap=performance.now()-drag.t<250;
-  if(tap){
-    const pointer=new T.Vector2(
-      e.clientX/innerWidth*2-1,
-      1-e.clientY/innerHeight*2
-    );
-    const ray=new T.Raycaster();
-    ray.setFromCamera(pointer,camera);
-    const hit=ray.intersectObjects(actors.map(a=>a.obj),true);
-    if(hit.length){
-      let obj=hit[0].object;
-      while(obj.parent&&!actors.some(a=>a.obj===obj))
-        obj=obj.parent;
-      const i=actors.findIndex(a=>a.obj===obj);
-      if(i>=0)switchTo(i);
-    }
-  }
-  drag=null;
+pointers.delete(e.pointerId);pinchDistance=0;
+if(drag&&!drag.moved&&performance.now()-drag.t<250&&playing&&!paused){
+pointer.set(e.clientX/innerWidth*2-1,1-e.clientY/innerHeight*2);
+ray.setFromCamera(pointer,camera);
+const hit=ray.intersectObjects(characters.map(a=>a.model),true);
+if(hit.length){
+let obj=hit[0].object;
+while(obj.parent&&!characters.some(a=>a.model===obj))obj=obj.parent;
+const i=characters.findIndex(a=>a.model===obj);
+if(i>=0)switchTo(i);
+}
+}
+drag=null;
+});
+renderer.domElement.addEventListener('pointercancel',e=>{
+pointers.delete(e.pointerId);drag=null;pinchDistance=0;
 });
 
-// INDEPENDENT CHARACTER ROUTINES
-function chooseGoal(a,day){
-  const h=a.home;
-  const targets=day
-    ?[[0,0],[17,3],[-18,9],[-10,-9],[10,-9],[-10,12],[11,12]]
-    :[[h.x,h.z],[0,0]];
-  const p=choice(targets);
-  a.goal.set(
-    p[0]+rnd(-2.5,2.5),
-    0,
-    p[1]+rnd(-2.5,2.5)
-  );
-  a.pause=rnd(.3,3);
+const stops=[[0,0],[17,3],[-19,9],[-10,-9],[10,-9],[-10,11],[10,11],[-5,-12],[5,12]];
+function newGoal(a,nighttime){
+const p=nighttime&&rng()<.75?[a.home.x,a.home.z]:pick(stops);
+a.goal.set(p[0]+rand(-2.2,2.2),0,p[1]+rand(-2.2,2.2));
+a.pause=rand(.7,3);
+}
+function animateGait(a,t,i,moving){
+const ud=a.model.userData,v=moving?1:0;
+ud.rig.position.y=Math.sin(t*.012+i)*.055*v;
+ud.head.rotation.z=Math.sin(t*.006+i)*.045;
+ud.legs.forEach((l,k)=>l.rotation.x=Math.sin(t*.012+i+k*Math.PI)*.35*v);
+ud.arms.forEach((l,k)=>l.rotation.x=Math.sin(t*.012+i+(1-k)*Math.PI)*.18*v);
+ud.tail.rotation.y=Math.sin(t*.006+i)*.35;
+}
+function animateAgent(a,dt,t,i,nighttime){
+const root=a.model,rig=root.userData.rig;
+if(a.pause>0){
+a.pause-=dt;
+rig.position.y=Math.sin(t*.003+i)*.015;
+root.userData.head.rotation.z=Math.sin(t*.002+i)*.045;
+return;
+}
+const d=a.goal.clone().sub(root.position);
+d.y=0;
+if(d.lengthSq()<.55){newGoal(a,nighttime);return}
+d.normalize();
+const speed=nighttime?.7:1.12;
+root.position.addScaledVector(d,speed*dt);
+root.position.x=clamp(root.position.x,-45,45);
+root.position.z=clamp(root.position.z,-45,45);
+root.rotation.y=Math.atan2(d.x,d.z);
+animateGait(a,t,i,true);
 }
 
-function wander(a,dt,now,i,nighttime){
-  if(a.pause>0){
-    a.pause-=dt;
-    a.obj.userData.body.position.y=
-      Math.sin(now*.003+i)*.02;
-    return;
-  }
-
-  const p=a.obj.position;
-  const v=a.goal.clone().sub(p);
-  const d=v.length();
-
-  if(d<.6){
-    chooseGoal(a,!nighttime);
-    return;
-  }
-
-  v.multiplyScalar(1/d);
-  const speed=nighttime?.65:1.05;
-  p.addScaledVector(v,dt*speed);
-  a.obj.rotation.y=Math.atan2(v.x,v.z);
-  a.obj.userData.body.position.y=
-    Math.sin(now*.009+i)*.055;
-  a.obj.userData.face.rotation.z=
-    Math.sin(now*.004+i)*.026;
+const precipitation=[],particleMat=new T.MeshBasicMaterial({color:'#e9f6ff'});
+for(let i=0;i<65;i++){
+precipitation.push(ball(scene,particleMat,0,-100,0,.045,.13,.045));
 }
 
-// RAIN AND SNOW
-const drops=[];
-const dropMat=new T.MeshBasicMaterial({color:'#ebfaff'});
-for(let i=0;i<48;i++){
-  drops.push(b(scene,dropMat,0,-100,0,.045,.15,.045));
-}
-
-// WHIMSICAL MUSIC
-let audio,melody=0;
+let audio,noteIndex=0;
 const notes=[392,440,523,587,659,523,440,392];
-
+function startAudio(){
+try{
+audio??=new(window.AudioContext||window.webkitAudioContext)();
+audio.resume();
+}catch(e){}
+}
 setInterval(()=>{
-  if(!music||!playing)return;
-  try{
-    audio??=new(window.AudioContext||window.webkitAudioContext)();
-    const osc=audio.createOscillator();
-    const v=audio.createGain();
-    osc.type='sine';
-    osc.frequency.value=notes[melody++%notes.length];
-    v.gain.setValueAtTime(.022,audio.currentTime);
-    v.gain.exponentialRampToValueAtTime(
-      .001,audio.currentTime+.25
-    );
-    osc.connect(v);
-    v.connect(audio.destination);
-    osc.start();
-    osc.stop(audio.currentTime+.26);
-  }catch(e){}
-},440);
+if(!music||!playing)return;
+try{
+startAudio();if(!audio)return;
+const o=audio.createOscillator(),v=audio.createGain();
+o.type='sine';o.frequency.value=notes[noteIndex++%notes.length];
+v.gain.setValueAtTime(.025,audio.currentTime);
+v.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.27);
+o.connect(v);v.connect(audio.destination);
+o.start();o.stop(audio.currentTime+.28);
+}catch(e){}
+},410);
 
-// MAIN GAME LOOP
-let last=performance.now();
-const tmp=new T.Vector3();
-camera.position.set(8,8,14);
+let last=performance.now(),elapsed=0;
+const velocity=new T.Vector3(),focus=new T.Vector3();
+camera.position.set(8,9,14);
 
-function frame(now){
-  requestAnimationFrame(frame);
-  const dt=Math.min((now-last)/1000,.05);
-  last=now;
+function frame(t){
+requestAnimationFrame(frame);
+const dt=Math.min((t-last)/1000,.05);
+last=t;
 
-  if(playing&&!panelOpen){
-    const hero=actors[selected];
-    const p=hero.obj.position;
-    const speed=Math.hypot(move.x,move.y);
+if(playing&&!paused){
+const hero=characters[selected],p=hero.model.position;
+yaw-=look.x*1.55*dt;
+pitch=clamp(pitch+look.y*.8*dt,.22,1.1);
+const intensity=Math.hypot(move.x,move.y);
 
-    yaw-=look.x*1.65*dt;
-    pitch=T.MathUtils.clamp(
-      pitch+look.y*.8*dt,.25,1.12
-    );
+if(intensity>.085){
+const forward=new T.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
+const right=new T.Vector3(Math.cos(yaw),0,-Math.sin(yaw));
+velocity.copy(right).multiplyScalar(move.x).addScaledVector(forward,-move.y).normalize();
+const old=p.clone();
+p.addScaledVector(velocity,dt*4.4);
+p.x=clamp(p.x,-46,46);
+p.z=clamp(p.z,-46,46);
+for(const o of obstacles){
+if(Math.hypot(p.x-o.x,p.z-o.z)<o.r){p.copy(old);break}
+}
+hero.model.rotation.y=Math.atan2(velocity.x,velocity.z);
+animateGait(hero,t,0,true);
+}else animateGait(hero,t,0,false);
 
-    if(speed>.08){
-      const forward=new T.Vector3(
-        -Math.sin(yaw),0,-Math.cos(yaw)
-      );
-      const right=new T.Vector3(
-        Math.cos(yaw),0,-Math.sin(yaw)
-      );
+for(let i=0;i<characters.length;i++)
+if(i!==selected)animateAgent(characters[i],dt,t,i,time===3);
+for(let i=0;i<villagers.length;i++)
+animateAgent(villagers[i],dt,t,i+30,time===3);
 
-      tmp.copy(right)
-        .multiplyScalar(move.x)
-        .addScaledVector(forward,-move.y)
-        .normalize();
-
-      p.addScaledVector(tmp,dt*4.7);
-      p.x=T.MathUtils.clamp(p.x,-46,46);
-      p.z=T.MathUtils.clamp(p.z,-46,46);
-
-      hero.obj.rotation.y=Math.atan2(tmp.x,tmp.z);
-      hero.obj.userData.body.position.y=
-        Math.sin(now*.014)*.08;
-    }else{
-      hero.obj.userData.body.position.y*=.8;
-    }
-
-    // All non-selected characters move independently.
-    for(let i=0;i<actors.length;i++){
-      if(i!==selected)
-        wander(actors[i],dt,now,i,time===3);
-    }
-
-    for(let i=0;i<neighbors.length;i++){
-      wander(neighbors[i],dt,now,i+40,time===3);
-    }
-
-    // Camera follows the selected character.
-    const offset=new T.Vector3(
-      Math.sin(yaw)*distance*Math.cos(pitch),
-      distance*Math.sin(pitch),
-      Math.cos(yaw)*distance*Math.cos(pitch)
-    );
-    camera.position.lerp(
-      tmp.copy(p).add(offset),
-      Math.min(1,dt*5)
-    );
-    camera.lookAt(p.x,1.2,p.z);
-
-    elapsed+=dt;
-    if(elapsed>=100){
-      elapsed=0;
-      rest();
-    }
-  }
-
-  // Tree movement
-  for(const [c,phase] of canopy){
-    c.rotation.z=Math.sin(now*.0007+phase)*.03;
-  }
-
-  // Treasure animation
-  for(let i=0;i<treasures.length;i++){
-    if(!treasures[i].found){
-      treasures[i].g.rotation.y+=dt*.6;
-      treasures[i].g.children[0].position.y=
-        .56+Math.sin(now*.002+i)*.07;
-    }
-  }
-
-  // Weather animation
-  for(const f of drops){
-    f.visible=weather===1||weather===3;
-    if(!f.visible)continue;
-
-    const p=actors[selected].obj.position;
-    if(f.position.y<0){
-      f.position.set(
-        p.x+rnd(-14,14),
-        rnd(8,17),
-        p.z+rnd(-14,14)
-      );
-    }
-    f.position.y-=dt*(weather===3?1.7:9);
-  }
-
-  renderer.render(scene,camera);
+focus.set(p.x,1.2,p.z);
+const target=new T.Vector3(
+p.x+Math.sin(yaw)*distance*Math.cos(pitch),
+1.2+distance*Math.sin(pitch),
+p.z+Math.cos(yaw)*distance*Math.cos(pitch)
+);
+for(const o of obstacles){
+const dx=target.x-o.x,dz=target.z-o.z;
+if(Math.hypot(dx,dz)<o.r+1.3&&target.y<5.5)target.y=5.5;
+}
+camera.position.lerp(target,Math.min(1,dt*5));
+camera.lookAt(focus);
+elapsed+=dt;
+if(elapsed>105){elapsed=0;rest()}
 }
 
+for(const [c,ph] of wind)c.rotation.z=Math.sin(t*.0008+ph)*.025;
+for(let i=0;i<treasures.length;i++){
+const a=treasures[i];
+if(!a.found){
+a.g.rotation.y+=dt*.7;
+a.g.position.y=Math.sin(t*.002+i)*.09;
+}
+}
+for(const p of precipitation){
+p.visible=weather===1||weather===3;
+if(!p.visible)continue;
+const h=characters[selected].model.position;
+if(p.position.y<0)
+p.position.set(h.x+rand(-15,15),rand(7,18),h.z+rand(-15,15));
+p.position.y-=dt*(weather===3?1.5:10);
+p.position.x+=dt*(weather===3?.5:2);
+}
+renderer.render(scene,camera);
+}
 requestAnimationFrame(frame);
 
 window.addEventListener('resize',()=>{
-  camera.aspect=innerWidth/innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth,innerHeight);
+camera.aspect=innerWidth/innerHeight;
+camera.updateProjectionMatrix();
+renderer.setSize(innerWidth,innerHeight);
 });
 </script>
 </body>
