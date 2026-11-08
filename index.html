@@ -1,1167 +1,1679 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Maple's 99 Nights - Version 9</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#315a49">
+<title>Maple's 99 Nights — Wildflower Village V10</title>
 <style>
+:root{
+  --pine:#224b3e;
+  --pine-light:#4d8368;
+  --gold:#f8e1a5;
+  --cream:#fff5db;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-top:env(safe-area-inset-top,0px);
+}
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;touch-action:none;font-family:system-ui;background:#9bc9bc;color:white}
-canvas{display:block}
-button{cursor:pointer;border:2px solid #f3d7a2;background:#33654d;color:white;border-radius:13px;padding:10px;font-weight:bold;font-size:12px;touch-action:none}
-#hud{position:fixed;top:8px;left:8px;background:#174635dd;border:1px solid #ffe1ab;border-radius:15px;padding:10px;max-width:62%;font-size:11px;pointer-events:none}
-#hud b{color:#ffe1ab}
-#toolbar{position:fixed;right:8px;top:8px;display:flex;gap:5px}
-#toolbar button{width:40px;height:40px;padding:0;font-size:18px;border-radius:50%}
-#actions{position:fixed;bottom:155px;right:8px;display:flex;gap:5px;z-index:4}
-#placeBtn{background:#3a805a}
-.joy{position:fixed;bottom:20px;width:118px;height:118px;border:3px solid #fff0c8;border-radius:50%;background:#36694b99;touch-action:none}
-#left{left:12px}
-#right{right:12px}
-.knob{position:absolute;left:32px;top:32px;width:48px;height:48px;border-radius:50%;background:#ffdca2;border:3px solid white;pointer-events:none}
-#right .knob{background:#b2dce7}
-#toast{position:fixed;bottom:220px;left:12%;right:12%;text-align:center;background:#205140ed;border:1px solid #ffe0a7;padding:10px;border-radius:13px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:8}
-#toast.show{opacity:1}
-#intro,#modal{position:fixed;inset:0;background:#153d32e9;display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
-#modal{display:none}
-.panel{width:100%;max-width:420px;max-height:85vh;overflow:auto;background:linear-gradient(145deg,#4e846b,#285445);border:2px solid #ffe1ab;border-radius:24px;padding:22px;text-align:center}
-.panel h1,.panel h2{color:#ffe1ab}
-.panel button{margin:4px}
-.panel input,.panel select{width:100%;padding:10px;margin:7px 0;border:0;border-radius:8px}
-#buildBar{display:none;position:fixed;bottom:215px;left:7px;right:7px;z-index:8;text-align:center;background:#254a3fe8;border:1px solid #fce0a5;border-radius:15px;padding:9px}
-#buildBar button{margin:3px}
-#wheel{display:none;position:fixed;bottom:235px;right:10px;width:252px;height:252px;background:radial-gradient(circle,#346e55f4,#153f34f5);border:2px solid #ffe2ab;border-radius:50%;z-index:10;box-shadow:0 4px 24px #152b2999}
-.wheelItem{position:absolute;transform:translate(-50%,-50%);width:84px;min-height:48px;padding:5px 2px;font-size:10px;border-radius:13px}
-.wheelCenter{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);font-size:11px;text-align:center;font-weight:bold;color:#ffe0ad;pointer-events:none}
-#wheelX{position:absolute;left:50%;top:68%;transform:translate(-50%,-50%);padding:4px 9px;background:#a75d5b}
-#notice{display:none;position:fixed;left:8%;right:8%;top:30%;padding:20px;background:#843a40;border:2px solid white;z-index:99;border-radius:15px}
+html,body{width:100%;height:100%;margin:0;overflow:hidden;touch-action:none}
+body{background:#92c6bd;color:white;font-family:system-ui,-apple-system,sans-serif}
+canvas{display:block;touch-action:none}
+button{font:700 12px system-ui;color:white;border:1.5px solid var(--gold);background:#2c604d;border-radius:14px;padding:10px;touch-action:none;cursor:pointer}
+button:disabled{opacity:.4;filter:grayscale(1)}
+button:active{filter:brightness(1.18)}
+#hud{
+  position:fixed;
+  z-index:2;
+  top:calc(8px + var(--safe-top));
+  left:8px;
+  max-width:59vw;
+  padding:9px 10px;
+  background:#1b4339df;
+  border:1px solid #f8dfa7;
+  border-radius:15px;
+  backdrop-filter:blur(7px);
+  box-shadow:0 5px 18px #133d3466;
+  pointer-events:none;
+}
+#hudTitle{font-size:12px;font-weight:900;color:#ffe0a4;letter-spacing:.02em}
+#stats{font-size:10.5px;line-height:1.55;margin-top:3px}
+#weatherTag{font-size:11px}
+#top{
+  position:fixed;
+  z-index:3;
+  right:7px;
+  top:calc(8px + var(--safe-top));
+  display:flex;
+  gap:5px;
+}
+#top button{width:40px;height:40px;border-radius:50%;padding:0;font-size:18px;background:#275847ed}
+#actions{
+  position:fixed;
+  z-index:5;
+  right:9px;
+  bottom:calc(159px + var(--safe-bottom));
+  display:flex;
+  gap:7px;
+  align-items:center;
+}
+#placeItem{font-size:13px;min-width:112px;background:linear-gradient(145deg,#4c936b,#276246);box-shadow:0 3px 11px #14372f88}
+#collectItem{background:#315c70e8}
+#restButton{background:#625476e8}
+#toast{
+  position:fixed;
+  z-index:12;
+  left:12%;
+  right:12%;
+  bottom:calc(216px + var(--safe-bottom));
+  text-align:center;
+  background:#1c4e3eea;
+  border:1px solid var(--gold);
+  border-radius:15px;
+  padding:10px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s;
+  font-size:12px;
+}
+#toast.visible{opacity:1}
+.joystick{
+  position:fixed;
+  z-index:4;
+  bottom:calc(17px + var(--safe-bottom));
+  width:124px;
+  height:124px;
+  border:3px solid #fff0c7;
+  border-radius:50%;
+  background:#305c4b8f;
+  touch-action:none;
+  user-select:none;
+}
+#moveStick{left:12px}
+#lookStick{right:12px}
+.knob{
+  position:absolute;
+  left:34px;
+  top:34px;
+  height:50px;
+  width:50px;
+  border-radius:50%;
+  border:3px solid white;
+  background:#ffd59d;
+  pointer-events:none;
+}
+#lookStick .knob{background:#a7dbe8}
+.stickCaption{
+  position:fixed;
+  z-index:4;
+  bottom:calc(145px + var(--safe-bottom));
+  font-size:10px;
+  font-weight:900;
+  color:#194b3a;
+  text-shadow:0 1px 0 #fff1ca;
+}
+#moveCaption{left:51px}
+#lookCaption{right:44px}
+#radial{
+  display:none;
+  position:fixed;
+  z-index:15;
+  right:12px;
+  bottom:calc(221px + var(--safe-bottom));
+  width:268px;
+  height:268px;
+  border-radius:50%;
+  border:2px solid #ffe9ba;
+  background:radial-gradient(circle,#366d58ed,#173c32f9);
+  box-shadow:0 8px 35px #081e19ab;
+  touch-action:none;
+}
+.radialItem{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:80px;
+  min-height:56px;
+  padding:5px 3px;
+  border-radius:15px;
+  font-size:10px;
+  line-height:1.15;
+  white-space:normal;
+  background:#4e886bec;
+}
+.radialItem b{display:block;font-size:23px;margin-bottom:2px}
+.radialItem small{display:block;color:#fff5d6;font-size:9px}
+.radialItem.chosen{background:#dca75e;color:#163a2e}
+.radialItem.chosen small{color:#284f3b}
+#radialCenter{
+  position:absolute;
+  top:49%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  font-size:11px;
+  color:#ffebbd;
+  text-align:center;
+  font-weight:850;
+  pointer-events:none;
+}
+#radialClose{
+  position:absolute;
+  bottom:15%;
+  left:50%;
+  transform:translateX(-50%);
+  background:#884c49;
+  padding:4px 9px;
+}
+#placingBar{
+  display:none;
+  position:fixed;
+  z-index:11;
+  left:9px;
+  right:9px;
+  bottom:calc(162px + var(--safe-bottom));
+  border:1px solid var(--gold);
+  border-radius:17px;
+  text-align:center;
+  padding:10px;
+  background:#244c41f4;
+  box-shadow:0 6px 25px #142c24a8;
+}
+#placingBar strong{display:block;color:#ffe3a1;font-size:13px}
+#placingBar .hint{font-size:11px;margin:5px 0}
+#placingBar button{margin:2px}
+#intro,#modal{
+  position:fixed;
+  inset:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:17px;
+  background:#143b30e8;
+}
+#modal{display:none;z-index:21}
+.sheet{
+  width:100%;
+  max-width:425px;
+  max-height:86dvh;
+  overflow:auto;
+  padding:21px;
+  border:2px solid #ffe0aa;
+  border-radius:24px;
+  background:linear-gradient(145deg,#51866f,#275848);
+  text-align:center;
+  box-shadow:0 16px 45px #0c241aaa;
+}
+.sheet h1,.sheet h2{margin:6px 0 12px;color:#ffe2a5}
+.sheet p{line-height:1.48}
+.sheet button{margin:4px}
+.sheet label{display:block;text-align:left;margin:10px 0}
+.sheet input,.sheet select{width:100%;border:0;border-radius:9px;padding:10px;margin-top:5px}
+.option{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  text-align:left;
+  padding:7px 9px;
+  margin:6px 0;
+  border-radius:12px;
+  background:#1b4d3d;
+}
+.option small{opacity:.8}
+#fatal{
+  display:none;
+  position:fixed;
+  z-index:99;
+  top:27%;
+  left:8%;
+  right:8%;
+  padding:20px;
+  background:#873d44;
+  border:2px solid white;
+  border-radius:15px;
+}
+@media(max-width:390px){
+  #actions{gap:4px;right:5px}
+  #actions button{padding:9px 7px}
+  #placeItem{min-width:97px}
+  #radial{width:247px;height:247px}
+  .radialItem{width:75px;min-height:53px}
+}
 </style>
 </head>
 <body>
-<div id="hud"><b>🍁 MAPLE'S 99 NIGHTS · V9</b><div id="stats">Loading forest...</div></div>
-
-<div id="toolbar">
-<button id="petsBtn">🐾</button>
-<button id="bagBtn">🎒</button>
-<button id="soundBtn">🔊</button>
-<button id="settingsBtn">☰</button>
+<div id="hud">
+  <div id="hudTitle">🍁 MAPLE'S 99 NIGHTS · V10</div>
+  <div id="stats">Preparing Wildflower Hollow...</div>
 </div>
-
-<div id="actions">
-<button id="placeBtn">🔨 Place Item</button>
-<button id="collectBtn">✨ Collect</button>
-<button id="restBtn">🌙 Rest</button>
+<div id="top">
+  <button id="friendsButton" title="Characters">🐾</button>
+  <button id="inventoryButton" title="Backpack">🎒</button>
+  <button id="musicButton" title="Turn music on or off">🔊</button>
+  <button id="settingsButton" title="Settings">☰</button>
 </div>
-
-<div id="wheel">
-<div id="wheelItems"></div>
-<div class="wheelCenter">CHOOSE<br>ITEM</div>
-<button id="wheelX">✕</button>
-</div>
-
-<div id="buildBar">
-<b id="buildLabel">Place your item</b>
-<div style="font-size:11px;margin:4px">Tap the ground to choose a location</div>
-<button id="rotateBtn">↻ Rotate</button>
-<button id="confirmBtn">✓ Place</button>
-<button id="cancelBtn">✕ Cancel</button>
-</div>
-
-<div id="left" class="joy"><div class="knob"></div></div>
-<div id="right" class="joy"><div class="knob"></div></div>
 <div id="toast"></div>
-
+<div id="actions">
+  <button id="placeItem">🔨 Place Item</button>
+  <button id="collectItem">✨ Collect</button>
+  <button id="restButton">🌙 Rest</button>
+</div>
+<div id="radial">
+  <div id="radialItems"></div>
+  <div id="radialCenter">CHOOSE<br>AN ITEM</div>
+  <button id="radialClose">✕</button>
+</div>
+<div id="placingBar">
+  <strong id="placingTitle">Place item</strong>
+  <div class="hint">Tap the ground to move · Green = allowed · Red = blocked</div>
+  <button id="rotateItem">↻ Rotate</button>
+  <button id="confirmItem">✓ Place Here</button>
+  <button id="cancelItem">✕ Cancel</button>
+</div>
+<div id="moveStick" class="joystick"><div class="knob"></div></div>
+<div id="lookStick" class="joystick"><div class="knob"></div></div>
+<div id="moveCaption" class="stickCaption">MOVE</div>
+<div id="lookCaption" class="stickCaption">CAMERA</div>
 <div id="intro">
-<div class="panel">
-<div style="font-size:46px">🐱 🌻 🐶</div>
-<h1>Maple's 99 Nights</h1>
-<h3>Wildflower Hollow · Version 9</h3>
-<p>Explore the forest, collect hidden treasures, place your own cottages and gardens, and enjoy 99 nights of adventures.</p>
-<p>Hold <b>Place Item</b> to open the circular building menu.</p>
-<p>🎵 Whimsical music begins when you play.</p>
-<button id="playBtn">▶ PLAY</button>
+  <div class="sheet">
+    <div style="font-size:42px">🐱 🌻 🐶 🏡</div>
+    <h1>Maple's 99 Nights</h1>
+    <b>WILDFLOWER HOLLOW · VERSION 10</b>
+    <p>Explore a richly decorated forest village. Collect treasures, design your neighborhood, and enjoy the changing weather and 99 magical nights.</p>
+    <p>Hold <b>Place Item</b> to open the circular building menu. Tap the world to choose exactly where to build.</p>
+    <p>🎵 Tap Play to begin the original forest soundtrack.</p>
+    <button id="playButton" style="font-size:16px;padding:12px 27px">▶ Play</button>
+  </div>
 </div>
-</div>
-
-<div id="modal"><div class="panel">
-<h2 id="modalTitle">Menu</h2>
-<div id="modalBody"></div>
-<button id="closeBtn">Close</button>
+<div id="modal"><div class="sheet">
+  <h2 id="modalTitle">Menu</h2>
+  <div id="modalBody"></div>
+  <button id="closeModal">Close</button>
 </div></div>
-<div id="notice"></div>
-
+<div id="fatal"></div>
 <script type="module">
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js";
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 
+// Helpers, materials, and geometry
 const $=id=>document.getElementById(id);
 const clamp=THREE.MathUtils.clamp;
-let seed=37713;
-function rand(){
-seed=(Math.imul(seed,1664525)+1013904223)>>>0;
-return seed/4294967296;
+let randomSeed=105333;
+function random(){
+  randomSeed=(Math.imul(1664525,randomSeed)+1013904223)>>>0;
+  return randomSeed/4294967296;
 }
-const rnd=(a,b)=>a+(b-a)*rand();
-const choose=a=>a[Math.floor(rand()*a.length)];
+function range(a,b){return a+(b-a)*random();}
+function choice(a){return a[Math.floor(random()*a.length)];}
+function angleFor(i,n){return i*Math.PI*2/n;}
+const v3=(x,y,z)=>new THREE.Vector3(x,y,z);
 
 const scene=new THREE.Scene();
-scene.background=new THREE.Color("#b8e5ea");
-scene.fog=new THREE.Fog("#b8e5ea",40,100);
-
-const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,150);
+scene.background=new THREE.Color('#b7e4e7');
+scene.fog=new THREE.Fog('#b7e4e7',36,92);
+const camera=new THREE.PerspectiveCamera(54,innerWidth/innerHeight,.1,140);
 let renderer;
 try{
-renderer=new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(innerWidth,innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.3));
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.35;
-document.body.prepend(renderer.domElement);
-}catch(e){
-$("notice").style.display="block";
-$("notice").textContent="3D could not start: "+e.message;
-throw e;
+  renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'default'});
+  renderer.setSize(innerWidth,innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.2));
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.36;
+  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  document.body.prepend(renderer.domElement);
+}catch(error){
+  $('fatal').style.display='block';
+  $('fatal').textContent='Could not start the 3D world: '+error.message;
+  throw error;
 }
-
-const hemi=new THREE.HemisphereLight("#fff5dc","#5b816a",2);
+const hemi=new THREE.HemisphereLight('#fff8df','#5a7a5f',2.1);
 scene.add(hemi);
+const sunlight=new THREE.DirectionalLight('#ffe4b9',2.4);
+sunlight.position.set(-13,23,13);
+sunlight.castShadow=true;
+sunlight.shadow.mapSize.set(512,512);
+sunlight.shadow.camera.left=-26;
+sunlight.shadow.camera.right=26;
+sunlight.shadow.camera.top=26;
+sunlight.shadow.camera.bottom=-26;
+sunlight.shadow.normalBias=.035;
+scene.add(sunlight);
+scene.add(sunlight.target);
 
-const sun=new THREE.DirectionalLight("#ffdfb2",2.5);
-sun.position.set(-12,23,13);
-sun.castShadow=true;
-sun.shadow.mapSize.set(512,512);
-sun.shadow.camera.left=-23;
-sun.shadow.camera.right=23;
-sun.shadow.camera.top=23;
-sun.shadow.camera.bottom=-23;
-scene.add(sun);
-scene.add(sun.target);
-
-const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.86});
-const mat={
-grass:material("#8fba79"),
-path:material("#dec4a0"),
-soil:material("#9b7155"),
-wood:material("#946441"),
-dark:material("#60432e"),
-cream:material("#f4e1b9"),
-stone:material("#9aa39b"),
-roof:material("#ad6e63"),
-blue:material("#7dbdce"),
-pink:material("#eaa0bb"),
-red:material("#d57660"),
-yellow:material("#f7d17a"),
-leaf:material("#478953"),
-leaf2:material("#82b478"),
-eye:material("#2c3436")
+function basicMaterial(color){
+  return new THREE.MeshStandardMaterial({color,roughness:.84});
+}
+function makeTexture(base,spots,mode){
+  const canvas=document.createElement('canvas');
+  canvas.width=canvas.height=256;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle=base;
+  ctx.fillRect(0,0,256,256);
+  let s=12345;
+  function rnd(){
+    s=(Math.imul(1664525,s)+1013904223)>>>0;
+    return s/4294967296;
+  }
+  for(let i=0;i<1300;i++){
+    ctx.globalAlpha=.06+rnd()*.24;
+    ctx.fillStyle=spots[Math.floor(rnd()*spots.length)];
+    ctx.fillRect(rnd()*256,rnd()*256,1+rnd()*6,1+rnd()*6);
+  }
+  ctx.globalAlpha=.3;
+  ctx.strokeStyle='#453c31';
+  if(mode==='planks'){
+    for(let y=0;y<256;y+=28){
+      ctx.beginPath();
+      ctx.moveTo(0,y);
+      ctx.lineTo(256,y);
+      ctx.stroke();
+    }
+  }
+  if(mode==='stone'){
+    for(let y=0;y<256;y+=42){
+      ctx.beginPath();
+      ctx.moveTo(0,y);
+      ctx.lineTo(256,y);
+      ctx.stroke();
+    }
+  }
+  const t=new THREE.CanvasTexture(canvas);
+  t.colorSpace=THREE.SRGBColorSpace;
+  t.wrapS=t.wrapT=THREE.RepeatWrapping;
+  return t;
+}
+const materials={
+  grass:basicMaterial('#91b67f'),
+  soil:basicMaterial('#ae825f'),
+  path:basicMaterial('#ddc29a'),
+  white:basicMaterial('#f4e6d0'),
+  cream:basicMaterial('#ddc59f'),
+  wood:basicMaterial('#a2774b'),
+  darkWood:basicMaterial('#6a482f'),
+  stone:basicMaterial('#949d93'),
+  roof:basicMaterial('#b17962'),
+  slate:basicMaterial('#6c8497'),
+  green:basicMaterial('#498b57'),
+  lightGreen:basicMaterial('#86b76d'),
+  pink:basicMaterial('#eda5b2'),
+  yellow:basicMaterial('#f9d37b'),
+  red:basicMaterial('#c87257'),
+  blue:basicMaterial('#75bdca'),
+  purple:basicMaterial('#a291c8'),
+  black:basicMaterial('#253238'),
+  snow:basicMaterial('#e8f0f0'),
+  pumpkin:basicMaterial('#e7a04b')
 };
+materials.grass.map=makeTexture('#8bae78',['#568c53','#c5d49a','#477f4d'],'grass');
+materials.grass.map.repeat.set(23,23);
+materials.soil.map=makeTexture('#a7805f',['#674a32','#ce9c71'],'stone');
+materials.path.map=makeTexture('#d9c6a6',['#a78966','#efdfc2'],'stone');
+materials.path.map.repeat.set(8,4);
+materials.wood.map=makeTexture('#aa8356',['#624329','#dfb184'],'planks');
+materials.slate.map=makeTexture('#7790a0',['#405b6d','#b7c0c0'],'stone');
 
-const geo={
-box:new THREE.BoxGeometry(1,1,1),
-ball:new THREE.SphereGeometry(1,12,9),
-cone:new THREE.ConeGeometry(1,1,8),
-cyl:new THREE.CylinderGeometry(1,1,1,10),
-torus:new THREE.TorusGeometry(1,.13,6,14)
+const geometries={
+  box:new THREE.BoxGeometry(1,1,1),
+  sphere:new THREE.SphereGeometry(1,12,9),
+  cone:new THREE.ConeGeometry(1,1,8),
+  cylinder:new THREE.CylinderGeometry(1,1,1,9),
+  torus:new THREE.TorusGeometry(1,.14,7,16),
+  icosa:new THREE.IcosahedronGeometry(1,0)
 };
-
-function add(parent,type,m,x,y,z,a=1,b=a,c=a){
-const o=new THREE.Mesh(geo[type],m);
-o.position.set(x,y,z);
-o.scale.set(a,b,c);
-o.castShadow=false;
-o.receiveShadow=true;
-parent.add(o);
-return o;
+function mesh(p,type,mat,x,y,z,sx=1,sy=sx,sz=sx,shadow=false){
+  const o=new THREE.Mesh(geometries[type],mat);
+  o.position.set(x,y,z);
+  o.scale.set(sx,sy,sz);
+  o.castShadow=shadow;
+  o.receiveShadow=shadow;
+  p.add(o);
+  return o;
 }
-const cube=(p,m,x,y,z,a,b,c)=>add(p,"box",m,x,y,z,a,b,c);
-const ball=(p,m,x,y,z,a,b=a,c=a)=>add(p,"ball",m,x,y,z,a,b,c);
-const cone=(p,m,x,y,z,a,b)=>add(p,"cone",m,x,y,z,a,b,a);
-const pole=(p,m,x,y,z,a,b)=>add(p,"cyl",m,x,y,z,a,b,a);
-
-function group(x=0,z=0){
-const g=new THREE.Group();
-g.position.set(x,0,z);
-scene.add(g);
-return g;
+const box=(p,m,x,y,z,a,b,c,sh=false)=>mesh(p,'box',m,x,y,z,a,b,c,sh);
+const orb=(p,m,x,y,z,a,b=a,c=a,sh=false)=>mesh(p,'sphere',m,x,y,z,a,b,c,sh);
+const cone=(p,m,x,y,z,a,b,sh=false)=>mesh(p,'cone',m,x,y,z,a,b,a,sh);
+const pole=(p,m,x,y,z,a,b,sh=false)=>mesh(p,'cylinder',m,x,y,z,a,b,a,sh);
+function root(x=0,z=0){
+  const g=new THREE.Group();
+  g.position.set(x,0,z);
+  scene.add(g);
+  return g;
 }
 
-cube(scene,mat.grass,0,-.35,0,105,.7,105);
-cube(scene,mat.path,0,.025,0,4,.06,58);
-cube(scene,mat.path,0,.028,0,58,.06,4);
+// Scene construction
+const obstacles=[];
+const treeCanopies=[];
+const chimneySmoke=[];
+const lamplights=[];
+const spinning=[];
+const collectables=[];
+const fireworks=[];
+const waterMaterials=[];
 
-const obstacles=[],trees=[],lamps=[];
-
-function tree(x,z,scale=1){
-const g=group(x,z);
-g.scale.setScalar(scale);
-pole(g,mat.wood,0,1.7,0,.28,3.4);
-const crown=new THREE.Group();
-g.add(crown);
-for(let i=0;i<7;i++){
-const a=i*Math.PI*2/7;
-ball(crown,i%2?mat.leaf:mat.leaf2,
-Math.cos(a)*.85,3.65+(i%3)*.18,
-Math.sin(a)*.85,1.2,1.1,1.15);
+box(scene,materials.grass,0,-.3,0,105,.6,105);
+box(scene,materials.path,0,.016,0,3.2,.04,59);
+box(scene,materials.path,0,.019,0,57,.04,3.2);
+box(scene,materials.path,0,.023,0,12,.05,12);
+for(let i=0;i<85;i++){
+  const x=range(-7,7);
+  const z=range(-7,7);
+  const s=box(scene,materials.stone,x,.065,z,range(.28,.55),.045,range(.25,.5));
+  s.rotation.y=range(-3,3);
 }
-ball(crown,mat.leaf2,0,4.5,0,1.4);
-trees.push({crown,offset:rnd(0,6)});
+function registerObstacle(x,z,r){
+  obstacles.push({x,z,r});
 }
-
-function pine(x,z,s=1){
-const g=group(x,z);
-g.scale.setScalar(s);
-pole(g,mat.wood,0,1.5,0,.24,3);
-for(let i=0;i<3;i++)
-cone(g,i%2?mat.leaf:mat.leaf2,0,2.25+i*.85,0,1.65-i*.3,2.2);
+function flower(p,x,z,col=materials.pink){
+  const f=new THREE.Group();
+  f.position.set(x,0,z);
+  p.add(f);
+  pole(f,materials.green,0,.23,0,.035,.45);
+  for(let i=0;i<6;i++){
+    const a=angleFor(i,6);
+    orb(f,col,Math.cos(a)*.14,.49,Math.sin(a)*.14,.13,.1,.13);
+  }
+  orb(f,materials.yellow,0,.49,0,.075);
+  return f;
 }
-
-function flower(x,z,color=mat.pink){
-const g=group(x,z);
-pole(g,mat.leaf,0,.23,0,.035,.45);
-for(let i=0;i<5;i++){
-const a=i*Math.PI*2/5;
-ball(g,color,Math.cos(a)*.13,.48,Math.sin(a)*.13,.12);
+function bush(p,x,z){
+  const g=new THREE.Group();
+  g.position.set(x,0,z);
+  p.add(g);
+  orb(g,materials.green,0,.5,0,.58,.46,.53);
+  orb(g,materials.lightGreen,.37,.57,.15,.42,.36,.4);
+  for(let i=0;i<5;i++){
+    orb(g,materials.red,range(-.4,.4),range(.54,.85),range(-.38,.38),.08);
+  }
 }
-ball(g,mat.yellow,0,.49,0,.065);
+function leafyTree(x,z,s=1){
+  const g=root(x,z);
+  g.scale.setScalar(s);
+  pole(g,materials.wood,0,1.8,0,.32,3.6,true);
+  const crown=new THREE.Group();
+  g.add(crown);
+  for(let i=0;i<8;i++){
+    const a=angleFor(i,8);
+    orb(crown,i%3?materials.green:materials.lightGreen,
+      Math.cos(a)*.95,3.85+i%3*.24,Math.sin(a)*.82,
+      1.2,1.08,1.15);
+  }
+  orb(crown,materials.lightGreen,0,4.83,0,1.45,1.24,1.38);
+  treeCanopies.push({crown,phase:range(0,6)});
 }
-
-function cottage(p){
-cube(p,mat.stone,0,.18,0,6,.36,5.5);
-cube(p,mat.cream,0,1.9,0,5.3,3.5,4.9);
-for(const s of [-1,1]){
-const r=cube(p,mat.roof,s*1.45,4.28,0,3.3,.25,6);
-r.rotation.z=-s*.5;
-for(let row=0;row<4;row++)
-for(let col=0;col<9;col++){
-const tile=cube(p,mat.roof,s*(.27+row*.7),5-row*.37,
--2.3+col*.58,.69,.075,.55);
-tile.rotation.z=-s*.5;
+function pineTree(x,z,s=1){
+  const g=root(x,z);
+  g.scale.setScalar(s);
+  pole(g,materials.wood,0,1.45,0,.25,2.9);
+  for(let i=0;i<3;i++){
+    cone(g,i%2?materials.green:materials.lightGreen,
+      0,2.4+i*.84,0,1.65-i*.32,2.22);
+  }
 }
+function wildGrass(x,z){
+  const g=root(x,z);
+  for(let i=0;i<4;i++){
+    const blade=cone(g,materials.green,range(-.2,.2),.22,range(-.2,.2),.065,range(.3,.58));
+    blade.rotation.z=range(-.35,.35);
+  }
 }
-cube(p,mat.dark,0,1.25,2.52,1.2,2.1,.16);
-ball(p,mat.yellow,.35,1.15,2.64,.085);
-for(const s of [-1,1]){
-cube(p,mat.blue,s*1.75,2.18,2.51,1.1,1.08,.15);
-cube(p,mat.cream,s*1.75,2.18,2.62,.1,1.12,.1);
-cube(p,mat.cream,s*1.75,2.18,2.63,1.12,.09,.1);
+function rock(x,z,size=1){
+  const o=new THREE.Mesh(geometries.icosa,materials.stone);
+  o.position.set(x,.25*size,z);
+  o.scale.set(size,size*.58,size*.9);
+  scene.add(o);
 }
-cube(p,mat.stone,-1.3,5.2,-1,.8,1.25,.8);
-}
-
-function garden(p){
-cube(p,mat.wood,0,.14,0,2.65,.28,1.9);
-cube(p,mat.soil,0,.3,0,2.38,.1,1.65);
-for(let i=-1;i<=1;i++){
-pole(p,mat.leaf,i*.68,.55,0,.06,.5);
-for(let j=0;j<6;j++){
-const a=j*Math.PI/3;
-ball(p,mat.pink,
-i*.68+Math.cos(a)*.23,.88,
-Math.sin(a)*.23,.14);
-}
-ball(p,mat.yellow,i*.68,.88,0,.12);
-}
-}
-
 function fence(p){
-for(const x of [-.75,.75]){
-pole(p,mat.wood,x,.55,0,.1,1.1);
-cone(p,mat.wood,x,1.2,0,.13,.25);
+  for(const x of [-.83,.83]){
+    pole(p,materials.wood,x,.57,0,.12,1.14);
+    cone(p,materials.darkWood,x,1.23,0,.17,.24);
+  }
+  box(p,materials.wood,0,.42,0,1.86,.12,.15);
+  box(p,materials.wood,0,.82,0,1.86,.12,.15);
 }
-cube(p,mat.wood,0,.42,0,1.7,.13,.12);
-cube(p,mat.wood,0,.8,0,1.7,.13,.12);
-}
-
 function lantern(p){
-pole(p,mat.dark,0,1.45,0,.11,2.9);
-ball(p,mat.yellow,0,3,0,.34,.39,.34);
-cone(p,mat.roof,0,3.4,0,.45,.4);
-const light=new THREE.PointLight("#ffc477",.1,6);
-light.position.y=3;
-p.add(light);
-lamps.push(light);
+  pole(p,materials.darkWood,0,1.58,0,.1,3.16);
+  box(p,materials.darkWood,0,3.14,0,.59,.08,.59);
+  orb(p,materials.yellow,0,3.33,0,.29,.4,.29);
+  cone(p,materials.roof,0,3.72,0,.46,.46);
+  const lamp=new THREE.PointLight('#ffbb75',.15,7);
+  lamp.position.set(0,3.32,0);
+  p.add(lamp);
+  lamplights.push(lamp);
 }
-
+function flowerGarden(p){
+  box(p,materials.wood,0,.15,0,2.9,.3,2.0);
+  box(p,materials.soil,0,.31,0,2.62,.12,1.75);
+  for(let i=-1;i<=1;i++){
+    for(let z of [-.48,.48]){
+      flower(p,i*.73,z,i===0?materials.yellow:materials.pink);
+    }
+  }
+}
+function vegetablePatch(p){
+  box(p,materials.wood,0,.14,0,3,.27,2.2);
+  box(p,materials.soil,0,.29,0,2.8,.11,2);
+  for(let i=-2;i<=2;i++){
+    for(let z of [-.55,.55]){
+      cone(p,materials.red,i*.52,.48,z,.15,.38).rotation.z=Math.PI;
+      cone(p,materials.green,i*.52,.7,z,.14,.29);
+    }
+  }
+}
+function cozyCottage(p){
+  const accent=choice(['#cdbfa2','#bbd2c6','#dec6bb','#d8ceb2']);
+  const wall=basicMaterial(accent);
+  box(p,materials.stone,0,.17,0,7,.34,6.1,true);
+  box(p,wall,0,2,0,6.2,3.7,5.55,true);
+  for(const side of [-1,1]){
+    box(p,materials.darkWood,side*3.02,2,2.87,.22,3.8,.23);
+    box(p,materials.wood,side*3.08,3.49,0,.24,.24,5.9);
+    box(p,materials.wood,side*3.07,.57,0,.22,.2,5.9);
+    for(let j=0;j<3;j++){
+      box(p,materials.wood,side*3.1,1.4,-1.8+j*1.75,.18,.18,1.45);
+    }
+    const roof=box(p,materials.roof,side*1.73,4.43,0,3.95,.22,6.7,true);
+    roof.rotation.z=-side*.5;
+    for(let row=0;row<5;row++){
+      for(let col=0;col<10;col++){
+        const shingle=box(p,materials.slate,
+          side*(.35+row*.68),5.23-row*.375,
+          -2.66+col*.59,.73,.085,.58);
+        shingle.rotation.z=-side*.5;
+        shingle.position.y+=((row+col)%2)*.012;
+      }
+    }
+  }
+  for(let side of [-1,1]){
+    box(p,materials.darkWood,side*2.09,2.16,2.88,1.32,1.35,.16);
+    box(p,materials.blue,side*2.09,2.16,2.97,1.11,1.15,.09);
+    box(p,materials.white,side*2.09,2.16,3.05,.1,1.2,.1);
+    box(p,materials.white,side*2.09,2.16,3.06,1.18,.1,.1);
+    box(p,materials.wood,side*2.09,.91,3.12,1.5,.14,.35);
+    bush(p,side*2.78,3.17);
+  }
+  box(p,materials.wood,0,.24,3.36,7.2,.24,2.1,true);
+  box(p,materials.darkWood,0,1.27,2.91,1.24,2.28,.17);
+  orb(p,materials.yellow,.38,1.23,3.02,.08);
+  for(let side of [-1,1]){
+    pole(p,materials.wood,side*2.8,1.6,4.08,.15,2.65);
+    for(let z of [3.7,4.45]){
+      box(p,materials.wood,side*2.8,2.03,z,.16,.15,.72);
+    }
+  }
+  box(p,materials.stone,-1.82,5.48,-1.48,.89,1.65,.89,true);
+  box(p,materials.roof,-1.82,6.29,-1.48,1.03,.12,1.03);
+  for(let i=0;i<3;i++){
+    const cloud=orb(p,materials.white,-1.82,6.9+i*.42,-1.48,.23+i*.05,.18,.22);
+    chimneySmoke.push({mesh:cloud,base:6.9+i*.42,phase:range(0,5)});
+  }
+  box(p,materials.darkWood,-.9,.5,4.32,1,.42,.8);
+  flower(p,-2.4,4.48,materials.pink);
+  flower(p,2.5,4.39,materials.yellow);
+}
 function petBed(p){
-cube(p,mat.wood,0,.3,0,1.7,.35,1.2);
-cube(p,mat.blue,0,.5,.1,1.5,.16,.95);
-ball(p,mat.cream,0,.62,-.33,.5,.12,.25);
+  box(p,materials.wood,0,.3,0,1.8,.38,1.25);
+  box(p,materials.blue,0,.49,.08,1.64,.15,1.03);
+  orb(p,materials.white,0,.66,-.32,.46,.15,.27);
 }
-
 function birdhouse(p){
-pole(p,mat.wood,0,1,0,.12,2);
-cube(p,mat.cream,0,2.28,0,.95,.8,.9);
-cone(p,mat.roof,0,2.95,0,.85,.65);
-ball(p,mat.dark,0,2.34,.47,.17,.17,.06);
+  pole(p,materials.wood,0,1.04,0,.13,2.08);
+  box(p,materials.cream,0,2.3,0,1,.87,.87);
+  cone(p,materials.roof,0,3.03,0,.85,.7);
+  orb(p,materials.darkWood,0,2.43,.48,.17,.17,.055);
+  box(p,materials.darkWood,0,2.14,.61,.21,.08,.26);
+}
+function signpost(p){
+  pole(p,materials.wood,0,1.05,0,.14,2.1);
+  box(p,materials.cream,0,1.86,.05,1.8,.68,.15);
+  box(p,materials.darkWood,-.22,1.87,.16,.75,.08,.05);
+  cone(p,materials.darkWood,.48,1.87,.16,.27,.4).rotation.z=-Math.PI/2;
+}
+function crate(p){
+  box(p,materials.darkWood,0,.43,0,1.1,.86,1.1);
+  for(const side of [-1,1]){
+    box(p,materials.wood,side*.45,.45,.57,.14,.78,.09);
+    box(p,materials.wood,.0,.45,side*.57,.93,.11,.1);
+  }
+  for(let i=0;i<3;i++){
+    orb(p,materials.red,-.25+i*.24,.95,range(-.24,.24),.16);
+  }
+}
+function bench(p){
+  box(p,materials.wood,0,.68,0,2.35,.16,.7);
+  box(p,materials.wood,0,1.21,-.3,2.35,.95,.16);
+  for(let side of [-1,1]){
+    box(p,materials.darkWood,side*.93,.35,0,.18,.7,.58);
+  }
+}
+function market(p){
+  box(p,materials.wood,0,1.06,0,4.6,.26,2.35,true);
+  for(let x of [-1.94,1.94]){
+    for(let z of [-.98,.98]){
+      pole(p,materials.wood,x,2.25,z,.13,4.3);
+    }
+  }
+  box(p,materials.roof,0,4.15,0,5.1,.25,3);
+  for(let i=0;i<9;i++){
+    box(p,i%2?materials.white:materials.red,
+      -2.24+i*.56,3.93,1.58,.56,.22,.19);
+  }
+  for(let i=0;i<7;i++){
+    orb(p,choice([materials.red,materials.yellow,materials.green]),
+      -1.65+i*.54,1.47,.46,.22,.2,.22);
+  }
+  crate(p);
+}
+function windmill(p){
+  box(p,materials.cream,0,2,0,4.2,3.9,4.1,true);
+  cone(p,materials.red,0,4.9,0,3.2,2.35);
+  box(p,materials.darkWood,0,1.25,2.13,1.1,2.1,.17);
+  const rotor=new THREE.Group();
+  rotor.position.set(0,3.03,2.34);
+  for(let i=0;i<4;i++){
+    const a=angleFor(i,4);
+    const blade=box(rotor,materials.white,0,1.5,0,.34,2.7,.12);
+    blade.position.set(-Math.sin(a)*1.55,Math.cos(a)*1.55,0);
+    blade.rotation.z=a;
+    for(let j=0;j<3;j++){
+      const slat=box(rotor,materials.wood,0,.7+j*.48,0,.7,.08,.14);
+      slat.position.set(-Math.sin(a)*(.7+j*.48),Math.cos(a)*(.7+j*.48),.05);
+      slat.rotation.z=a;
+    }
+  }
+  orb(rotor,materials.darkWood,0,0,.13,.3);
+  p.add(rotor);
+  spinning.push(rotor);
+}
+function pond(p){
+  const waterMaterial=new THREE.MeshStandardMaterial({color:'#5faec1',roughness:.18,metalness:.18,transparent:true,opacity:.92});
+  const water=new THREE.Mesh(new THREE.CircleGeometry(5.35,40),waterMaterial);
+  water.rotation.x=-Math.PI/2;
+  water.scale.y=.76;
+  water.position.y=.07;
+  p.add(water);
+  waterMaterials.push(waterMaterial);
+  for(let i=0;i<30;i++){
+    const a=angleFor(i,30);
+    orb(p,materials.stone,Math.cos(a)*5.32,.2,Math.sin(a)*4.05,.39,.24,.42);
+  }
+  for(let i=0;i<6;i++){
+    const x=2.7+i*.42;
+    box(p,materials.wood,x,.33,1.5,.39,.2,2.5);
+    pole(p,materials.darkWood,x,.31,.35,.07,.58);
+  }
+  for(let i=0;i<6;i++){
+    orb(p,materials.lightGreen,range(-3,3),.17,range(-2.8,2.8),.32,.05,.3);
+  }
+  for(let i=0;i<8;i++){
+    flower(p,range(-5.6,5.6),range(-5,5),materials.yellow);
+  }
+}
+function sunflowers(p){
+  for(let i=0;i<5;i++){
+    const x=i*.92;
+    pole(p,materials.green,x,.88,0,.09,1.75);
+    orb(p,materials.darkWood,x,1.93,.15,.3,.31,.12);
+    for(let j=0;j<8;j++){
+      const a=angleFor(j,8);
+      orb(p,materials.yellow,x+Math.cos(a)*.36,1.93+Math.sin(a)*.36,.15,.17,.17,.12);
+    }
+    orb(p,materials.green,x+.27,.92,.14,.23,.13,.13);
+  }
+}
+function farmhouse(p){
+  box(p,materials.soil,0,.13,0,9,.26,9);
+  for(let row=0;row<4;row++){
+    box(p,materials.wood,-3+row*1.4,.24,0,1.08,.22,7.7);
+    box(p,materials.soil,-3+row*1.4,.36,0,.9,.1,7.3);
+    for(let i=0;i<7;i++){
+      cone(p,materials.red,-3+row*1.4,.54,-3+i, .15,.35).rotation.z=Math.PI;
+      cone(p,materials.green,-3+row*1.4,.79,-3+i,.13,.31);
+    }
+  }
+  const flowers=new THREE.Group();
+  flowers.position.set(1.5,0,-2.7);
+  p.add(flowers);
+  sunflowers(flowers);
+  for(let x=-4.5;x<=4.5;x+=1.8){
+    const f=new THREE.Group();
+    f.position.set(x,0,-4.6);
+    p.add(f);
+    fence(f);
+  }
+  crateAt(p,3.4,3.2);
+}
+function crateAt(p,x,z){
+  const g=new THREE.Group();
+  g.position.set(x,0,z);
+  p.add(g);
+  crate(g);
 }
 
-function villageSign(p){
-pole(p,mat.wood,0,1,0,.13,2);
-cube(p,mat.cream,0,1.7,.05,1.6,.64,.17);
-cube(p,mat.dark,0,1.7,.16,.95,.08,.04);
+// Permanent detailed village landmarks
+const homes=[[-12,-12],[12,-12],[-12,13],[12,13]];
+for(const [x,z] of homes){
+  const g=root(x,z);
+  cozyCottage(g);
+  registerObstacle(x,z,4.1);
+  for(let f=0;f<5;f++){
+    flower(g,range(-3.2,3.2),range(4.6,5.8),choice([materials.pink,materials.yellow]));
+  }
+}
+for(const [x,z] of [[-4,-7],[4,-7],[-4,8],[4,8]]){
+  lantern(root(x,z));
+}
+for(let z of [-16,-14,-9,9,16]){
+  for(let x of [-6,6]){
+    const f=root(x,z);
+    fence(f);
+  }
+}
+for(let i=0;i<5;i++){
+  const g=root(-4+i*2,20);
+  fence(g);
+}
+const marketGroup=root(15,3);
+market(marketGroup);
+registerObstacle(15,3,2.6);
+const pondGroup=root(-21,10);
+pond(pondGroup);
+registerObstacle(-21,10,4.8);
+const farmGroup=root(23,-16);
+farmhouse(farmGroup);
+registerObstacle(26,-13,1.5);
+const windmillGroup=root(22,12);
+windmill(windmillGroup);
+registerObstacle(22,12,3.1);
+bench(root(-4,3));
+bench(root(4,-3));
+crateAt(marketGroup,2.1,1.8);
+for(let i=0;i<95;i++){
+  const x=range(-48,48);
+  const z=range(-48,48);
+  if(Math.abs(x)<26&&Math.abs(z)<23)continue;
+  if(i%3)leafyTree(x,z,range(.75,1.2));
+  else pineTree(x,z,range(.8,1.25));
+}
+for(let i=0;i<205;i++){
+  const x=range(-34,34);
+  const z=range(-34,34);
+  if(Math.abs(x)<2.3||Math.abs(z)<2.3)continue;
+  if(i%13===0)rock(x,z,range(.22,.7));
+  else if(i%6===0)bush(root(x,z),0,0);
+  else if(i%5===0)wildGrass(x,z);
+  else flower(root(x,z),0,0,choice([materials.pink,materials.yellow,materials.white]));
 }
 
+// Building catalog and persistent placement
 const catalog=[
-{id:"cottage",icon:"🏡",name:"Cottage",cost:4,radius:3.5,draw:cottage},
-{id:"garden",icon:"🌻",name:"Garden",cost:0,radius:1.5,draw:garden},
-{id:"fence",icon:"🪵",name:"Fence",cost:1,radius:.8,draw:fence},
-{id:"lantern",icon:"🏮",name:"Lantern",cost:1,radius:.7,draw:lantern},
-{id:"bed",icon:"🛏️",name:"Pet Bed",cost:1,radius:1,draw:petBed},
-{id:"birdhouse",icon:"🐦",name:"Birdhouse",cost:1,radius:.7,draw:birdhouse},
-{id:"sign",icon:"🪧",name:"Sign",cost:1,radius:.8,draw:villageSign}
+  {id:'cottage',name:'Cozy Cottage',icon:'🏡',cost:4,radius:4.1,build:cozyCottage},
+  {id:'garden',name:'Flower Garden',icon:'🌻',cost:0,radius:1.65,build:flowerGarden},
+  {id:'vegetables',name:'Veggie Garden',icon:'🥕',cost:0,radius:1.7,build:vegetablePatch},
+  {id:'fence',name:'Wooden Fence',icon:'🪵',cost:1,radius:.85,build:fence},
+  {id:'lantern',name:'Lantern',icon:'🏮',cost:1,radius:.7,build:lantern},
+  {id:'bed',name:'Pet Bed',icon:'🛏️',cost:1,radius:1,build:petBed},
+  {id:'birdhouse',name:'Birdhouse',icon:'🐦',cost:1,radius:.8,build:birdhouse},
+  {id:'sign',name:'Signpost',icon:'🪧',cost:1,radius:.75,build:signpost},
+  {id:'bench',name:'Bench',icon:'🪑',cost:2,radius:1.4,build:bench},
+  {id:'crate',name:'Fruit Crate',icon:'🍎',cost:1,radius:.9,build:crate}
 ];
-
-function findItem(id){return catalog.find(x=>x.id===id)}
-
-function placeWorld(id,x,z,rotation=0,blocking=true){
-const item=findItem(id);
-if(!item)return;
-const g=group(x,z);
-item.draw(g);
-g.rotation.y=rotation;
-if(blocking&&item.radius>1.5)
-obstacles.push({x,z,r:item.radius});
-return g;
+function getCatalog(id){return catalog.find(item=>item.id===id);}
+function spawnBuilding(id,x,z,rotation=0,collision=true){
+  const item=getCatalog(id);
+  if(!item)return null;
+  const g=root(x,z);
+  item.build(g);
+  g.rotation.y=rotation;
+  if(collision&&item.radius>1.7)registerObstacle(x,z,item.radius);
+  return g;
 }
 
-for(const [x,z] of [[-11,-11],[11,-11],[-11,12],[11,12]]){
-placeWorld("cottage",x,z);
-}
-for(const [x,z] of [[-5,-8],[5,-8],[-5,8],[5,8]]){
-placeWorld("lantern",x,z);
-}
-for(let i=0;i<9;i++){
-placeWorld("fence",-8+i*1.7,19,0,false);
-}
-
-for(let i=0;i<90;i++){
-const x=rnd(-47,47),z=rnd(-47,47);
-if(Math.abs(x)<19&&Math.abs(z)<20)continue;
-i%3?tree(x,z,rnd(.8,1.2)):pine(x,z,rnd(.85,1.2));
-}
-
-for(let i=0;i<125;i++){
-const x=rnd(-30,30),z=rnd(-30,30);
-if(Math.abs(x)<2.3||Math.abs(z)<2.3)continue;
-flower(x,z,choose([mat.pink,mat.yellow,mat.cream]));
-}
-
-const pond=group(-21,10);
-ball(pond,mat.blue,0,.03,0,4.7,.08,3.2);
-for(let i=0;i<28;i++){
-const a=i*Math.PI*2/28;
-ball(pond,mat.stone,Math.cos(a)*4.7,.18,Math.sin(a)*3.2,.35,.2,.4);
-}
-obstacles.push({x:-21,z:10,r:4.4});
-
-const market=group(15,4);
-cube(market,mat.wood,0,1,0,4,.2,2.2);
-for(const x of [-1.7,1.7])
-for(const z of [-.9,.9])
-pole(market,mat.wood,x,2,z,.12,3.8);
-cube(market,mat.red,0,3.75,0,4.6,.25,2.8);
-for(let i=0;i<7;i++)
-ball(market,choose([mat.red,mat.yellow,mat.leaf]),(i-3)*.5,1.4,.3,.23);
-obstacles.push({x:15,z:4,r:2.5});
-
-// CHARACTERS
-const characters=[],villagers=[];
-
+// Detailed animal avatars and autonomous villagers
+const playable=[];
+const villagers=[];
 function createCharacter(data){
-const root=group(data.x,data.z);
-const rig=new THREE.Group();
-root.add(rig);
-const fur=material(data.color);
-const clothes=material(data.shirt||"#c8a6d6");
-
-ball(rig,clothes,0,1,0,.48,.55,.42);
-const legs=[],arms=[];
-for(const side of [-1,1]){
-const leg=new THREE.Group();
-leg.position.set(side*.28,.55,0);
-ball(leg,fur,0,-.24,.15,.2,.3,.2);
-rig.add(leg);
-legs.push(leg);
-
-const arm=new THREE.Group();
-arm.position.set(side*.45,1.15,0);
-ball(arm,fur,0,-.2,.15,.2,.27,.19);
-rig.add(arm);
-arms.push(arm);
+  const g=root(data.x,data.z);
+  const rig=new THREE.Group();
+  g.add(rig);
+  const fur=basicMaterial(data.color);
+  const outfit=basicMaterial(data.shirt||'#bda4cd');
+  const face=basicMaterial('#f7dfc4');
+  orb(rig,outfit,0,1.02,0,.46,.56,.42,true);
+  orb(rig,face,0,.91,.35,.28,.29,.13);
+  const legs=[];
+  const arms=[];
+  for(const side of [-1,1]){
+    const leg=new THREE.Group();
+    leg.position.set(side*.29,.55,0);
+    orb(leg,fur,0,-.27,.17,.2,.32,.21);
+    rig.add(leg);
+    legs.push(leg);
+    const arm=new THREE.Group();
+    arm.position.set(side*.44,1.2,0);
+    orb(arm,fur,0,-.2,.15,.18,.28,.19);
+    rig.add(arm);
+    arms.push(arm);
+  }
+  const head=new THREE.Group();
+  head.position.y=1.82;
+  rig.add(head);
+  orb(head,data.kind==='person'?face:fur,0,0,0,.66,.62,.57,true);
+  if(data.kind==='cat'){
+    for(const side of [-1,1]){
+      const ear=cone(head,fur,side*.43,.57,0,.3,.58);
+      ear.rotation.z=-side*.18;
+      cone(head,materials.pink,side*.43,.57,.18,.15,.29);
+      orb(head,face,side*.19,-.2,.45,.26,.18,.16);
+    }
+  }
+  if(data.kind==='dog'){
+    for(const side of [-1,1]){
+      const ear=orb(head,fur,side*.66,.05,-.06,.24,.45,.23);
+      ear.rotation.z=side*.28;
+    }
+    orb(head,face,0,-.19,.45,.41,.29,.29);
+  }
+  if(data.kind==='bird'){
+    const beak=cone(head,materials.yellow,0,-.12,.56,.2,.34);
+    beak.rotation.x=Math.PI/2;
+    for(const side of [-1,1]){
+      orb(rig,fur,side*.5,1.09,-.06,.26,.37,.25);
+    }
+  }
+  if(data.kind==='person'){
+    orb(head,fur,0,.43,-.08,.63,.23,.47);
+    orb(head,fur,0,.2,-.32,.54,.3,.27);
+  }
+  const eyes=[];
+  for(const side of [-1,1]){
+    orb(head,materials.white,side*.24,.075,.47,.19,.22,.09);
+    eyes.push(orb(head,materials.black,side*.24,.07,.55,.087,.13,.045));
+    orb(head,materials.white,side*.27,.15,.595,.037);
+    orb(head,materials.pink,side*.44,-.21,.39,.14,.08,.055);
+  }
+  if(data.kind!=='bird'){
+    orb(head,materials.black,0,-.19,.58,.1,.08,.065);
+  }
+  const tail=new THREE.Group();
+  tail.position.set(.46,1,-.45);
+  rig.add(tail);
+  orb(tail,fur,0,0,-.25,.16,.16,.42);
+  const collar=mesh(rig,'torus',materials.yellow,0,1.44,.15,.22,.22,.22);
+  collar.rotation.x=Math.PI/2;
+  g.userData={data,rig,head,legs,arms,eyes,tail};
+  return {
+    obj:g,
+    home:v3(data.x,0,data.z),
+    goal:v3(data.x,0,data.z),
+    pause:range(.5,3)
+  };
 }
-
-const head=new THREE.Group();
-head.position.y=1.8;
-rig.add(head);
-ball(head,fur,0,0,0,.65,.62,.56);
-
-if(data.kind==="cat"){
-for(const side of [-1,1]){
-const ear=cone(head,fur,side*.4,.56,0,.28,.55);
-ear.rotation.z=-side*.15;
-cone(head,mat.pink,side*.4,.56,.17,.13,.28);
-}
-}
-if(data.kind==="dog"){
-for(const side of [-1,1]){
-const ear=ball(head,fur,side*.63,.06,-.04,.24,.42,.23);
-ear.rotation.z=side*.3;
-}
-ball(head,mat.cream,0,-.2,.45,.4,.26,.29);
-}
-if(data.kind==="bird"){
-cone(head,mat.yellow,0,-.15,.57,.19,.3).rotation.x=Math.PI/2;
-for(const side of [-1,1])
-ball(rig,fur,side*.49,1.1,0,.25,.34,.25);
-}
-if(data.kind==="person"){
-ball(head,material("#f2d9be"),0,-.1,.22,.5,.49,.38);
-ball(head,fur,0,.42,-.12,.61,.25,.44);
-}
-
-for(const side of [-1,1]){
-ball(head,mat.cream,side*.23,.075,.48,.17,.2,.09);
-ball(head,mat.eye,side*.23,.075,.56,.09,.12,.045);
-ball(head,mat.cream,side*.25,.14,.6,.035);
-ball(head,mat.pink,side*.42,-.2,.4,.13,.08,.05);
-}
-if(data.kind!=="bird")
-ball(head,mat.eye,0,-.2,.57,.095,.075,.06);
-
-const tail=new THREE.Group();
-tail.position.set(.4,1,-.45);
-rig.add(tail);
-ball(tail,fur,0,0,-.25,.16,.16,.4);
-
-root.userData={rig,head,arms,legs,tail,data};
-return {
-obj:root,
-home:new THREE.Vector3(data.x,0,data.z),
-goal:new THREE.Vector3(data.x,0,data.z),
-pause:rnd(0,3)
-};
-}
-
-function addPlayable(d){characters.push(createCharacter(d))}
-
-addPlayable({name:"Maple",kind:"cat",color:"#e4ab76",shirt:"#d6a3b5",x:0,z:3});
-addPlayable({name:"Biscuit",kind:"dog",color:"#d1b497",shirt:"#8abcae",x:2,z:4});
-addPlayable({name:"Pip",kind:"bird",color:"#8ac5d4",shirt:"#e8c57b",x:-2,z:4});
-addPlayable({name:"Robin",kind:"person",color:"#92715b",shirt:"#9aafdb",x:3,z:4});
-
-const npcNames=["Clover","Mochi","Willow","Sunny","Milo","Poppy","Peanut"];
+function addPlayable(data){playable.push(createCharacter(data));}
+addPlayable({name:'Maple',kind:'cat',color:'#e8ad7a',shirt:'#d9a8b9',x:0,z:3});
+addPlayable({name:'Biscuit',kind:'dog',color:'#d5b79a',shirt:'#8dc3b1',x:2.7,z:4});
+addPlayable({name:'Pip',kind:'bird',color:'#91c4d1',shirt:'#e7c879',x:-2,z:4});
+addPlayable({name:'Robin',kind:'person',color:'#947058',shirt:'#abb9d8',x:3.7,z:4});
+const npcNames=['Clover','Mochi','Peanut','Sunny','Juniper','Willow','Poppy','Milo','Wren'];
 for(let i=0;i<npcNames.length;i++){
-villagers.push(createCharacter({
-name:npcNames[i],
-kind:["cat","dog","bird","person"][i%4],
-color:choose(["#ddc0a0","#b3a2d0","#e8ac96","#b7cba9"]),
-shirt:choose(["#d6a8bc","#92b5ab","#a8b3d5"]),
-x:rnd(-16,16),z:rnd(-16,16)
-}));
+  villagers.push(createCharacter({
+    name:npcNames[i],
+    kind:['cat','dog','bird','person'][i%4],
+    color:choice(['#c7ab91','#a99cc5','#e2be9c','#9dbcb1']),
+    shirt:choice(['#d3a8b9','#8dbaac','#a5aed2']),
+    x:range(-16,16),
+    z:range(-16,16)
+  }));
 }
 
-// COLLECTIBLES LYING ON THE GROUND
-const collectibles=[];
+// Ground objects: recognizable shape and pickup behavior
 const itemNames=[
-"Wood Log","Carrot","Berry Basket","Cat Collar",
-"Rope","Little Axe","Flashlight","Bird Cage",
-"Magic Acorn","Star Crystal"
+  'Wood Log','Carrot','Berry Basket','Cat Collar',
+  'Rope','Little Axe','Flashlight','Bird Cage',
+  'Magic Acorn','Star Crystal','Mushroom','Flower Seeds'
 ];
-
-function itemShape(parent,name){
-if(name==="Wood Log"){
-const log=pole(parent,mat.wood,0,.35,0,.24,.9);
-log.rotation.z=Math.PI/2;
-ball(parent,mat.cream,-.47,.35,0,.23,.23,.23);
+function drawCollectable(p,name){
+  if(name==='Wood Log'){
+    const log=pole(p,materials.wood,0,.33,0,.26,1.12);
+    log.rotation.z=Math.PI/2;
+    orb(p,materials.cream,-.56,.33,0,.26,.26,.26);
+  }else if(name==='Carrot'){
+    cone(p,materials.pumpkin,0,.38,0,.23,.7).rotation.z=Math.PI;
+    cone(p,materials.green,0,.79,0,.25,.35);
+  }else if(name==='Berry Basket'){
+    box(p,materials.wood,0,.26,0,.73,.46,.69);
+    for(let i=0;i<6;i++){
+      orb(p,materials.red,range(-.25,.25),.58,range(-.25,.25),.14);
+    }
+  }else if(name==='Cat Collar'||name==='Rope'){
+    const ring=mesh(p,'torus',name==='Rope'?materials.wood:materials.yellow,0,.26,0,.35,.35,.35);
+    ring.rotation.x=Math.PI/2;
+  }else if(name==='Little Axe'){
+    const h=pole(p,materials.wood,0,.51,0,.09,.85);
+    h.rotation.z=.52;
+    box(p,materials.stone,.25,.81,0,.43,.25,.17);
+  }else if(name==='Flashlight'){
+    const h=pole(p,materials.darkWood,0,.31,0,.15,.66);
+    h.rotation.z=Math.PI/2;
+    orb(p,materials.yellow,.4,.31,0,.19);
+  }else if(name==='Bird Cage'){
+    pole(p,materials.yellow,0,.43,0,.41,.84);
+    orb(p,materials.white,0,.91,0,.45,.14,.45);
+    for(let x of [-.28,.28])pole(p,materials.darkWood,x,.45,0,.03,.72);
+  }else if(name==='Magic Acorn'){
+    orb(p,materials.wood,0,.33,0,.27,.31,.25);
+    cone(p,materials.yellow,0,.64,0,.29,.34);
+  }else if(name==='Star Crystal'){
+    cone(p,materials.blue,0,.48,0,.3,.9);
+    orb(p,materials.white,0,.93,0,.13);
+  }else if(name==='Mushroom'){
+    pole(p,materials.white,0,.27,0,.13,.45);
+    orb(p,materials.red,0,.52,0,.43,.2,.4);
+    for(let i=0;i<5;i++)orb(p,materials.white,range(-.3,.3),.68,range(-.25,.25),.055);
+  }else{
+    box(p,materials.cream,0,.18,0,.5,.22,.42);
+    cone(p,materials.green,0,.49,0,.16,.42);
+  }
 }
-else if(name==="Carrot"){
-const carrot=cone(parent,mat.red,0,.35,0,.25,.7);
-carrot.rotation.z=Math.PI;
-cone(parent,mat.leaf,0,.8,0,.25,.4);
+function makeCollectable(i,name,x,z,found=false){
+  const g=root(x,z);
+  drawCollectable(g,name);
+  g.visible=!found;
+  collectables.push({i,name,x,z,g,found});
 }
-else if(name==="Berry Basket"){
-cube(parent,mat.wood,0,.26,0,.7,.45,.6);
-for(let i=0;i<5;i++)
-ball(parent,mat.red,rnd(-.27,.27),.57,rnd(-.2,.2),.13);
-}
-else if(name==="Cat Collar"||name==="Rope"){
-const ring=add(parent,"torus",name==="Rope"?mat.wood:mat.yellow,
-0,.23,0,.32,.32,.32);
-ring.rotation.x=Math.PI/2;
-}
-else if(name==="Little Axe"){
-const shaft=pole(parent,mat.wood,0,.5,0,.08,.85);
-shaft.rotation.z=.5;
-cube(parent,mat.stone,.25,.8,0,.4,.23,.15);
-}
-else if(name==="Flashlight"){
-const body=pole(parent,mat.dark,0,.32,0,.14,.65);
-body.rotation.z=Math.PI/2;
-ball(parent,mat.yellow,.38,.32,0,.17);
-}
-else if(name==="Bird Cage"){
-pole(parent,mat.yellow,0,.42,0,.35,.75);
-ball(parent,mat.cream,0,.86,0,.4,.13,.4);
-}
-else if(name==="Magic Acorn"){
-ball(parent,mat.wood,0,.35,0,.27,.32,.25);
-cone(parent,mat.yellow,0,.65,0,.28,.3);
-}
-else{
-ball(parent,mat.blue,0,.45,0,.32,.43,.29);
-ball(parent,mat.cream,0,.84,0,.13);
-}
-}
-
-for(let i=0;i<52;i++){
-let x=rnd(-35,35),z=rnd(-35,35);
-if(i<15){x=rnd(-12,12);z=rnd(-12,12)}
-const type=itemNames[i%itemNames.length];
-const g=group(x,z);
-itemShape(g,type);
-collectibles.push({g,type,x,z,found:false});
-}
-
-// SAVE AND GAME STATE
-const SAVEKEY="maples-v9-mobile";
-const times=["Morning","Afternoon","Evening","Night"];
-const seasons=["Spring","Summer","Autumn","Winter"];
-const weathers=["Sunny","Rainy","Windy","Snowy"];
-
-let playing=false,menuOpen=false,selected=0;
-let night=1,phase=0,season=0,weather=0;
-let timeElapsed=0,wood=2,carrots=0,berries=0;
-let inventory=[],placed=[],musicOn=true;
-let buildMode=null,preview=null,rotation=0,valid=false;
-
-function notice(t){
-$("toast").textContent=t;
-$("toast").classList.add("show");
-clearTimeout(notice.timer);
-notice.timer=setTimeout(()=>$("toast").classList.remove("show"),4500);
+for(let i=0;i<74;i++){
+  const x=i<20?range(-16,16):range(-39,39);
+  const z=i<20?range(-15,16):range(-39,39);
+  makeCollectable(i,itemNames[i%itemNames.length],x,z);
 }
 
+// Game state, days, seasons, weather, inventory
+const SAVE_KEY='maple-v10-wildflower';
+const phases=['Morning','Afternoon','Evening','Night'];
+const seasonNames=['Spring','Summer','Autumn','Winter'];
+const weatherNames=['Sunny','Rain','Windy','Snow'];
+let night=1;
+let phaseIndex=0;
+let seasonIndex=0;
+let weatherIndex=0;
+let phaseClock=0;
+let selected=0;
+let woodCount=3;
+let carrotCount=0;
+let berryCount=0;
+let inventory=[];
+let placedBuildings=[];
+let musicEnabled=true;
+let playing=false;
+let paused=false;
+let placement=null;
+let toastTimer=0;
+const PHASE_DURATION=72;
+function toast(message){
+  $('toast').textContent=message;
+  $('toast').classList.add('visible');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>$('toast').classList.remove('visible'),4500);
+}
 function updateHud(){
-const p=characters[selected].obj.userData.data;
-$("stats").textContent=
-`🌙 ${night}/99 · ${times[phase]} · ${seasons[season]} · ${weathers[weather]} | 🐾 ${p.name} · 🪵 ${wood} · 🥕 ${carrots}`;
+  const who=playable[selected].obj.userData.data.name;
+  $('stats').textContent=`🌙 ${Math.min(night,99)}/99 · ${phases[phaseIndex]} · ${seasonNames[seasonIndex]} · ${weatherNames[weatherIndex]} · 🐾 ${who} · 🪵 ${woodCount} · 🥕 ${carrotCount}`;
 }
-
 function saveGame(){
-try{
-localStorage.setItem(SAVEKEY,JSON.stringify({
-night,phase,season,weather,timeElapsed,selected,
-wood,carrots,berries,inventory,placed,
-found:collectibles.map((v,i)=>v.found?i:-1).filter(i=>i>=0),
-extra:characters.slice(4).map(c=>c.obj.userData.data)
-}));
-}catch(e){}
+  try{
+    localStorage.setItem(SAVE_KEY,JSON.stringify({
+      night,phaseIndex,seasonIndex,weatherIndex,phaseClock,
+      selected,woodCount,carrotCount,berryCount,inventory,
+      placedBuildings,musicEnabled,
+      found:collectables.filter(x=>x.found).map(x=>x.i),
+      extra:playable.slice(4).map(x=>x.obj.userData.data),
+      characterPositions:playable.map(x=>({x:x.obj.position.x,z:x.obj.position.z}))
+    }));
+  }catch(e){}
 }
-
 function loadGame(){
-try{
-const s=JSON.parse(localStorage.getItem(SAVEKEY)||"null");
-if(!s)return;
-night=s.night||1;
-phase=s.phase||0;
-season=s.season||0;
-weather=s.weather||0;
-timeElapsed=s.timeElapsed||0;
-wood=s.wood??2;
-carrots=s.carrots||0;
-berries=s.berries||0;
-inventory=s.inventory||[];
-for(const d of s.extra||[])addPlayable(d);
-selected=clamp(s.selected||0,0,characters.length-1);
-for(const i of s.found||[]){
-if(collectibles[i]){
-collectibles[i].found=true;
-collectibles[i].g.visible=false;
+  try{
+    const state=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');
+    if(!state)return;
+    night=state.night||1;
+    phaseIndex=state.phaseIndex||0;
+    seasonIndex=state.seasonIndex||0;
+    weatherIndex=state.weatherIndex||0;
+    phaseClock=state.phaseClock||0;
+    woodCount=state.woodCount??3;
+    carrotCount=state.carrotCount||0;
+    berryCount=state.berryCount||0;
+    inventory=state.inventory||[];
+    musicEnabled=state.musicEnabled!==false;
+    for(const data of (state.extra||[]).slice(0,8))addPlayable(data);
+    selected=clamp(state.selected||0,0,playable.length-1);
+    (state.characterPositions||[]).forEach((point,i)=>{
+      if(playable[i]&&Number.isFinite(point.x)&&Number.isFinite(point.z)){
+        playable[i].obj.position.set(point.x,0,point.z);
+      }
+    });
+    for(const index of state.found||[]){
+      if(collectables[index]){
+        collectables[index].found=true;
+        collectables[index].g.visible=false;
+      }
+    }
+    for(const object of state.placedBuildings||[]){
+      if(!getCatalog(object.id))continue;
+      spawnBuilding(object.id,object.x,object.z,object.rotation||0);
+      placedBuildings.push(object);
+    }
+  }catch(e){console.warn('Save could not be loaded',e);}
 }
+function setAtmosphere(){
+  const skies=['#b7e5ea','#a5d8de','#e4b38f','#2e4268'];
+  const color=skies[phaseIndex];
+  scene.background.set(color);
+  scene.fog.color.set(color);
+  sunlight.intensity=[2.5,2.65,1.35,.18][phaseIndex];
+  sunlight.color.set(phaseIndex===2?'#ffb985':'#ffe4c1');
+  hemi.intensity=[2.1,2.15,1.45,.78][phaseIndex];
+  lamplights.forEach(light=>light.intensity=phaseIndex===3?1.45:.12);
+  materials.grass.color.set(['#90b77f','#78ad73','#c4a879','#dce9ea'][seasonIndex]);
+  materials.green.color.set(['#498b57','#44804b','#b57e49','#b9d4d5'][seasonIndex]);
+  materials.lightGreen.color.set(['#86b76d','#6d9f59','#d4a164','#d1e1e1'][seasonIndex]);
+  scene.fog.far=weatherIndex===1?63:92;
+  $('musicButton').textContent=musicEnabled?'🔊':'🔇';
 }
-for(const o of s.placed||[]){
-placeWorld(o.id,o.x,o.z,o.rotation);
-placed.push(o);
+function advancePhase(){
+  phaseIndex=(phaseIndex+1)%4;
+  phaseClock=0;
+  if(phaseIndex===0){
+    night++;
+    if(night>1&&night%8===1)seasonIndex=(seasonIndex+1)%4;
+  }
+  const roll=random();
+  weatherIndex=roll<.31?(seasonIndex===3?3:1):roll<.49?2:0;
+  setAtmosphere();
+  updateHud();
+  saveGame();
+  toast('🌤️ '+phases[phaseIndex]+' · '+weatherNames[weatherIndex]);
 }
-}catch(e){}
-}
-
-function atmosphere(){
-const sky=["#bde5e8","#a5d7e4","#e4b28c","#2d4168"][phase];
-scene.background.set(sky);
-scene.fog.color.set(sky);
-sun.intensity=[2.4,2.7,1.25,.25][phase];
-hemi.intensity=[2.1,2.2,1.5,.8][phase];
-mat.grass.color.set(["#8fba79","#7bab69","#c5a77c","#d8e4e8"][season]);
-mat.leaf.color.set(["#478953","#44804a","#b77d4a","#bed5d9"][season]);
-lamps.forEach(l=>l.intensity=phase===3?1.6:.1);
-scene.fog.far=weather===1?62:100;
-}
-
-function nextTime(){
-phase=(phase+1)%4;
-if(phase===0){
-night++;
-if(night>1&&night%8===1)season=(season+1)%4;
-}
-weather=rand()<.33?(season===3?3:1):rand()<.22?2:0;
-timeElapsed=0;
-atmosphere();
-updateHud();
-saveGame();
-notice("🌤️ "+times[phase]+" · "+weathers[weather]);
-}
-
-function collect(){
-const p=characters[selected].obj.position;
-let closest=null;
-let distance=3.2;
-for(const c of collectibles){
-if(c.found)continue;
-const d=Math.hypot(c.x-p.x,c.z-p.z);
-if(d<distance){distance=d;closest=c}
-}
-if(!closest){
-notice("Walk closer to an item on the ground.");
-return;
-}
-closest.found=true;
-closest.g.visible=false;
-switch(closest.type){
-case "Wood Log":wood+=2;break;
-case "Carrot":carrots++;break;
-case "Berry Basket":berries+=3;break;
-default:inventory.push(closest.type);
-}
-notice("🎒 Collected "+closest.type);
-updateHud();
-saveGame();
-}
-
-// RADIAL BUILDING MENU
-const wheel=$("wheel");
-let holdTimer,holdOpened=false;
-
-function closeWheel(){wheel.style.display="none"}
-
-function openWheel(){
-$("wheelItems").innerHTML="";
-catalog.forEach((item,i)=>{
-const a=-Math.PI/2+i*Math.PI*2/catalog.length;
-const x=50+36*Math.cos(a);
-const y=50+36*Math.sin(a);
-const b=document.createElement("button");
-b.className="wheelItem";
-b.style.left=x+"%";
-b.style.top=y+"%";
-b.textContent=item.icon+" "+item.name;
-b.onclick=e=>{
-e.stopPropagation();
-startBuilding(item.id);
-};
-$("wheelItems").appendChild(b);
-});
-wheel.style.display="block";
+function collectNearest(){
+  const point=playable[selected].obj.position;
+  let nearest=null;
+  let min=3.25;
+  for(const item of collectables){
+    if(item.found)continue;
+    const distance=Math.hypot(item.x-point.x,item.z-point.z);
+    if(distance<min){nearest=item;min=distance;}
+  }
+  if(!nearest){
+    const npc=villagers.find(a=>a.obj.position.distanceTo(point)<3.4);
+    toast(npc?'💬 '+npc.obj.userData.data.name+': Welcome to the village!':'Find an object on the ground and walk closer.');
+    return;
+  }
+  nearest.found=true;
+  nearest.g.visible=false;
+  if(nearest.name==='Wood Log')woodCount+=2;
+  else if(nearest.name==='Carrot')carrotCount++;
+  else if(nearest.name==='Berry Basket')berryCount+=3;
+  else inventory.push(nearest.name);
+  toast('🎁 Collected '+nearest.name+'!');
+  updateHud();
+  saveGame();
 }
 
-const placeBtn=$("placeBtn");
-placeBtn.addEventListener("contextmenu",e=>e.preventDefault());
-placeBtn.addEventListener("pointerdown",e=>{
-e.preventDefault();
-holdOpened=false;
-clearTimeout(holdTimer);
-holdTimer=setTimeout(()=>{
-holdOpened=true;
-openWheel();
-},420);
-});
-placeBtn.addEventListener("pointerup",e=>{
-e.preventDefault();
-clearTimeout(holdTimer);
-if(!holdOpened){
-if(wheel.style.display==="block")closeWheel();
-else openWheel();
-}
-});
-placeBtn.addEventListener("pointercancel",()=>clearTimeout(holdTimer));
-$("wheelX").onclick=closeWheel;
-
-function destroyPreview(){
-if(!preview)return;
-scene.remove(preview);
-preview.traverse(o=>{
-if(o.isMesh&&o.material.userData.preview)o.material.dispose();
-});
-preview=null;
-}
-
-function startBuilding(id){
-closeWheel();
-destroyPreview();
-buildMode=id;
-rotation=0;
-const item=findItem(id);
-preview=new THREE.Group();
-item.draw(preview);
-preview.traverse(o=>{
-if(o.isMesh){
-const m=new THREE.MeshBasicMaterial({
-color:"#82ffc7",transparent:true,opacity:.45,depthWrite:false
-});
-m.userData.preview=true;
-o.material=m;
-}
-});
-scene.add(preview);
-const p=characters[selected].obj.position;
-preview.position.set(p.x+3,0,p.z+3);
-$("buildLabel").textContent=item.icon+" Place "+item.name+" ("+item.cost+" wood)";
-$("buildBar").style.display="block";
-$("actions").style.display="none";
-validate();
-notice("Tap the ground to choose where to place it.");
-}
-
-function validate(){
-if(!preview)return;
-const item=findItem(buildMode);
-const x=preview.position.x,z=preview.position.z;
-const p=characters[selected].obj.position;
-valid=
-Math.abs(x)<46&&Math.abs(z)<46&&
-Math.hypot(x-p.x,z-p.z)<22&&
-!obstacles.some(o=>
-Math.hypot(o.x-x,o.z-z)<o.r+item.radius*.8
-);
-preview.traverse(o=>{
-if(o.isMesh&&o.material.userData.preview)
-o.material.color.set(valid?"#82ffc7":"#ff7474");
-});
-$("confirmBtn").disabled=!valid||wood<item.cost;
-}
-
-function cancelBuilding(){
-buildMode=null;
-destroyPreview();
-$("buildBar").style.display="none";
-$("actions").style.display="flex";
-}
-
-$("rotateBtn").onclick=()=>{
-if(!preview)return;
-rotation+=Math.PI/4;
-preview.rotation.y=rotation;
-};
-
-$("cancelBtn").onclick=cancelBuilding;
-$("confirmBtn").onclick=()=>{
-if(!preview||!valid)return;
-const item=findItem(buildMode);
-if(wood<item.cost){notice("Not enough wood!");return}
-const {x,z}=preview.position;
-wood-=item.cost;
-placeWorld(buildMode,x,z,rotation);
-placed.push({id:buildMode,x,z,rotation});
-notice(item.icon+" "+item.name+" placed!");
-cancelBuilding();
-updateHud();
-saveGame();
-};
-
-// MENUS
-function showModal(title,html){
-$("modalTitle").textContent=title;
-$("modalBody").innerHTML=html;
-$("modal").style.display="flex";
-menuOpen=true;
+// Accessible modal menus
+function openModal(title,html){
+  $('modalTitle').textContent=title;
+  $('modalBody').innerHTML=html;
+  $('modal').style.display='flex';
+  paused=true;
 }
 function closeModal(){
-$("modal").style.display="none";
-menuOpen=false;
+  $('modal').style.display='none';
+  paused=false;
 }
-$("closeBtn").onclick=closeModal;
-
-$("petsBtn").onclick=()=>{
-showModal("🐾 Choose Your Character",
-characters.map((c,i)=>`
-<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0">
-<span>${c.obj.userData.data.name}</span>
-<button data-person="${i}">Play</button>
-</div>`).join("")+
-'<button id="createFriend">✨ Create Friend</button>');
-
-$("modalBody").querySelectorAll("[data-person]").forEach(b=>
-b.onclick=()=>{
-selected=+b.dataset.person;
-updateHud();
-saveGame();
-closeModal();
-});
-
-$("createFriend").onclick=()=>{
-showModal("Create a Friend",`
-<input id="friendName" placeholder="Character name" value="Clover">
-<select id="friendType">
-<option value="cat">Kitten</option>
-<option value="dog">Puppy</option>
-<option value="bird">Bird</option>
-<option value="person">Person</option>
-</select>
-<select id="friendColor">
-<option value="#e4ad76">Golden</option>
-<option value="#f3e6d7">White</option>
-<option value="#92745e">Brown</option>
-<option value="#b9a6d8">Lavender</option>
-</select>
-<button id="makeFriend">Create</button>`);
-
-$("makeFriend").onclick=()=>{
-if(characters.length>=12){
-notice("Character limit reached.");
-closeModal();
-return;
+$('closeModal').onclick=closeModal;
+function selectCharacter(i){
+  selected=i;
+  updateHud();
+  saveGame();
+  toast('🐾 Playing as '+playable[i].obj.userData.data.name);
 }
-const p=characters[selected].obj.position;
-addPlayable({
-name:$("friendName").value.trim()||"Friend",
-kind:$("friendType").value,
-color:$("friendColor").value,
-shirt:"#bfa2d8",
-x:p.x+2,z:p.z+1
+$('friendsButton').onclick=()=>{
+  openModal('🐾 Choose a Friend',
+    playable.map((a,i)=>{
+      const s=a.obj.userData.data;
+      return `<div class="option"><span>${i===selected?'⭐ ':''}${s.name} · ${s.kind}</span><button data-friend="${i}">Play</button></div>`;
+    }).join('')+'<button id="createFriend">✨ Create a Friend</button>');
+  $('modalBody').querySelectorAll('[data-friend]').forEach(btn=>{
+    btn.onclick=()=>{selectCharacter(+btn.dataset.friend);closeModal();};
+  });
+  $('createFriend').onclick=()=>{
+    openModal('✨ Create Your Character',`
+      <label>Name<input id="friendName" value="Clover" maxlength="18"></label>
+      <label>Character<select id="friendKind">
+        <option value="cat">Kitten</option>
+        <option value="dog">Puppy</option>
+        <option value="bird">Bird</option>
+        <option value="person">Person</option>
+      </select></label>
+      <label>Color<select id="friendColor">
+        <option value="#e8ad7a">Golden</option>
+        <option value="#f3e7da">Snow White</option>
+        <option value="#8f6d59">Chocolate</option>
+        <option value="#b9a3db">Lavender</option>
+        <option value="#92c6d3">Sky Blue</option>
+      </select></label>
+      <button id="makeFriend">Create Character</button>`);
+    $('makeFriend').onclick=()=>{
+      if(playable.length>=12){closeModal();toast('Your character family is full.');return;}
+      const p=playable[selected].obj.position;
+      addPlayable({
+        name:$('friendName').value.trim()||'Friend',
+        kind:$('friendKind').value,
+        color:$('friendColor').value,
+        shirt:'#bda8d1',
+        x:p.x+2,z:p.z+1
+      });
+      selectCharacter(playable.length-1);
+      closeModal();
+    };
+  };
+};
+$('inventoryButton').onclick=()=>{
+  openModal('🎒 Your Backpack',`
+    <p>🪵 ${woodCount} wood · 🥕 ${carrotCount} carrots · 🫐 ${berryCount} berries</p>
+    <p>${inventory.length?inventory.join(' · '):'Explore the forest to collect treasures.'}</p>
+    <button id="backpackBuild">🔨 Place Item</button>`);
+  $('backpackBuild').onclick=()=>{closeModal();openRadial();};
+};
+$('settingsButton').onclick=()=>{
+  openModal('⚙️ Game Settings',`
+    <p>Long hold <b>Place Item</b> to choose something to build. Tap the ground to move it, then tap <b>Place Here</b>.</p>
+    <p>Time of day changes automatically every 72 seconds. Weather and seasons change as you explore.</p>
+    <button id="toggleMusic">🎵 Music ${musicEnabled?'On':'Off'}</button>
+    <button id="resetCam">📷 Reset Camera</button>`);
+  $('toggleMusic').onclick=()=>{
+    musicEnabled=!musicEnabled;
+    $('toggleMusic').textContent='🎵 Music '+(musicEnabled?'On':'Off');
+    $('musicButton').textContent=musicEnabled?'🔊':'🔇';
+    if(musicEnabled)unlockAudio();
+    saveGame();
+  };
+  $('resetCam').onclick=()=>{yaw=.65;pitch=.6;camDistance=13;closeModal();};
+};
+$('collectItem').onclick=collectNearest;
+$('restButton').onclick=advancePhase;
+
+// Circular item selection: tap or press and hold Place Item
+let wheelOpen=false;
+let holdTimer=null;
+let openedOnHold=false;
+const RADIAL_RADIUS=38;
+function openRadial(){
+  if(placement)cancelPlacement();
+  wheelOpen=true;
+  $('radial').style.display='block';
+  $('radialItems').innerHTML='';
+  catalog.forEach((item,i)=>{
+    const a=-Math.PI/2+angleFor(i,catalog.length);
+    const x=50+RADIAL_RADIUS*Math.cos(a);
+    const y=50+RADIAL_RADIUS*Math.sin(a);
+    const button=document.createElement('button');
+    button.className='radialItem';
+    button.style.left=x+'%';
+    button.style.top=y+'%';
+    button.innerHTML=`<b>${item.icon}</b>${item.name}<small>${item.cost?item.cost+' wood':'Free'}</small>`;
+    button.disabled=woodCount<item.cost;
+    button.addEventListener('pointerdown',event=>event.stopPropagation());
+    button.onclick=event=>{
+      event.stopPropagation();
+      startPlacement(item.id);
+    };
+    $('radialItems').appendChild(button);
+  });
+}
+function closeRadial(){
+  wheelOpen=false;
+  $('radial').style.display='none';
+}
+const placeButton=$('placeItem');
+placeButton.addEventListener('contextmenu',event=>event.preventDefault());
+placeButton.addEventListener('pointerdown',event=>{
+  event.preventDefault();
+  openedOnHold=false;
+  clearTimeout(holdTimer);
+  try{placeButton.setPointerCapture(event.pointerId);}catch(e){}
+  holdTimer=setTimeout(()=>{
+    openedOnHold=true;
+    openRadial();
+  },380);
 });
-selected=characters.length-1;
-updateHud();
-saveGame();
-closeModal();
-};
-};
-};
+placeButton.addEventListener('pointerup',event=>{
+  event.preventDefault();
+  clearTimeout(holdTimer);
+  if(!openedOnHold){
+    if(wheelOpen)closeRadial();else openRadial();
+  }
+});
+placeButton.addEventListener('pointercancel',()=>clearTimeout(holdTimer));
+$('radialClose').onclick=closeRadial;
 
-$("bagBtn").onclick=()=>{
-showModal("🎒 Backpack",`
-<p>🪵 Wood: ${wood}</p>
-<p>🥕 Carrots: ${carrots}</p>
-<p>🫐 Berries: ${berries}</p>
-<p>${inventory.length?inventory.join(" · "):"Explore the forest to find treasures!"}</p>
-<button id="openBuild">🔨 Place Items</button>`);
-$("openBuild").onclick=()=>{
-closeModal();
-openWheel();
+// Preview: choose, reposition by tapping the ground, rotate, commit
+let preview=null;
+let placementRotation=0;
+let validPlacement=false;
+function clearPreview(){
+  if(!preview)return;
+  scene.remove(preview);
+  preview.traverse(o=>{
+    if(o.isMesh&&o.material&&o.material.userData.preview)o.material.dispose();
+  });
+  preview=null;
+}
+function startPlacement(id){
+  closeRadial();
+  clearPreview();
+  const item=getCatalog(id);
+  if(!item)return;
+  placement=id;
+  placementRotation=0;
+  preview=new THREE.Group();
+  item.build(preview);
+  preview.traverse(o=>{
+    if(!o.isMesh)return;
+    const material=new THREE.MeshBasicMaterial({
+      color:'#9effce',
+      transparent:true,
+      opacity:.48,
+      depthWrite:false
+    });
+    material.userData.preview=true;
+    o.material=material;
+  });
+  const p=playable[selected].obj.position;
+  preview.position.set(clamp(p.x+3,-44,44),0,clamp(p.z+3,-44,44));
+  scene.add(preview);
+  $('placingTitle').textContent=item.icon+' '+item.name+' · '+(item.cost?item.cost+' wood':'Free');
+  $('placingBar').style.display='block';
+  $('actions').style.display='none';
+  validatePlacement();
+  toast('📍 Tap the ground to choose exactly where to place '+item.name+'.');
+}
+function validatePlacement(){
+  if(!preview||!placement)return;
+  const x=preview.position.x;
+  const z=preview.position.z;
+  const item=getCatalog(placement);
+  const hero=playable[selected].obj.position;
+  validPlacement=Math.abs(x)<44&&Math.abs(z)<44;
+  validPlacement=validPlacement&&Math.hypot(x-hero.x,z-hero.z)<24;
+  validPlacement=validPlacement&&!obstacles.some(o=>
+    Math.hypot(x-o.x,z-o.z)<o.r+item.radius*.83
+  );
+  validPlacement=validPlacement&&Math.hypot(x-hero.x,z-hero.z)>1.1;
+  preview.traverse(o=>{
+    if(o.isMesh&&o.material.userData.preview){
+      o.material.color.set(validPlacement?'#9effce':'#ff858a');
+    }
+  });
+  $('confirmItem').disabled=!validPlacement||woodCount<item.cost;
+}
+function cancelPlacement(){
+  placement=null;
+  clearPreview();
+  $('placingBar').style.display='none';
+  $('actions').style.display='flex';
+}
+function confirmPlacement(){
+  if(!preview||!placement||!validPlacement)return;
+  const item=getCatalog(placement);
+  if(woodCount<item.cost){toast('You need more wood.');return;}
+  const x=preview.position.x;
+  const z=preview.position.z;
+  const rotation=placementRotation;
+  woodCount-=item.cost;
+  spawnBuilding(placement,x,z,rotation);
+  placedBuildings.push({id:placement,x,z,rotation});
+  cancelPlacement();
+  saveGame();
+  updateHud();
+  toast('✨ '+item.name+' placed exactly where you chose!');
+}
+$('rotateItem').onclick=()=>{
+  if(!preview)return;
+  placementRotation+=Math.PI/4;
+  preview.rotation.y=placementRotation;
 };
-};
+$('confirmItem').onclick=confirmPlacement;
+$('cancelItem').onclick=cancelPlacement;
 
-$("settingsBtn").onclick=()=>{
-showModal("⚙️ Settings",`
-<p>Day and night change automatically.</p>
-<p>Rain, snow, and seasons change as you explore.</p>
-<button id="musicToggle">🎵 Music ${musicOn?"ON":"OFF"}</button>
-<button id="resetCamera">📷 Reset Camera</button>`);
-$("musicToggle").onclick=()=>{
-musicOn=!musicOn;
-$("soundBtn").textContent=musicOn?"🔊":"🔇";
-$("musicToggle").textContent="🎵 Music "+(musicOn?"ON":"OFF");
-if(musicOn)startMusic();
-};
-$("resetCamera").onclick=()=>{
-yaw=.6;pitch=.55;distance=13;closeModal();
-};
-};
-
-$("collectBtn").onclick=collect;
-$("restBtn").onclick=nextTime;
-
-// MOBILE JOYSTICKS
+// Two mobile joysticks, camera pan, pinch zoom, and tap ground
 function joystick(id){
-const el=$(id),knob=el.querySelector(".knob");
-const v={x:0,y:0};
-function update(e){
-e.preventDefault();
-const b=el.getBoundingClientRect();
-const dx=e.clientX-b.left-b.width/2;
-const dy=e.clientY-b.top-b.height/2;
-const length=Math.hypot(dx,dy)||1;
-const amount=Math.min(length,38);
-v.x=dx/length*amount/38;
-v.y=dy/length*amount/38;
-knob.style.transform=`translate(${v.x*38}px,${v.y*38}px)`;
+  const el=$(id);
+  const knob=el.querySelector('.knob');
+  const value={x:0,y:0};
+  function movePointer(event){
+    event.preventDefault();
+    const b=el.getBoundingClientRect();
+    const dx=event.clientX-b.left-b.width/2;
+    const dy=event.clientY-b.top-b.height/2;
+    const length=Math.hypot(dx,dy)||1;
+    const limit=Math.min(length,39);
+    value.x=dx/length*limit/39;
+    value.y=dy/length*limit/39;
+    knob.style.transform=`translate(${value.x*39}px,${value.y*39}px)`;
+  }
+  el.addEventListener('pointerdown',event=>{
+    el.setPointerCapture(event.pointerId);
+    movePointer(event);
+  });
+  el.addEventListener('pointermove',event=>{
+    if(el.hasPointerCapture(event.pointerId))movePointer(event);
+  });
+  function clear(){
+    value.x=0;
+    value.y=0;
+    knob.style.transform='translate(0,0)';
+  }
+  el.addEventListener('pointerup',clear);
+  el.addEventListener('pointercancel',clear);
+  return value;
 }
-el.addEventListener("pointerdown",e=>{
-el.setPointerCapture(e.pointerId);
-update(e);
+const moveInput=joystick('moveStick');
+const cameraInput=joystick('lookStick');
+let yaw=.65;
+let pitch=.6;
+let camDistance=13;
+const pointers=new Map();
+let gesture=null;
+let pinchDistance=0;
+const raycaster=new THREE.Raycaster();
+const pointerNDC=new THREE.Vector2();
+const floorPlane=new THREE.Plane(v3(0,1,0),0);
+function screenRay(x,y){
+  pointerNDC.set(x/innerWidth*2-1,1-y/innerHeight*2);
+  raycaster.setFromCamera(pointerNDC,camera);
+}
+renderer.domElement.addEventListener('pointerdown',event=>{
+  pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+  if(pointers.size===1){
+    gesture={x:event.clientX,y:event.clientY,originX:event.clientX,originY:event.clientY,moved:false,time:performance.now()};
+  }else gesture=null;
 });
-el.addEventListener("pointermove",e=>{
-if(el.hasPointerCapture(e.pointerId))update(e);
+renderer.domElement.addEventListener('pointermove',event=>{
+  if(!pointers.has(event.pointerId))return;
+  pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+  if(pointers.size===2){
+    const values=[...pointers.values()];
+    const dist=Math.hypot(values[0].x-values[1].x,values[0].y-values[1].y);
+    if(pinchDistance)camDistance=clamp(camDistance+(pinchDistance-dist)*.035,6,23);
+    pinchDistance=dist;
+    gesture=null;
+  }else if(gesture){
+    const dx=event.clientX-gesture.x;
+    const dy=event.clientY-gesture.y;
+    if(Math.hypot(event.clientX-gesture.originX,event.clientY-gesture.originY)>9)gesture.moved=true;
+    if(!placement){
+      yaw-=dx*.006;
+      pitch=clamp(pitch+dy*.004,.25,1.13);
+    }
+    gesture.x=event.clientX;
+    gesture.y=event.clientY;
+  }
 });
-function reset(){
-v.x=v.y=0;
-knob.style.transform="translate(0,0)";
-}
-el.addEventListener("pointerup",reset);
-el.addEventListener("pointercancel",reset);
-return v;
-}
-const move=joystick("left");
-const look=joystick("right");
-let yaw=.6,pitch=.55,distance=13,drag=null;
-const ray=new THREE.Raycaster();
-const mouse=new THREE.Vector2();
-const plane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
+renderer.domElement.addEventListener('pointerup',event=>{
+  pointers.delete(event.pointerId);
+  pinchDistance=0;
+  if(gesture&&!gesture.moved&&playing&&!paused&&performance.now()-gesture.time<350){
+    screenRay(event.clientX,event.clientY);
+    if(placement&&preview){
+      const point=v3(0,0,0);
+      if(raycaster.ray.intersectPlane(floorPlane,point)){
+        preview.position.set(clamp(point.x,-46,46),0,clamp(point.z,-46,46));
+        validatePlacement();
+      }
+    }else{
+      const hits=raycaster.intersectObjects(playable.map(a=>a.obj),true);
+      if(hits.length){
+        let o=hits[0].object;
+        while(o.parent&&!playable.some(a=>a.obj===o))o=o.parent;
+        const index=playable.findIndex(a=>a.obj===o);
+        if(index>=0)selectCharacter(index);
+      }
+    }
+  }
+  gesture=null;
+});
+renderer.domElement.addEventListener('pointercancel',event=>{
+  pointers.delete(event.pointerId);
+  gesture=null;
+  pinchDistance=0;
+});
 
-renderer.domElement.addEventListener("pointerdown",e=>{
-drag={x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY,moved:false};
-});
-renderer.domElement.addEventListener("pointermove",e=>{
-if(!drag)return;
-const dx=e.clientX-drag.x;
-const dy=e.clientY-drag.y;
-if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)>8)
-drag.moved=true;
-if(!buildMode){
-yaw-=dx*.006;
-pitch=clamp(pitch+dy*.004,.25,1.1);
+// NPC goal selection and animation
+const destinations=[[0,0],[15,3],[23,-16],[-21,10],[22,12],[-12,-12],[12,13]];
+function chooseDestination(a){
+  const place=phaseIndex===3&&random()<.8
+    ?[a.home.x,a.home.z]
+    :choice(destinations);
+  a.goal.set(place[0]+range(-2,2),0,place[1]+range(-2,2));
+  a.pause=range(.3,2);
 }
-drag.x=e.clientX;
-drag.y=e.clientY;
-});
-renderer.domElement.addEventListener("pointerup",e=>{
-if(drag&&!drag.moved&&playing&&!menuOpen){
-mouse.set(e.clientX/innerWidth*2-1,1-e.clientY/innerHeight*2);
-ray.setFromCamera(mouse,camera);
-if(buildMode&&preview){
-const point=new THREE.Vector3();
-if(ray.ray.intersectPlane(plane,point)){
-preview.position.set(clamp(point.x,-46,46),0,clamp(point.z,-46,46));
-validate();
+function animateCharacter(a,t,i,moving){
+  const u=a.obj.userData;
+  const f=moving?1:0;
+  u.rig.position.y=Math.sin(t*.013+i)*.055*f;
+  u.head.rotation.z=Math.sin(t*.004+i)*.037;
+  u.legs.forEach((leg,k)=>{
+    leg.rotation.x=Math.sin(t*.013+i+k*Math.PI)*.36*f;
+  });
+  u.arms.forEach((arm,k)=>{
+    arm.rotation.x=Math.sin(t*.013+i+(1-k)*Math.PI)*.24*f;
+  });
+  u.tail.rotation.y=Math.sin(t*.006+i)*.32;
+  const blink=Math.sin(t*.0017+i*8)>.992;
+  u.eyes.forEach(eye=>eye.scale.y=blink?.02:.13);
 }
-}else{
-const hits=ray.intersectObjects(characters.map(a=>a.obj),true);
-if(hits.length){
-let obj=hits[0].object;
-while(obj.parent&&!characters.some(a=>a.obj===obj))
-obj=obj.parent;
-const index=characters.findIndex(a=>a.obj===obj);
-if(index>=0){
-selected=index;
-updateHud();
-saveGame();
-}
-}
-}
-}
-drag=null;
-});
-
-// VILLAGER BEHAVIOR
-const goals=[[0,0],[-11,-11],[11,-11],[-11,12],[11,12],[15,4]];
-
-function animate(a,t,i,moving){
-const d=a.obj.userData;
-const f=moving?1:0;
-d.rig.position.y=Math.sin(t*.012+i)*.055*f;
-d.legs.forEach((l,k)=>l.rotation.x=Math.sin(t*.012+i+k*Math.PI)*.35*f);
-d.arms.forEach((l,k)=>l.rotation.x=Math.sin(t*.012+i+(1-k)*Math.PI)*.23*f);
-d.tail.rotation.y=Math.sin(t*.006+i)*.25;
-d.head.rotation.z=Math.sin(t*.004+i)*.035;
-}
-
 function wander(a,dt,t,i){
-if(a.pause>0){
-a.pause-=dt;
-animate(a,t,i,false);
-return;
-}
-let d=a.goal.clone().sub(a.obj.position);
-d.y=0;
-if(d.lengthSq()<.6){
-const p=phase===3&&rand()<.7
-?[a.home.x,a.home.z]:choose(goals);
-a.goal.set(p[0]+rnd(-2,2),0,p[1]+rnd(-2,2));
-a.pause=rnd(.5,2);
-return;
-}
-d.normalize();
-const old=a.obj.position.clone();
-a.obj.position.addScaledVector(d,dt*1.1);
-if(obstacles.some(o=>
-Math.hypot(a.obj.position.x-o.x,a.obj.position.z-o.z)<o.r)){
-a.obj.position.copy(old);
-a.pause=1;
-a.goal.set(rnd(-12,12),0,rnd(-12,12));
-return;
-}
-a.obj.rotation.y=Math.atan2(d.x,d.z);
-animate(a,t,i,true);
+  if(a.pause>0){
+    a.pause-=dt;
+    animateCharacter(a,t,i,false);
+    return;
+  }
+  const direction=a.goal.clone().sub(a.obj.position);
+  direction.y=0;
+  if(direction.lengthSq()<.6){chooseDestination(a);return;}
+  direction.normalize();
+  const previous=a.obj.position.clone();
+  a.obj.position.addScaledVector(direction,dt*(phaseIndex===3?.67:1.12));
+  if(obstacles.some(o=>Math.hypot(a.obj.position.x-o.x,a.obj.position.z-o.z)<o.r)){
+    a.obj.position.copy(previous);
+    a.pause=.25;
+    a.goal.set(range(-17,17),0,range(-17,17));
+    return;
+  }
+  a.obj.rotation.y=Math.atan2(direction.x,direction.z);
+  animateCharacter(a,t,i,true);
 }
 
-// ORIGINAL MUSIC
-let audio=null,nextNote=0,musicStep=0;
-const melody=[392,440,523,659,587,523,440,392,349,392,440,523,440,392,330,349];
-const bass=[196,174.61,220,196];
-
-function tone(freq,when,duration,volume,type="triangle"){
-if(!audio)return;
-const osc=audio.createOscillator();
-const gain=audio.createGain();
-osc.type=type;
-osc.frequency.setValueAtTime(freq,when);
-gain.gain.setValueAtTime(.0001,when);
-gain.gain.exponentialRampToValueAtTime(volume,when+.02);
-gain.gain.exponentialRampToValueAtTime(.0001,when+duration);
-osc.connect(gain);
-gain.connect(audio.destination);
-osc.start(when);
-osc.stop(when+duration+.03);
+// Original music: explicit tap-to-start sound unlock for iPhone
+let audioContext=null;
+let nextNote=0;
+let noteStep=0;
+const musicMelody=[
+  392,440,523.25,587.33,659.25,587.33,523.25,440,
+  392,349.23,392,440,523.25,440,392,329.63,
+  349.23,392,440,523.25,587.33,523.25,440,392,
+  329.63,349.23,392,440,392,349.23,329.63,293.66
+];
+const musicBass=[196,174.61,220,196,164.81,174.61,196,146.83];
+function playTone(frequency,time,duration,volume,type='sine'){
+  if(!audioContext)return;
+  const osc=audioContext.createOscillator();
+  const gain=audioContext.createGain();
+  osc.type=type;
+  osc.frequency.setValueAtTime(frequency,time);
+  gain.gain.setValueAtTime(.0001,time);
+  gain.gain.exponentialRampToValueAtTime(volume,time+.025);
+  gain.gain.exponentialRampToValueAtTime(.0001,time+duration);
+  osc.connect(gain);
+  gain.connect(audioContext.destination);
+  osc.start(time);
+  osc.stop(time+duration+.035);
 }
-
-function startMusic(){
-try{
-audio??=new(window.AudioContext||window.webkitAudioContext)();
-audio.resume();
-nextNote=audio.currentTime+.1;
-tone(523.25,audio.currentTime+.08,.2,.12);
-tone(659.25,audio.currentTime+.23,.25,.12,"sine");
-$("soundBtn").textContent="🔊";
-}catch(e){
-notice("Audio unavailable. Try Safari.");
+function unlockAudio(){
+  try{
+    audioContext??=new(window.AudioContext||window.webkitAudioContext)();
+    const result=audioContext.resume();
+    if(result&&typeof result.catch==='function')result.catch(()=>{});
+    nextNote=audioContext.currentTime+.16;
+    playTone(523.25,audioContext.currentTime+.05,.22,.14);
+    playTone(659.25,audioContext.currentTime+.21,.3,.12,'triangle');
+    $('musicButton').textContent=musicEnabled?'🔊':'🔇';
+  }catch(error){
+    toast('Audio unavailable. Open in Safari and tap 🔊.');
+  }
 }
-}
-
 function updateMusic(){
-if(!playing||!musicOn||!audio||audio.state!=="running")return;
-if(nextNote<audio.currentTime-.5)
-nextNote=audio.currentTime+.08;
-while(nextNote<audio.currentTime+.3){
-tone(melody[musicStep%16],nextNote,.32,.07);
-if(musicStep%4===0)
-tone(bass[Math.floor(musicStep/4)%4],nextNote,.78,.035,"sine");
-if(musicStep%2===0)
-tone(melody[(musicStep+4)%16]/2,nextNote,.34,.018,"sine");
-nextNote+=.37;
-musicStep++;
+  if(!playing||!musicEnabled||!audioContext||audioContext.state!=='running')return;
+  if(nextNote<audioContext.currentTime-.4)nextNote=audioContext.currentTime+.04;
+  let scheduled=0;
+  while(nextNote<audioContext.currentTime+.32&&scheduled<3){
+    const idx=noteStep%musicMelody.length;
+    playTone(musicMelody[idx],nextNote,.3,.066,'sine');
+    if(noteStep%4===0){
+      playTone(musicBass[Math.floor(noteStep/4)%musicBass.length],nextNote,.78,.035,'triangle');
+    }
+    if(noteStep%2===0){
+      playTone(musicMelody[(idx+8)%musicMelody.length]/2,nextNote,.32,.017,'sine');
+    }
+    noteStep++;
+    nextNote+=.35;
+    scheduled++;
+  }
 }
-}
-
-$("soundBtn").onclick=()=>{
-musicOn=!musicOn;
-$("soundBtn").textContent=musicOn?"🔊":"🔇";
-if(musicOn){
-startMusic();
-notice("🎵 Music playing");
-}else{
-notice("🔇 Music muted");
-}
+$('musicButton').onclick=()=>{
+  musicEnabled=!musicEnabled;
+  $('musicButton').textContent=musicEnabled?'🔊':'🔇';
+  if(musicEnabled){
+    unlockAudio();
+    toast('🎵 Forest music ON');
+  }else toast('🔇 Music OFF');
+  saveGame();
+};
+$('playButton').onclick=()=>{
+  $('intro').style.display='none';
+  playing=true;
+  if(musicEnabled)unlockAudio();
+  toast('🍁 Welcome! Hold Place Item to build your village.');
 };
 
-$("playBtn").onclick=()=>{
-$("intro").style.display="none";
-playing=true;
-musicOn=true;
-startMusic();
-notice("🍁 Welcome to Wildflower Hollow!");
-};
-
-// WEATHER PARTICLES
+// Visible weather: rain streaks and gently falling snow
 const weatherParticles=[];
-const particleMat=new THREE.MeshBasicMaterial({color:"#edf5ff"});
-for(let i=0;i<65;i++)
-weatherParticles.push(ball(scene,particleMat,0,-100,0,.045,.16,.045));
+const rainMaterial=new THREE.MeshBasicMaterial({color:'#cce9f5',transparent:true,opacity:.8});
+const snowMaterial=new THREE.MeshBasicMaterial({color:'#f7fbff',transparent:true,opacity:.95});
+for(let i=0;i<82;i++){
+  const drop=orb(scene,rainMaterial,0,-100,0,.045,.17,.045);
+  weatherParticles.push(drop);
+}
+function weatherFrame(dt,t){
+  const hero=playable[selected].obj.position;
+  const isRain=weatherIndex===1;
+  const isSnow=weatherIndex===3;
+  for(let i=0;i<weatherParticles.length;i++){
+    const particle=weatherParticles[i];
+    particle.visible=isRain||isSnow;
+    if(!particle.visible)continue;
+    particle.material=isSnow?snowMaterial:rainMaterial;
+    particle.scale.set(isSnow?.095:.035,isSnow?.095:.19,isSnow?.095:.035);
+    if(particle.position.y<0){
+      particle.position.set(hero.x+range(-13,13),range(7,17),hero.z+range(-13,13));
+    }
+    particle.position.y-=dt*(isSnow?1.7:11);
+    if(isSnow){
+      particle.position.x+=Math.sin(t*.001+i)*dt*.35;
+      particle.position.z+=Math.cos(t*.001+i)*dt*.2;
+    }
+  }
+}
 
-function updateWeather(dt){
-const p=characters[selected].obj.position;
-for(const drop of weatherParticles){
-drop.visible=weather===1||weather===3;
-if(!drop.visible)continue;
-if(drop.position.y<0){
-drop.position.set(p.x+rnd(-14,14),rnd(7,17),p.z+rnd(-14,14));
-}
-drop.position.y-=dt*(weather===3?1.6:10);
-}
-}
-
-// GAME LOOP
+// Main update loop, optimized for mobile
+const followTarget=v3(0,0,0);
+const movement=v3(0,0,0);
+const forward=v3(0,0,0);
+const sideways=v3(0,0,0);
 let last=performance.now();
 let autosave=0;
-const target=new THREE.Vector3();
-const velocity=new THREE.Vector3();
-
 function frame(t){
-requestAnimationFrame(frame);
-const dt=Math.min((t-last)/1000,.05);
-last=t;
-
-if(playing&&!menuOpen){
-const hero=characters[selected];
-const p=hero.obj.position;
-
-yaw-=look.x*dt*1.55;
-pitch=clamp(pitch+look.y*dt*.8,.25,1.1);
-
-const power=Math.hypot(move.x,move.y);
-if(power>.08&&!buildMode){
-const forward=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
-const right=new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));
-velocity.copy(right).multiplyScalar(move.x)
-.addScaledVector(forward,-move.y).normalize();
-
-const old=p.clone();
-p.addScaledVector(velocity,dt*4.5);
-p.x=clamp(p.x,-48,48);
-p.z=clamp(p.z,-48,48);
-
-if(obstacles.some(o=>Math.hypot(p.x-o.x,p.z-o.z)<o.r))
-p.copy(old);
-
-hero.obj.rotation.y=Math.atan2(velocity.x,velocity.z);
+  requestAnimationFrame(frame);
+  const dt=Math.min((t-last)/1000,.05);
+  last=t;
+  if(playing&&!paused){
+    const hero=playable[selected];
+    const position=hero.obj.position;
+    yaw-=cameraInput.x*dt*1.48;
+    pitch=clamp(pitch+cameraInput.y*dt*.8,.25,1.13);
+    const power=Math.hypot(moveInput.x,moveInput.y);
+    if(power>.08&&!placement){
+      forward.set(-Math.sin(yaw),0,-Math.cos(yaw));
+      sideways.set(Math.cos(yaw),0,-Math.sin(yaw));
+      movement.copy(sideways).multiplyScalar(moveInput.x);
+      movement.addScaledVector(forward,-moveInput.y).normalize();
+      const old=position.clone();
+      position.addScaledVector(movement,dt*4.55);
+      position.x=clamp(position.x,-47,47);
+      position.z=clamp(position.z,-47,47);
+      if(obstacles.some(o=>Math.hypot(position.x-o.x,position.z-o.z)<o.r)){
+        position.copy(old);
+      }
+      hero.obj.rotation.y=Math.atan2(movement.x,movement.z);
+    }
+    animateCharacter(hero,t,0,power>.08&&!placement);
+    for(let i=0;i<playable.length;i++){
+      if(i!==selected)wander(playable[i],dt,t,i);
+    }
+    villagers.forEach((v,i)=>wander(v,dt,t,i+20));
+    followTarget.set(
+      position.x+Math.sin(yaw)*camDistance*Math.cos(pitch),
+      1.25+camDistance*Math.sin(pitch),
+      position.z+Math.cos(yaw)*camDistance*Math.cos(pitch)
+    );
+    camera.position.lerp(followTarget,Math.min(1,dt*4.7));
+    camera.lookAt(position.x,1.23,position.z);
+    sunlight.position.set(position.x-13,23,position.z+13);
+    sunlight.target.position.set(position.x,0,position.z);
+    phaseClock+=dt;
+    if(phaseClock>=PHASE_DURATION)advancePhase();
+    autosave+=dt;
+    if(autosave>=12){autosave=0;saveGame();}
+  }
+  for(const tree of treeCanopies){
+    tree.crown.rotation.z=Math.sin(t*.0007+tree.phase)*.024;
+  }
+  for(const rotor of spinning)rotor.rotation.z+=dt*.48;
+  for(const cloud of chimneySmoke){
+    cloud.mesh.position.y=cloud.base+((t*.0003+cloud.phase)%1.35);
+  }
+  for(const item of collectables){
+    if(!item.found){
+      item.g.rotation.y+=dt*.26;
+      item.g.position.y=Math.sin(t*.0018+item.i)*.05;
+    }
+  }
+  weatherFrame(dt,t);
+  updateMusic();
+  renderer.render(scene,camera);
 }
-
-animate(hero,t,0,power>.08&&!buildMode);
-characters.forEach((a,i)=>{
-if(i!==selected)wander(a,dt,t,i);
-});
-villagers.forEach((a,i)=>wander(a,dt,t,i+20));
-
-target.set(
-p.x+Math.sin(yaw)*distance*Math.cos(pitch),
-1.25+distance*Math.sin(pitch),
-p.z+Math.cos(yaw)*distance*Math.cos(pitch)
-);
-camera.position.lerp(target,Math.min(1,dt*5));
-camera.lookAt(p.x,1.3,p.z);
-
-sun.position.set(p.x-12,23,p.z+13);
-sun.target.position.set(p.x,0,p.z);
-
-timeElapsed+=dt;
-if(timeElapsed>=70)nextTime();
-
-autosave+=dt;
-if(autosave>=12){autosave=0;saveGame();}
-}
-
-for(const t0 of trees)
-t0.crown.rotation.z=Math.sin(t*.0008+t0.offset)*.025;
-
-for(const c of collectibles)
-if(!c.found)c.g.rotation.y+=dt*.25;
-
-updateWeather(dt);
-updateMusic();
-renderer.render(scene,camera);
-}
-
 loadGame();
-atmosphere();
+setAtmosphere();
 updateHud();
-camera.position.set(8,10,15);
+camera.position.set(8,10,14);
 requestAnimationFrame(frame);
-
-window.addEventListener("resize",()=>{
-camera.aspect=innerWidth/innerHeight;
-camera.updateProjectionMatrix();
-renderer.setSize(innerWidth,innerHeight);
+window.addEventListener('resize',()=>{
+  camera.aspect=innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
 });
 </script>
 </body>
