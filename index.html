@@ -4,773 +4,868 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Maple's 99 Nights - Bloomwood Valley V5</title>
+<title>Maple's 99 Nights | Hearthwood Village V6</title>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;touch-action:none;background:#95c9d8;color:#fff;font:13px system-ui,-apple-system,sans-serif}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#96c5b2;color:#fff;font:14px system-ui,-apple-system,sans-serif;touch-action:none}
 canvas{display:block}
 button,input,select{font:inherit}
-button{border:2px solid #ffe9c5;background:#2f7169ed;border-radius:16px;color:white;font-weight:750;padding:9px 12px}
-button:active{background:#529b82}
-#hud{position:fixed;top:max(env(safe-area-inset-top),9px);left:10px;max-width:64%;background:#173f3bbf;border:2px solid #ffdfac;border-radius:16px;padding:8px 11px;pointer-events:none;backdrop-filter:blur(6px)}
-#hud strong{color:#ffe5ad;font-size:12px}
-#stats{line-height:1.5;font-size:11px;margin-top:3px}
-#toolbar{position:fixed;top:max(env(safe-area-inset-top),9px);right:9px;display:flex;gap:6px}
-#toolbar button{width:43px;height:43px;border-radius:50%;padding:0;font-size:20px}
-#actions{position:fixed;bottom:calc(162px + env(safe-area-inset-bottom));right:12px;display:flex;gap:8px}
-#actions button{min-width:79px}
-#toast{position:fixed;bottom:calc(180px + env(safe-area-inset-bottom));left:15%;right:15%;text-align:center;padding:9px 14px;border:1px solid #ffe6b9;background:#18473ddc;border-radius:16px;opacity:0;transition:opacity .3s;pointer-events:none}
-#toast.on{opacity:1}
-.stick{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom));width:124px;height:124px;border-radius:50%;background:#285d568a;border:3px solid #ffefd2;touch-action:none}
-.stick .nub{position:absolute;top:34px;left:34px;width:52px;height:52px;background:#f9d396;border:3px solid #fff4dc;border-radius:50%;pointer-events:none}
-#move{left:15px}
-#cameraStick{right:15px}
-#cameraStick .nub{background:#a4d4e5}
-.stick-label{position:fixed;bottom:calc(148px + env(safe-area-inset-bottom));color:#1d4a41;font-size:11px;font-weight:800}
-#moveLabel{left:54px}
-#lookLabel{right:45px}
-#screen,#intro{position:fixed;inset:0;z-index:10;background:#153d40db;display:none;justify-content:center;align-items:center;padding:20px}
-#intro{display:flex;z-index:11}
-.panel{width:100%;max-width:420px;max-height:85dvh;overflow:auto;background:linear-gradient(150deg,#337467,#245d58);border:2px solid #ffe3ae;border-radius:23px;padding:20px;text-align:center}
-.panel h1,.panel h2{color:#ffe6b0;margin:5px 0 10px}
-.panel p{line-height:1.5}
-.panel button{margin:4px}
-.entry{display:flex;justify-content:space-between;align-items:center;gap:7px;padding:7px 9px;margin:6px 0;background:#1d514c;border-radius:12px}
-.entry span{text-align:left}
-.panel label{text-align:left;display:block;margin:9px 0}
-.panel input,.panel select{width:100%;border:0;border-radius:10px;padding:10px;margin-top:5px}
-.hint{font-size:11px;color:#d6e9de}
-#fatal{position:fixed;z-index:50;top:25%;left:8%;right:8%;display:none;background:#783d43;border:2px solid white;padding:16px;border-radius:15px}
+button{border:1.5px solid #f9e3b8;background:#285b50ec;color:white;border-radius:14px;padding:10px;font-weight:700}
+button:active{background:#458776}
+#hud{position:absolute;top:max(9px,env(safe-area-inset-top));left:10px;background:#1b3e35dc;border:1.5px solid #efd5a7;padding:9px 12px;border-radius:15px;max-width:66%;pointer-events:none;box-shadow:0 4px 16px #10271e55}
+#hud b{color:#ffde9c;font-size:12px}
+#stats{font-size:11px;line-height:1.5}
+#menu{position:absolute;top:max(9px,env(safe-area-inset-top));right:10px;display:flex;gap:6px}
+#menu button{font-size:18px;border-radius:50%;width:43px;height:43px;padding:0}
+#msg{position:absolute;bottom:calc(174px + env(safe-area-inset-bottom));left:13%;right:13%;background:#234e43ec;border:1px solid #f7e5be;border-radius:15px;padding:10px;text-align:center;opacity:0;transition:opacity .25s;pointer-events:none}
+#msg.show{opacity:1}
+.joy{position:absolute;bottom:calc(20px + env(safe-area-inset-bottom));height:125px;width:125px;border:3px solid #f9ebd5;background:#2b5d4ca8;border-radius:50%;touch-action:none}
+.nub{position:absolute;left:33px;top:33px;width:54px;height:54px;border:3px solid #fff6e9;border-radius:50%;background:#ffd19a;pointer-events:none}
+#move{left:16px}
+#look{right:16px}
+#look .nub{background:#9bcad7}
+#actions{position:absolute;right:13px;bottom:calc(158px + env(safe-area-inset-bottom));display:flex;gap:7px}
+#actions button{font-size:12px;padding:10px}
+#modal,#intro{position:absolute;inset:0;display:none;z-index:5;background:#17392edb;align-items:center;justify-content:center;padding:20px}
+#intro{display:flex;z-index:6}
+.panel{width:100%;max-width:390px;max-height:85dvh;overflow:auto;border:2px solid #f3d6a0;border-radius:24px;padding:22px;background:#2b6458;box-shadow:0 20px 50px #091d1880;text-align:center}
+.panel h1,.panel h2{color:#ffe3ae;margin:5px 0 12px}
+.panel p{line-height:1.55}
+.panel button{margin:5px}
+.entry{display:flex;align-items:center;justify-content:space-between;margin:6px 0;padding:7px;background:#18473c;border-radius:12px}
+.panel label{display:block;text-align:left;margin:8px 0}
+.panel input,.panel select{display:block;width:100%;padding:10px;border:0;border-radius:8px;margin-top:4px}
+#loading{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:#122f28;color:#ffe6ad;z-index:15;padding:24px;text-align:center}
 </style>
 </head>
 <body>
+<div id="loading">Preparing Hearthwood Village...</div>
 <div id="hud">
-<strong>🍁 MAPLE'S 99 NIGHTS</strong>
-<div id="stats">Loading Bloomwood Valley...</div>
+<b>🍁 MAPLE'S 99 NIGHTS · HEARTHWOOD</b>
+<div id="stats">Welcome to the valley</div>
 </div>
-<div id="toolbar">
-<button id="characters">🐾</button>
-<button id="inventory">🎒</button>
-<button id="menu">☰</button>
+<div id="menu">
+<button id="pets">🐾</button>
+<button id="bag">🎒</button>
+<button id="settings">☰</button>
 </div>
-<div id="toast"></div>
+<div id="msg"></div>
 <div id="actions">
-<button id="action">✨ Explore</button>
-<button id="sleep">🌙 Rest</button>
+<button id="explore">✨ Explore</button>
+<button id="rest">🌙 Rest</button>
 </div>
-<div class="stick" id="move"><div class="nub"></div></div>
-<div class="stick-label" id="moveLabel">MOVE</div>
-<div class="stick" id="cameraStick"><div class="nub"></div></div>
-<div class="stick-label" id="lookLabel">CAMERA</div>
+<div class="joy" id="move"><div class="nub"></div></div>
+<div class="joy" id="look"><div class="nub"></div></div>
 <div id="intro">
 <div class="panel">
-<div style="font-size:46px">🍁 🐱 🐶 🌸</div>
+<div style="font-size:48px">🍁 🐱 🐶 🏡</div>
 <h1>Maple's 99 Nights</h1>
-<b>BLOOMWOOD VALLEY · VERSION 5</b>
-<p>Meet your neighbors, explore an enchanted 3D village, create new animal friends, find treasures and enjoy 99 peaceful nights.</p>
-<p class="hint">Left circle: walk · Right circle: look · Pinch: zoom</p>
-<button id="start">▶ Enter Bloomwood Valley</button>
+<strong>HEARTHWOOD VILLAGE · VERSION 6</strong>
+<p>Discover a lovingly detailed village, meet independent animal neighbors, collect treasures, tend gardens, and watch the seasons change.</p>
+<p>Left circle: move · Right circle: camera · Pinch: zoom</p>
+<button id="start">▶ Enter the Village</button>
 </div>
 </div>
-<div id="screen">
+<div id="modal">
 <div class="panel">
-<h2 id="screenTitle"></h2>
-<div id="screenBody"></div>
+<h2 id="mtitle"></h2>
+<div id="mbody"></div>
 <button id="close">Close</button>
 </div>
 </div>
-<div id="fatal"></div>
-
 <script type="module">
-import * as T from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 
 const $=id=>document.getElementById(id);
-const clamp=T.MathUtils.clamp;
-let rngState=19431;
-
-function rng(){
-rngState=(1664525*rngState+1013904223)>>>0;
-return rngState/4294967296;
+const clamp=THREE.MathUtils.clamp;
+let seed=90431;
+function random(){
+seed=(1664525*seed+1013904223)>>>0;
+return seed/4294967296;
 }
-const rand=(a,b)=>a+rng()*(b-a);
-const pick=a=>a[Math.floor(rng()*a.length)];
+const rnd=(a,b)=>a+(b-a)*random();
+const pick=a=>a[Math.floor(random()*a.length)];
 
-const scene=new T.Scene();
-scene.background=new T.Color('#a7dfef');
-scene.fog=new T.FogExp2('#a7dfef',.010);
+const scene=new THREE.Scene();
+scene.background=new THREE.Color('#b4dce5');
+scene.fog=new THREE.Fog('#b4dce5',30,72);
+const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,115);
 
-const camera=new T.PerspectiveCamera(52,innerWidth/innerHeight,.1,150);
-let renderer;
-
-try{
-renderer=new T.WebGLRenderer({antialias:true,powerPreference:'default'});
+const renderer=new THREE.WebGLRenderer({
+antialias:true,
+powerPreference:'default'
+});
 renderer.setSize(innerWidth,innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.35));
-renderer.outputColorSpace=T.SRGBColorSpace;
-renderer.toneMapping=T.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.45;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.35;
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 document.body.prepend(renderer.domElement);
-}catch(e){
-$('fatal').style.display='block';
-$('fatal').textContent='3D cannot start: '+e.message;
-throw e;
-}
 
-const hemi=new T.HemisphereLight('#fff6df','#617d70',2.05);
+const hemi=new THREE.HemisphereLight('#fff5d8','#647c62',2.2);
 scene.add(hemi);
-const sun=new T.DirectionalLight('#ffe6ba',2.7);
-sun.position.set(20,30,15);
+const sun=new THREE.DirectionalLight('#ffe7b6',2.8);
+sun.position.set(-15,23,13);
+sun.castShadow=true;
+sun.shadow.mapSize.set(1024,1024);
+sun.shadow.camera.left=-29;
+sun.shadow.camera.right=29;
+sun.shadow.camera.top=29;
+sun.shadow.camera.bottom=-29;
+sun.shadow.normalBias=.03;
 scene.add(sun);
+sun.target.position.set(0,0,0);
+scene.add(sun.target);
 
-const M=(c,r=.82)=>new T.MeshStandardMaterial({color:c,roughness:r});
-const mat={
-grass:M('#79b96e'),
-dirt:M('#d4b18b'),
-stone:M('#9da6a5'),
-trim:M('#f9ebd1'),
-wood:M('#936b49'),
-woodDark:M('#67452e'),
-leaf:M('#6cac68'),
-leafLight:M('#91c783'),
-roof:M('#b76f6e'),
-dark:M('#282d37'),
-cream:M('#fff2df'),
-pink:M('#eeb0b6'),
-gold:M('#f8d18a'),
-water:new T.MeshStandardMaterial({color:'#5faec5',roughness:.23,transparent:true,opacity:.9})
+function material(hex,rough=.88){
+return new THREE.MeshStandardMaterial({color:hex,roughness:rough});
+}
+const m={
+grass:material('#a7ba79'),
+path:material('#dfbf92'),
+stone:material('#9b9e95'),
+cream:material('#fff0d2'),
+wood:material('#91643d'),
+darkWood:material('#674631'),
+slate:material('#5b7e95'),
+clay:material('#bc6851'),
+leaf:material('#4c935b'),
+leaf2:material('#6fa85e'),
+flowers:[
+material('#f6d38a'),
+material('#f8a7a2'),
+material('#ebd1f0')
+],
+eye:material('#222d33'),
+water:material('#6cb7bc',.25)
 };
 
-const geo={
-sphere:new T.SphereGeometry(1,20,14),
-cube:new T.BoxGeometry(1,1,1),
-cone:new T.ConeGeometry(1,1,10),
-cyl:new T.CylinderGeometry(1,1,1,12),
-torus:new T.TorusGeometry(1,.12,6,20)
-};
+function texture(base,dots,lines=0){
+const c=document.createElement('canvas');
+c.width=c.height=256;
+const x=c.getContext('2d');
+x.fillStyle=base;
+x.fillRect(0,0,256,256);
+let s=7712;
+function r(){
+s=(s*1664525+1013904223)>>>0;
+return s/4294967296;
+}
+for(let i=0;i<1800;i++){
+x.fillStyle=dots[Math.floor(r()*dots.length)];
+x.globalAlpha=.07+r()*.24;
+const px=r()*256,py=r()*256;
+x.fillRect(px,py,1+r()*8,1+r()*5);
+}
+x.globalAlpha=.32;
+x.strokeStyle='#584b39';
+for(let i=0;i<lines;i++){
+x.beginPath();
+x.moveTo(0,i*256/lines);
+x.lineTo(256,i*256/lines);
+x.stroke();
+}
+x.globalAlpha=1;
+let t=new THREE.CanvasTexture(c);
+t.colorSpace=THREE.SRGBColorSpace;
+t.wrapS=t.wrapT=THREE.RepeatWrapping;
+t.anisotropy=4;
+return t;
+}
+m.grass.map=texture('#b0be86',['#598251','#e5d2a0','#6a9a5c']);
+m.grass.map.repeat.set(18,18);
+m.path.map=texture('#d3b58d',['#9d805b','#f4dea8','#b49374']);
+m.path.map.repeat.set(6,3);
+m.wood.map=texture('#a87a4e',['#66452a','#c3915a','#5a4030'],10);
+m.wood.map.repeat.set(1,2);
+m.slate.map=texture('#6c899d',['#344e68','#a8b6bd','#435872'],12);
 
-function mesh(p,g,m,x,y,z,sx=1,sy=sx,sz=sx){
-const o=new T.Mesh(geo[g],m);
+const ballG=new THREE.SphereGeometry(1,14,10);
+const boxG=new THREE.BoxGeometry(1,1,1);
+const cylG=new THREE.CylinderGeometry(1,1,1,10);
+const coneG=new THREE.ConeGeometry(1,1,9);
+
+function shape(p,g,mat,x,y,z,sx=1,sy=sx,sz=sx,shadow=false){
+const o=new THREE.Mesh(g,mat);
 o.position.set(x,y,z);
 o.scale.set(sx,sy,sz);
+o.castShadow=shadow;
+o.receiveShadow=shadow;
 p.add(o);
 return o;
 }
-const ball=(p,m,x,y,z,sx,sy=sx,sz=sx)=>mesh(p,'sphere',m,x,y,z,sx,sy,sz);
-const box=(p,m,x,y,z,sx,sy,sz)=>mesh(p,'cube',m,x,y,z,sx,sy,sz);
-const cone=(p,m,x,y,z,r,h)=>mesh(p,'cone',m,x,y,z,r,h,r);
-const pole=(p,m,x,y,z,r,h)=>mesh(p,'cyl',m,x,y,z,r,h,r);
+const box=(p,c,x,y,z,w,h,d,sh=false)=>shape(p,boxG,c,x,y,z,w,h,d,sh);
+const orb=(p,c,x,y,z,a,b=a,d=a,sh=false)=>shape(p,ballG,c,x,y,z,a,b,d,sh);
+const pole=(p,c,x,y,z,r,h,sh=false)=>shape(p,cylG,c,x,y,z,r,h,r,sh);
+const cone=(p,c,x,y,z,r,h,sh=false)=>shape(p,coneG,c,x,y,z,r,h,r,sh);
 
-function noiseTexture(type){
-const c=document.createElement('canvas');
-c.width=c.height=128;
-const ctx=c.getContext('2d');
-const base=type==='grass'?'#78b46b':type==='path'?'#d9bb8d':'#b77870';
-ctx.fillStyle=base;
-ctx.fillRect(0,0,128,128);
-let s=type.length*737;
-function v(){
-s=(1664525*s+1013904223)>>>0;
-return s/4294967296;
-}
-for(let i=0;i<600;i++){
-ctx.fillStyle=type==='grass'?(v()>.5?'#94c780':'#5ba162'):type==='roof'?(v()>.5?'#d08c7b':'#9e5b58'):(v()>.5?'#e9cda3':'#bca078');
-ctx.globalAlpha=.08+v()*.16;
-ctx.fillRect(v()*128,v()*128,1+v()*5,1+v()*5);
-}
-ctx.globalAlpha=1;
-if(type==='roof'){
-ctx.strokeStyle='#804b49';
-ctx.globalAlpha=.18;
-for(let y=16;y<128;y+=22){
-ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(128,y);ctx.stroke();
-}
-}
-const tex=new T.CanvasTexture(c);
-tex.colorSpace=T.SRGBColorSpace;
-tex.wrapS=tex.wrapT=T.RepeatWrapping;
-tex.repeat.set(type==='grass'?18:3,type==='grass'?18:3);
-return tex;
-}
-mat.grass.map=noiseTexture('grass');
-mat.dirt.map=noiseTexture('path');
-mat.roof.map=noiseTexture('roof');
-
-box(scene,mat.grass,0,-.32,0,108,.64,108);
-box(scene,mat.dirt,0,.012,0,4,.025,56);
-box(scene,mat.dirt,0,.014,0,55,.025,4);
-
-for(let i=0;i<85;i++){
-const x=rand(-25,25),z=rand(-25,25);
-if(Math.abs(x)<2.2||Math.abs(z)<2.2)continue;
-const stone=ball(scene,mat.stone,x,.026,z,rand(.12,.28),.03,rand(.1,.24));
-stone.rotation.y=rand(0,6);
-}
-
-const wind=[];
-function tree(x,z,sc=1){
-const g=new T.Group(),crown=new T.Group();
+function group(x=0,z=0){
+let g=new THREE.Group();
 g.position.set(x,0,z);
-g.scale.setScalar(sc);
-pole(g,mat.wood,0,1.65,0,.3,3.3);
-g.add(crown);
-for(let j=0;j<7;j++){
-const a=j*Math.PI*2/7;
-ball(crown,j%2?mat.leaf:mat.leafLight,
-Math.cos(a)*.78,3.65+(j%3)*.25,
-Math.sin(a)*.78,1.15,1.06,1.1);
-}
-ball(crown,mat.leafLight,0,4.65,0,1.25,1.12,1.18);
 scene.add(g);
-wind.push([crown,rand(0,6)]);
+return g;
 }
-function pine(x,z,sc=1){
-const g=new T.Group();
-g.position.set(x,0,z);
-g.scale.setScalar(sc);
-pole(g,mat.wood,0,1.6,0,.25,3.2);
-for(let j=0;j<3;j++)
-cone(g,j%2?mat.leaf:mat.leafLight,0,2.4+j*.82,0,1.55-j*.22,2.15);
-scene.add(g);
+
+box(scene,m.grass,0,-.28,0,98,.55,98);
+const paths=[[-.1,0,3.5,42],[0,0,48,3.5]];
+paths.forEach(q=>box(scene,m.path,q[0],.01,q[1],q[2],.035,q[3]));
+
+const blockers=[];
+
+function cabin(x,z,color,roof){
+let g=group(x,z);
+let wall=material(color),tile=material(roof);
+box(g,m.stone,0,.12,0,6.1,.25,5.2,true);
+box(g,wall,0,1.9,0,5.4,3.6,4.6,true);
+
+// Pitched roof and individual shingles
+for(let s of [-1,1]){
+let plane=box(g,tile,s*1.3,4.08,0,3.15,.19,5.75,true);
+plane.rotation.z=-s*.54;
+for(let row=0;row<4;row++){
+for(let col=0;col<9;col++){
+let t=box(g,m.slate,s*(.22+row*.68),4.83-row*.39,-2.42+col*.61,.66,.10,.59);
+t.rotation.z=-s*.54;
 }
-function rock(x,z,s=.5){
-const o=new T.Mesh(new T.DodecahedronGeometry(1,0),mat.stone);
-o.position.set(x,s*.36,z);
-o.scale.set(s,s*.65,s*.8);
-scene.add(o);
 }
-function flower(x,z,color=mat.pink){
-const g=new T.Group();
-g.position.set(x,0,z);
-pole(g,mat.leaf,0,.23,0,.035,.46);
-for(let i=0;i<5;i++){
-const a=i*6.28/5;
-ball(g,color,Math.cos(a)*.17,.49,Math.sin(a)*.17,.13,.1,.13);
 }
-ball(g,mat.gold,0,.49,0,.085);
-scene.add(g);
+
+box(g,m.darkWood,0,1.21,2.37,1.15,2.18,.17,true);
+orb(g,m.cream,.36,1.25,2.48,.075);
+for(let s of [-1,1]){
+box(g,m.darkWood,s*1.77,2.2,2.39,1.14,1.14,.15);
+box(g,m.cream,s*1.77,2.2,2.5,.88,.89,.08);
+box(g,m.darkWood,s*1.77,2.2,2.57,.07,.94,.09);
+box(g,m.darkWood,s*1.77,2.2,2.58,.9,.07,.09);
+box(g,m.wood,s*2.58,2.22,2.45,.18,3.8,.25);
 }
+for(let i=0;i<4;i++)
+box(g,m.wood,-2.9+i*1.9,3.62,0,.16,.27,4.9);
+box(g,m.stone,-1.65,5.06,-1.5,.76,1.5,.76,true);
+
+for(let s of [-1,1]){
+orb(g,m.leaf,s*2.75,.62,2.25,.55,.5,.55);
+orb(g,m.flowers[1],s*2.68,1.09,2.32,.12);
+}
+blockers.push({x,z,r:3.6});
+return g;
+}
+
+cabin(-10,-10,'#c9a57b','#5f8099');
+cabin(11,-10,'#e6bb92','#876d8a');
+
 function fence(x,z){
-const g=new T.Group();
-g.position.set(x,0,z);
-for(const s of [-.68,.68]){
-box(g,mat.trim,s,.52,0,.18,1,.16);
-cone(g,mat.trim,s,1.08,0,.17,.26);
+let g=group(x,z);
+for(let s of [-.7,.7]){
+pole(g,m.wood,s,.53,0,.11,1.06);
+cone(g,m.wood,s,1.14,0,.15,.26);
 }
-box(g,mat.trim,0,.43,0,1.55,.12,.14);
-box(g,mat.trim,0,.76,0,1.55,.12,.14);
-scene.add(g);
+box(g,m.wood,0,.4,0,1.6,.13,.12);
+box(g,m.wood,0,.79,0,1.6,.13,.12);
+}
+for(let z of [-15,-13,-7,7,13])
+for(let x of [-6,6])fence(x,z);
+
+const sway=[];
+function tree(x,z,scale=1){
+let g=group(x,z),c=new THREE.Group();
+g.scale.setScalar(scale);
+pole(g,m.wood,0,1.8,0,.31,3.6,true);
+g.add(c);
+for(let i=0;i<8;i++){
+let a=i*Math.PI/4;
+orb(c,i%2?m.leaf:m.leaf2,
+Math.cos(a)*.9,
+3.8+(i%3)*.27,
+Math.sin(a)*.9,
+1.08,1.08,1.12,true);
+}
+orb(c,m.leaf,0,4.9,0,1.42,1.15,1.4,true);
+sway.push([c,rnd(0,10)]);
+}
+function pine(x,z,s=1){
+let g=group(x,z);
+g.scale.setScalar(s);
+pole(g,m.wood,0,1.6,0,.22,3.2);
+for(let i=0;i<3;i++)
+cone(g,i%2?m.leaf:m.leaf2,0,2.5+i*.85,0,1.5-i*.25,2.4,true);
 }
 
-const obstacles=[];
-function cottage(x,z,wallColor,roofColor='#c87871'){
-const g=new T.Group();
-g.position.set(x,0,z);
-const wall=M(wallColor),roof=M(roofColor);
-box(g,mat.stone,0,.17,0,5.15,.34,4.85);
-box(g,wall,0,1.75,0,4.4,3.15,4.15);
-const cap=cone(g,roof,0,4.3,0,3.4,2.35);
-cap.rotation.y=Math.PI/4;
-box(g,mat.woodDark,0,1.15,2.13,1.05,2,.14);
-ball(g,mat.gold,.28,1.12,2.24,.07);
-for(const s of [-1,1]){
-box(g,mat.trim,s*1.32,2.04,2.14,.88,1.02,.14);
-box(g,mat.wood,s*1.32,2.05,2.23,.075,1.02,.13);
-box(g,mat.wood,s*1.32,2.05,2.23,.88,.075,.13);
-box(g,mat.trim,s*1.33,.43,2.12,1.45,.23,.38);
-ball(g,mat.leaf,s*2,.53,2.1,.46,.45,.45);
-}
-box(g,mat.stone,-1.35,4.75,-.5,.55,1.2,.55);
-box(g,mat.wood,0,2.9,2.17,1.9,.31,.16);
-scene.add(g);
-obstacles.push({x,z,r:3.1});
-}
-cottage(-10,-9,'#e4c7a5');
-cottage(10,-9,'#bfd3dc','#a66b85');
-cottage(-10,11,'#dbbad1','#b36a82');
-cottage(10,11,'#ead6ae','#a97668');
-
-for(let z of [-15,-12,-5,6,14,17])
-for(let x of [-5,5])fence(x,z);
-
-for(let i=0;i<112;i++){
-const x=rand(-48,48),z=rand(-48,48);
-if(Math.abs(x)<18&&Math.abs(z)<20)continue;
-i%4===0?pine(x,z,rand(.8,1.3)):tree(x,z,rand(.78,1.25));
+for(let i=0;i<90;i++){
+let x=rnd(-46,46),z=rnd(-46,46);
+if(Math.abs(x)<19&&Math.abs(z)<19)continue;
+i%3?tree(x,z,rnd(.7,1.2)):pine(x,z,rnd(.8,1.25));
 }
 
-for(let i=0;i<190;i++){
-const x=rand(-35,35),z=rand(-35,35);
-if(Math.abs(x)<2.4||Math.abs(z)<2.4)continue;
-if(i%7===0)rock(x,z,rand(.18,.48));
-else flower(x,z,pick([mat.pink,mat.trim,mat.gold]));
+function flowers(x,z){
+let g=group(x,z);
+pole(g,m.leaf,0,.2,0,.027,.4);
+let c=pick(m.flowers);
+for(let i=0;i<5;i++){
+let a=i*2*Math.PI/5;
+orb(g,c,Math.cos(a)*.13,.47,Math.sin(a)*.13,.12,.1,.1);
+}
+orb(g,m.cream,0,.47,0,.055);
+}
+for(let i=0;i<120;i++){
+let x=rnd(-29,29),z=rnd(-29,29);
+if(Math.abs(x)<2.5||Math.abs(z)<2.5)continue;
+flowers(x,z);
 }
 
-const pond=new T.Group();
-pond.position.set(-20,.01,9);
-ball(pond,mat.water,0,.02,0,5.3,.085,3.6);
-for(let i=0;i<27;i++){
-const a=i*2*Math.PI/27;
-ball(pond,mat.stone,Math.cos(a)*5.2,.14,Math.sin(a)*3.5,.4,.22,.45);
+function pond(x,z){
+let g=group(x,z);
+orb(g,m.water,0,.02,0,4.5,.09,3.2);
+for(let i=0;i<24;i++){
+let a=i*2*Math.PI/24;
+orb(g,m.stone,Math.cos(a)*4.5,.16,Math.sin(a)*3.15,.38,.23,.42);
 }
-scene.add(pond);
-obstacles.push({x:-20,z:9,r:4.8});
+blockers.push({x,z,r:3.8});
+}
+pond(-20,8);
+
+function stand(x,z){
+let g=group(x,z);
+box(g,m.wood,0,1,0,4,.23,2.1,true);
+for(let a of [-1.7,1.7])
+for(let b of [-.8,.8])
+pole(g,m.wood,a,2,b,.1,3.8);
+box(g,m.clay,0,3.84,0,4.7,.22,2.7,true);
+for(let i=0;i<7;i++)
+orb(g,pick(m.flowers),-.18+(i-3)*.52,1.38,.45,.24);
+blockers.push({x,z,r:2.4});
+}
+stand(15,3);
 
 function lantern(x,z){
-const g=new T.Group();
-g.position.set(x,0,z);
-pole(g,mat.wood,0,1.55,0,.11,3.1);
-ball(g,mat.gold,0,3.05,0,.34,.41,.35);
-cone(g,mat.roof,0,3.51,0,.48,.47);
-scene.add(g);
+let g=group(x,z);
+pole(g,m.darkWood,0,1.55,0,.11,3.1);
+orb(g,m.cream,0,3.16,0,.31,.4,.31);
+cone(g,m.clay,0,3.6,0,.43,.4);
+let light=new THREE.PointLight('#ffcc80',.5,7);
+light.position.set(0,3.1,0);
+g.add(light);
+return light;
 }
-for(const q of [[-4,-8],[4,-8],[-4,8],[4,8],[17,3]])lantern(...q);
-
-function market(){
-const g=new T.Group();
-g.position.set(17,0,3);
-box(g,mat.wood,0,.96,0,4.6,.21,2.5);
-for(const x of [-1.9,1.9])
-for(const z of [-.9,.9])pole(g,mat.wood,x,2,z,.1,3.8);
-box(g,mat.roof,0,3.8,0,5,.2,3);
-for(let i=0;i<7;i++)
-ball(g,pick([mat.pink,mat.gold,mat.leaf]),(i-3)*.5,1.38,.4,.25,.26,.25);
-scene.add(g);
-obstacles.push({x:17,z:3,r:2.7});
-}
-market();
+const lights=[
+lantern(-4,-8),
+lantern(4,-8),
+lantern(-4,8),
+lantern(4,8)
+];
 
 // CHARACTERS
-const characters=[],villagers=[];
+const roster=[],npcs=[];
 
-function character(spec){
-const root=new T.Group(),rig=new T.Group();
+function makeCharacter(s){
+let root=group(s.x||0,s.z||0);
+let rig=new THREE.Group();
 root.add(rig);
-const fur=M(spec.color);
-const accent=M(spec.accent||'#f7e3c8');
-const outfit=M(spec.outfit||'#b9a1d3');
-const eye=M('#252b37');
+let fur=material(s.color);
+let shirt=material(s.shirt);
+let white=material('#f9e7d5');
 
-ball(rig,outfit,0,.96,0,.47,.57,.43);
-ball(rig,accent,0,.93,.38,.31,.35,.15);
+orb(rig,shirt,0,1,0,.5,.58,.43,true);
+orb(rig,white,0,1.03,.36,.31,.35,.15);
 
-const legs=[],arms=[];
-for(const s of [-1,1]){
-const leg=new T.Group();
-leg.position.set(s*.29,.51,0);
-ball(leg,fur,0,-.19,.16,.22,.3,.23);
-rig.add(leg);legs.push(leg);
-const arm=new T.Group();
-arm.position.set(s*.43,1.15,0);
-ball(arm,fur,0,-.16,.17,.18,.3,.19);
-rig.add(arm);arms.push(arm);
+let legs=[],arms=[];
+for(let side of [-1,1]){
+let leg=new THREE.Group();
+leg.position.set(side*.29,.55,0);
+orb(leg,fur,0,-.25,.13,.2,.3,.23,true);
+rig.add(leg);
+legs.push(leg);
+
+let arm=new THREE.Group();
+arm.position.set(side*.46,1.12,0);
+orb(arm,fur,0,-.21,.15,.2,.28,.21,true);
+rig.add(arm);
+arms.push(arm);
 }
-const head=new T.Group();
-head.position.y=1.78;
+
+let head=new THREE.Group();
+head.position.y=1.82;
 rig.add(head);
+orb(head,s.kind==='person'?white:fur,0,0,0,.66,.62,.55,true);
 
-const isHuman=spec.kind==='person';
-ball(head,isHuman?accent:fur,0,0,0,.67,.61,.55);
+if(s.kind==='cat'){
+for(let side of [-1,1]){
+let ear=cone(head,fur,side*.4,.56,0,.27,.57);
+ear.rotation.z=-side*.19;
+cone(head,m.flowers[1],side*.4,.56,.17,.13,.3);
+}
+}
 
-if(spec.kind==='cat'){
-for(const s of [-1,1]){
-const e=cone(head,fur,s*.43,.52,-.03,.28,.56);
-e.rotation.z=-s*.22;
-cone(head,mat.pink,s*.43,.55,.12,.14,.3);
+if(s.kind==='dog'){
+for(let side of [-1,1]){
+let ear=orb(head,fur,side*.64,.05,-.06,.24,.42,.22);
+ear.rotation.z=side*.24;
 }
-for(const s of [-1,1])
-ball(head,accent,s*.21,-.2,.47,.26,.2,.17);
-}else if(spec.kind==='dog'){
-for(const s of [-1,1]){
-const e=ball(head,fur,s*.66,.04,-.08,.22,.42,.2);
-e.rotation.z=s*.3;
+orb(head,white,0,-.19,.43,.43,.28,.3);
 }
-ball(head,accent,0,-.21,.45,.4,.28,.31);
-}else if(spec.kind==='bird'){
-for(const s of [-1,1]){
-const wing=ball(rig,fur,s*.51,1.02,-.06,.23,.32,.31);
-wing.rotation.z=s*.2;
-}
-const beak=cone(head,mat.gold,0,-.13,.57,.19,.33);
+
+if(s.kind==='bird'){
+for(let side of [-1,1])
+orb(rig,fur,side*.48,1.08,-.1,.23,.37,.28);
+let beak=cone(head,m.clay,0,-.14,.58,.18,.32);
 beak.rotation.x=Math.PI/2;
-}else{
-ball(head,fur,0,.42,-.08,.67,.23,.49);
-ball(head,fur,0,.3,-.37,.53,.31,.25);
 }
 
-for(const s of [-1,1]){
-ball(head,mat.trim,s*.245,.08,.46,.195,.245,.095);
-ball(head,eye,s*.245,.065,.542,.104,.155,.045);
-ball(head,mat.trim,s*.28,.15,.58,.037,.043,.02);
-ball(head,mat.pink,s*.45,-.22,.38,.16,.085,.06);
+if(s.kind==='person'){
+orb(head,fur,0,.44,-.1,.62,.21,.43);
+orb(head,fur,0,.23,-.32,.52,.28,.27);
 }
-if(spec.kind!=='bird')
-ball(head,eye,0,-.2,.58,.11,.084,.08);
 
-const tail=new T.Group();
-tail.position.set(spec.kind==='cat'?-.46:.46,1,-.41);
+for(let side of [-1,1]){
+orb(head,m.cream,side*.24,.08,.46,.18,.23,.1);
+orb(head,m.eye,side*.24,.08,.56,.095,.13,.047);
+orb(head,m.cream,side*.275,.14,.61,.034);
+orb(head,m.flowers[1],side*.43,-.2,.43,.14,.065,.05);
+}
+if(s.kind!=='bird')
+orb(head,m.eye,0,-.18,.58,.095,.08,.075);
+
+let tail=new THREE.Group();
+tail.position.set(.46,1,-.4);
 rig.add(tail);
-const tailMesh=ball(tail,fur,0,0,-.22,.14,.15,.46);
-tailMesh.rotation.y=.2;
+orb(tail,fur,0,0,-.24,.15,.16,.43);
 
-if(spec.kind==='cat'||spec.kind==='dog'){
-const collar=mesh(rig,'torus',mat.gold,0,1.36,.05,.4,.4,.4);
-collar.rotation.x=Math.PI/2;
-ball(rig,mat.gold,0,1.29,.41,.1);
-}else{
-box(rig,outfit,0,1.25,-.38,.56,.55,.12);
-}
-
-root.position.set(spec.x||0,0,spec.z||0);
-root.userData={spec,rig,head,arms,legs,tail};
-scene.add(root);
+root.userData={rig,head,legs,arms,tail,s};
 return root;
 }
 
-function agent(spec,playable){
-const model=character(spec);
+function actor(s){
+let obj=makeCharacter(s);
 return{
-model,
-home:new T.Vector3(spec.x,0,spec.z),
-goal:new T.Vector3(spec.x,0,spec.z),
-pause:rand(.4,2),
-playable
+obj,
+home:new THREE.Vector3(s.x,0,s.z),
+goal:new THREE.Vector3(s.x,0,s.z),
+pause:rnd(.5,3)
 };
 }
 
-const party=[
-{name:'Maple',kind:'cat',color:'#e8ac69',accent:'#ffe9cc',outfit:'#d89eb5',x:0,z:2},
-{name:'Biscuit',kind:'dog',color:'#d0ac90',accent:'#fff4db',outfit:'#8fc5b6',x:3,z:3},
-{name:'Pip',kind:'bird',color:'#8ac5d6',accent:'#f2ebd3',outfit:'#f1c883',x:-2,z:4},
-{name:'Robin',kind:'person',color:'#9f795f',accent:'#eec9aa',outfit:'#9db5d9',x:3,z:5}
+const pets=[
+{name:'Maple',kind:'cat',color:'#e9b47c',shirt:'#d9a0ae',x:0,z:2},
+{name:'Biscuit',kind:'dog',color:'#d9b89a',shirt:'#86b5aa',x:2,z:3},
+{name:'Pip',kind:'bird',color:'#86bccc',shirt:'#e5be86',x:-2,z:4},
+{name:'Robin',kind:'person',color:'#9b7454',shirt:'#a7a8d2',x:3,z:5}
 ];
+pets.forEach(s=>roster.push(actor(s)));
 
-party.forEach(s=>characters.push(agent(s,true)));
-
-const names=['Clover','Poppy','Mochi','Peanut','Sunny','Milo','Wren','Willow','Pebble','Juniper'];
+const names=['Clover','Mochi','Peanut','Sunny','Juniper','Poppy','Willow','Milo'];
 for(let i=0;i<names.length;i++){
-const s={
+let s={
 name:names[i],
 kind:['cat','dog','bird','person'][i%4],
-color:pick(['#dfc19b','#b9a6cb','#a8d2c8','#d5a48a']),
-accent:'#f4dfc9',
-outfit:pick(['#b7a1d8','#e8b694','#9cbeab']),
-x:rand(-16,16),z:rand(-16,16)
+color:pick(['#e7c3a5','#b0a1bc','#c2d0af','#d89d91']),
+shirt:pick(['#c08ba1','#84aaa2','#c4a787']),
+x:rnd(-14,14),z:rnd(-14,14)
 };
-villagers.push(agent(s,false));
+npcs.push(actor(s));
 }
 
-const artifactNames=['Cat collar','Dog bed','Birdhouse','Small axe','Rope','Ladder','Flashlight','Moonstone','Star map','Silver bell'];
-const treasures=[];
-for(let i=0;i<26;i++){
-const g=new T.Group();
-g.position.set(rand(-31,31),0,rand(-31,31));
-ball(g,mat.gold,0,.65,0,.27,.37,.27);
-ball(g,mat.trim,0,1.03,0,.13);
-scene.add(g);
-treasures.push({g,name:artifactNames[i%artifactNames.length],found:false});
+// COLLECTIBLES
+const artifacts=[
+'Cat collar','Dog bed','Bird cage','Axe','Rope',
+'Ladder','Flashlight','Magic acorn','Compass'
+];
+const pickups=[];
+
+for(let i=0;i<20;i++){
+let g=group(rnd(-25,25),rnd(-25,25));
+orb(g,m.cream,0,.53,0,.22,.29,.22);
+orb(g,m.clay,0,.85,0,.12);
+pickups.push({g,name:artifacts[i%artifacts.length],found:false});
 }
 
-const seasonNames=['Spring','Summer','Autumn','Winter'];
-const timeNames=['Morning','Afternoon','Evening','Night'];
-const weatherNames=['Sunny','Rain','Breezy','Snow'];
-let selected=0,night=1,time=0,season=0,weather=0;
-let wood=0,berries=0,gardens=0,homes=0,inventory=[];
-let playing=false,paused=false,music=false;
-const saveKey='maples-bloomwood-v5';
+// TIME, WEATHER AND INVENTORY
+let chosen=0,night=1,phase=0,season=0,weather=0;
+let logs=0,berries=0,gardens=0,homes=0,inventory=[];
+let playing=false,menuOpen=false,music=false,clock=0;
+
+const times=['Morning','Afternoon','Evening','Night'];
+const seasons=['Spring','Summer','Autumn','Winter'];
+const weatherNames=['Sunny','Rainy','Windy','Snowy'];
+
+function stats(){
+$('stats').textContent=
+`🌙 ${night}/99 · ${times[phase]} · ${seasons[season]} · ${weatherNames[weather]} | 🐾 ${pets[chosen].name} · 🎒 ${inventory.length} · 🪵 ${logs} · 🌱 ${gardens}`;
+}
+
+function atmosphere(){
+let colors=['#b4dce5','#a7d4dc','#e2b78f','#374f74'];
+scene.background.set(colors[phase]);
+scene.fog.color.set(colors[phase]);
+sun.intensity=[2.5,2.9,1.5,.35][phase];
+hemi.intensity=[2.2,2.3,1.6,.8][phase];
+lights.forEach(l=>l.intensity=phase===3?1.8:.3);
+m.grass.color.set(['#a0b873','#8eac64','#bda17a','#dce7e9'][season]);
+m.leaf.color.set(['#4c935b','#458b54','#b4814e','#a5c5c4'][season]);
+m.leaf2.color.set(['#6fa85e','#5c9f55','#c7a15c','#c5d5d6'][season]);
+}
 
 function save(){
 try{
-localStorage.setItem(saveKey,JSON.stringify({
-selected,night,time,season,wood,berries,gardens,homes,inventory,extras:party.slice(4)
+localStorage.setItem('maples-hearthwood-v6',JSON.stringify({
+night,phase,season,logs,berries,gardens,homes,inventory,chosen,extras:pets.slice(4)
 }));
 }catch(e){}
 }
+
 function load(){
 try{
-const s=JSON.parse(localStorage.getItem(saveKey)||'null');
-if(!s)return;
-night=s.night||1;
-time=s.time||0;
-season=s.season||0;
-wood=s.wood||0;
-berries=s.berries||0;
-gardens=s.gardens||0;
-homes=s.homes||0;
-inventory=s.inventory||[];
-for(const p of (s.extras||[]).slice(0,8)){
-party.push(p);
-characters.push(agent({...p,x:p.x||2,z:p.z||2},true));
+let v=JSON.parse(localStorage.getItem('maples-hearthwood-v6')||'null');
+if(!v)return;
+night=v.night||1;
+phase=v.phase||0;
+season=v.season||0;
+logs=v.logs||0;
+berries=v.berries||0;
+gardens=v.gardens||0;
+homes=v.homes||0;
+inventory=v.inventory||[];
+for(let s of (v.extras||[]).slice(0,8)){
+pets.push(s);
+roster.push(actor(s));
 }
-selected=clamp(s.selected||0,0,party.length-1);
-for(let i=0;i<Math.min(inventory.length,treasures.length);i++){
-treasures[i].found=true;
-scene.remove(treasures[i].g);
-}
+chosen=clamp(v.chosen||0,0,pets.length-1);
+pickups.slice(0,Math.min(inventory.length,pickups.length)).forEach(p=>{
+p.found=true;
+scene.remove(p.g);
+});
 }catch(e){}
 }
 
-let toastTimeout;
-function toast(s){
-$('toast').textContent=s;
-$('toast').classList.add('on');
-clearTimeout(toastTimeout);
-toastTimeout=setTimeout(()=>$('toast').classList.remove('on'),5000);
+load();
+atmosphere();
+stats();
+
+let toastTimer;
+function say(s){
+$('msg').textContent=s;
+$('msg').classList.add('show');
+clearTimeout(toastTimer);
+toastTimer=setTimeout(()=>$('msg').classList.remove('show'),5000);
 }
 
-function stats(){
-$('stats').textContent=`🌙 ${night}/99 · ${timeNames[time]} · ${seasonNames[season]} · ${weatherNames[weather]} | 🐾 ${party[selected].name} · 🎒 ${inventory.length} · 🪵 ${wood} · 🍓 ${berries} · 🏡 ${homes}`;
+function choose(i){
+chosen=i;
+stats();
+save();
+say('🐾 Playing as '+pets[i].name);
 }
-function ambience(){
-const sky=['#b7e4ef','#a7dce8','#e7b88f','#344d78'][time];
-scene.background.set(sky);
-scene.fog.color.set(sky);
-sun.intensity=[2.2,2.65,1.25,.3][time];
-hemi.intensity=[2.05,2.1,1.45,.8][time];
-mat.grass.color.set(['#7cb977','#72b96d','#c8ab77','#d6e5e5'][season]);
-mat.leaf.color.set(['#6cac68','#59a764','#bf9258','#a8c3c5'][season]);
-mat.leafLight.color.set(['#91c783','#7abb70','#deb16b','#bfd4d5'][season]);
-}
-load();ambience();stats();
 
-function switchTo(i){
-selected=i;stats();save();toast('🐾 Playing as '+party[i].name);
-}
 function explore(){
-const p=characters[selected].model.position;
-let found=null,d=3;
-for(const t of treasures){
-const r=p.distanceTo(t.g.position);
-if(!t.found&&r<d){d=r;found=t}
+let p=roster[chosen].obj.position,near=null,d=3;
+for(let a of pickups){
+let r=p.distanceTo(a.g.position);
+if(!a.found&&r<d){near=a;d=r}
 }
-if(found){
-found.found=true;
-scene.remove(found.g);
-inventory.push(found.name);
-toast('🎁 Found '+found.name+'!');
+if(near){
+near.found=true;
+scene.remove(near.g);
+inventory.push(near.name);
+say('🎁 Found '+near.name);
 }else{
-const n=villagers.find(a=>a.model.position.distanceTo(p)<3);
-if(n)toast('💬 '+n.model.userData.spec.name+': Let’s explore the village!');
-else{wood++;berries++;toast('🌳 Gathered wood and berries!')}
+let friend=npcs.find(n=>n.obj.position.distanceTo(p)<3);
+if(friend){
+say('💬 '+friend.obj.userData.s.name+': Welcome to Hearthwood!');
+}else{
+logs++;
+berries++;
+say('🌲 Gathered wood and berries!');
 }
-stats();save();
 }
+stats();
+save();
+}
+
 function plant(){
-const p=characters[selected].model.position,g=new T.Group();
-g.position.set(p.x+1.5,0,p.z+1);
-box(g,mat.wood,0,.1,0,1.5,.2,1.1);
+let p=roster[chosen].obj.position,g=group(p.x+1.5,p.z+1);
+box(g,m.wood,0,.1,0,1.5,.2,1.2);
 for(let i=-1;i<=1;i++){
-cone(g,mat.leaf,i*.36,.48,0,.19,.65);
-ball(g,mat.pink,i*.36,.84,0,.18);
+cone(g,m.leaf,i*.37,.5,0,.2,.68);
+orb(g,m.flowers[1],i*.37,.87,0,.18);
 }
-scene.add(g);
 gardens++;
-toast('🌸 A new flower garden!');
-stats();save();
+stats();
+save();
+say('🌻 Your garden is growing!');
 }
+
 function build(){
-if(wood<3){toast('🪵 Gather three logs to build.');return}
-const p=characters[selected].model.position;
-wood-=3;homes++;
-cottage(clamp(p.x+6,-42,42),clamp(p.z+5,-42,42),'#efd4b5');
-toast('🏡 A cozy cottage is ready!');
-stats();save();
+if(logs<3){say('🪵 Find 3 logs first.');return}
+logs-=3;
+homes++;
+let p=roster[chosen].obj.position;
+cabin(clamp(p.x+6,-38,38),clamp(p.z+6,-38,38),'#c9aa84','#6f8895');
+stats();
+save();
+say('🏡 A new cottage!');
 }
+
 function rest(){
-time=(time+1)%4;
-if(time===0){
+phase=(phase+1)%4;
+if(!phase){
 night++;
 if(night%8===1)season=(season+1)%4;
 }
-weather=rng()<.24?(season===3?3:1):rng()<.2?2:0;
-ambience();stats();save();
-toast(night>=99?'🏆 You reached 99 nights! Keep exploring!':'✨ '+timeNames[time]+' in '+seasonNames[season]);
+weather=random()<.22?(season===3?3:1):random()<.22?2:0;
+atmosphere();
+stats();
+save();
+say(night>=99?'🏆 You reached 99 nights!':'✨ '+times[phase]+' in '+seasons[season]);
 }
 
-function panel(title,html){
-$('screenTitle').textContent=title;
-$('screenBody').innerHTML=html;
-$('screen').style.display='flex';
-paused=true;
+// MENUS
+function open(title,html){
+$('mtitle').textContent=title;
+$('mbody').innerHTML=html;
+$('modal').style.display='flex';
+menuOpen=true;
 }
-function closePanel(){
-$('screen').style.display='none';
-paused=false;
+function close(){
+$('modal').style.display='none';
+menuOpen=false;
 }
-$('close').onclick=closePanel;
+$('close').onclick=close;
 
-function characterList(){
-panel('🐾 Your Characters',
-'<p>Everyone else continues living independently.</p>'+
-party.map((s,i)=>`<div class="entry"><span>${i===selected?'⭐ ':''}${s.name} · ${s.kind}</span><button data-i="${i}">Play</button></div>`).join('')+
-'<button id="create">✨ Make a Character</button>');
-$('screenBody').querySelectorAll('[data-i]').forEach(el=>el.onclick=()=>{
-switchTo(+el.dataset.i);closePanel();
+$('pets').onclick=()=>{
+open('🐾 Characters',
+'<p>Everyone else continues their own routine.</p>'+
+pets.map((s,i)=>
+`<div class="entry"><span>${i===chosen?'⭐ ':''}${s.name} · ${s.kind}</span><button data-pet="${i}">Play</button></div>`
+).join('')+
+'<button id="newFriend">✨ Create Friend</button>');
+
+$('mbody').querySelectorAll('[data-pet]').forEach(el=>{
+el.onclick=()=>{
+choose(+el.dataset.pet);
+close();
+};
 });
-$('create').onclick=characterCreator;
-}
-function characterCreator(){
-panel('✨ Create a Friend',`
-<label>Name<input id="newName" maxlength="18" value="Clover"></label>
-<label>Character<select id="newKind">
+
+$('newFriend').onclick=()=>{
+open('✨ Create Friend',`
+<label>Name<input id="newName" value="Clover" maxlength="18"></label>
+<label>Type<select id="newKind">
 <option value="cat">Kitten</option>
 <option value="dog">Puppy</option>
 <option value="bird">Bird</option>
 <option value="person">Person</option>
 </select></label>
-<label>Fur or hair<select id="newColor">
-<option value="#eab374">Golden</option>
-<option value="#eee6d9">Snow</option>
-<option value="#96765e">Chocolate</option>
-<option value="#b6a4d6">Lavender</option>
-<option value="#9ecad6">Blue</option>
+<label>Color<select id="newColor">
+<option value="#e9b47c">Golden</option>
+<option value="#eee1cb">Snow</option>
+<option value="#99745a">Chocolate</option>
+<option value="#bba5d5">Lavender</option>
+<option value="#91bfc7">Blue</option>
 </select></label>
-<button id="makeNow">Create</button>`);
-$('makeNow').onclick=()=>{
-if(party.length>=12){toast('Maximum 12 playable characters.');closePanel();return}
-const p=characters[selected].model.position;
-const s={
+<button id="createNow">Create</button>`);
+
+$('createNow').onclick=()=>{
+if(pets.length>=12){
+say('Character limit reached');
+close();
+return;
+}
+let p=roster[chosen].obj.position;
+let s={
 name:$('newName').value.trim()||'Friend',
 kind:$('newKind').value,
 color:$('newColor').value,
-accent:'#f6e4cc',outfit:'#b5a2d8',x:p.x+2,z:p.z+1
+shirt:'#a5b7a1',
+x:p.x+1.5,z:p.z+1.5
 };
-party.push(s);
-characters.push(agent(s,true));
-switchTo(party.length-1);
-closePanel();
+pets.push(s);
+roster.push(actor(s));
+choose(pets.length-1);
+close();
 };
-}
-$('characters').onclick=characterList;
-$('inventory').onclick=()=>{
-panel('🎒 Keepsakes & Supplies',`
-<p>${inventory.length?inventory.join(' · '):'Search for glowing artifacts around the forest!'}</p>
-<p>🪵 ${wood} wood · 🍓 ${berries} berries · 🌷 ${gardens} gardens · 🏡 ${homes} cottages</p>
-<button id="plantNow">🌷 Plant flowers</button>
-<button id="buildNow">🏡 Build cottage (3 wood)</button>`);
-$('plantNow').onclick=()=>{plant();closePanel()};
-$('buildNow').onclick=()=>{build();closePanel()};
 };
-$('menu').onclick=()=>{
-panel('📖 Village Guide',`
-<p>Use the left circle to move. Use the right circle or drag the background to rotate the camera. Pinch to zoom.</p>
-<p>Tap 🐾 to switch characters or create a new kitten, puppy, bird or person. Other characters wander independently.</p>
-<p>Explore for artifacts and wood. Plant flowers, build cottages, and rest to change the time of day.</p>
-<button id="musicButton">🎵 ${music?'Music On':'Music Off'}</button>`);
-$('musicButton').onclick=()=>{
+};
+
+$('bag').onclick=()=>{
+open('🎒 Backpack',`
+<p>${inventory.length?inventory.join(' · '):'Collect glowing artifacts around the village.'}</p>
+<p>🪵 ${logs} · 🍓 ${berries} · 🌱 ${gardens} · 🏡 ${homes}</p>
+<button id="garden">🌱 Plant</button>
+<button id="home">🏡 Build (3 logs)</button>`);
+$('garden').onclick=()=>{plant();close()};
+$('home').onclick=()=>{build();close()};
+};
+
+$('settings').onclick=()=>{
+open('📖 Village Guide',`
+<p>Left joystick: move · Right joystick: turn camera · Pinch: zoom.</p>
+<p>Visit neighbors, explore for artifacts, plant and build. Villagers live independently.</p>
+<p>Progress saves on this device.</p>
+<button id="tune">🎵 ${music?'Music On':'Music Off'}</button>`);
+$('tune').onclick=()=>{
 music=!music;
-$('musicButton').textContent='🎵 '+(music?'Music On':'Music Off');
+$('tune').textContent='🎵 '+(music?'Music On':'Music Off');
 if(music)startAudio();
 };
 };
-$('action').onclick=explore;
-$('sleep').onclick=rest;
+
+$('explore').onclick=explore;
+$('rest').onclick=rest;
 $('start').onclick=()=>{
 $('intro').style.display='none';
 playing=true;
-toast('🍁 Welcome to Bloomwood Valley!');
+say('🍁 Welcome to Hearthwood Village!');
 };
 
-function joystick(id){
-const el=$(id),nub=el.querySelector('.nub'),state={x:0,y:0};
+// JOYSTICKS
+function joy(id){
+let el=$(id),nub=el.querySelector('.nub'),state={x:0,y:0};
 function update(e){
 e.preventDefault();
-const r=el.getBoundingClientRect();
-const dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2;
-const l=Math.hypot(dx,dy)||1,k=Math.min(37,l);
-state.x=dx/l*k/37;state.y=dy/l*k/37;
-nub.style.transform=`translate(${state.x*37}px,${state.y*37}px)`;
+let r=el.getBoundingClientRect();
+let x=e.clientX-r.left-r.width/2;
+let y=e.clientY-r.top-r.height/2;
+let l=Math.hypot(x,y)||1,d=Math.min(39,l);
+state.x=x/l*d/39;
+state.y=y/l*d/39;
+nub.style.transform=`translate(${state.x*39}px,${state.y*39}px)`;
 }
-el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);update(e)});
-el.addEventListener('pointermove',e=>{if(el.hasPointerCapture(e.pointerId))update(e)});
-function reset(){state.x=state.y=0;nub.style.transform='translate(0,0)'}
+el.addEventListener('pointerdown',e=>{
+el.setPointerCapture(e.pointerId);
+update(e);
+});
+el.addEventListener('pointermove',e=>{
+if(el.hasPointerCapture(e.pointerId))update(e);
+});
+function reset(){
+state.x=state.y=0;
+nub.style.transform='translate(0,0)';
+}
 el.addEventListener('pointerup',reset);
 el.addEventListener('pointercancel',reset);
 return state;
 }
-const move=joystick('move'),look=joystick('cameraStick');
-let yaw=.55,pitch=.52,distance=13.5,drag=null,pinchDistance=0;
-const pointers=new Map();
+
+const move=joy('move'),look=joy('look');
+let yaw=.55,pitch=.62,distance=12.5,drag=null,pointers=new Map(),pinch=0;
+
 renderer.domElement.addEventListener('pointerdown',e=>{
 pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-if(pointers.size===1)drag={x:e.clientX,y:e.clientY,t:performance.now(),moved:false};
+drag=pointers.size===1?{
+x:e.clientX,y:e.clientY,started:performance.now(),moved:false
+}:null;
 });
+
 renderer.domElement.addEventListener('pointermove',e=>{
 if(!pointers.has(e.pointerId))return;
 pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
 if(pointers.size===2){
-const p=[...pointers.values()];
-const d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
-if(pinchDistance)distance=clamp(distance+(pinchDistance-d)*.035,7,23);
-pinchDistance=d;drag=null;return;
-}
-if(drag){
-const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+let a=[...pointers.values()];
+let d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
+if(pinch)distance=clamp(distance+(pinch-d)*.03,6.5,21);
+pinch=d;
+drag=null;
+}else if(drag){
+let dx=e.clientX-drag.x,dy=e.clientY-drag.y;
 if(Math.abs(dx)+Math.abs(dy)>3)drag.moved=true;
-yaw-=dx*.006;pitch=clamp(pitch+dy*.004,.22,1.1);
+yaw-=dx*.006;
+pitch=clamp(pitch+dy*.004,.3,1.12);
 drag.x=e.clientX;drag.y=e.clientY;
 }
 });
-const ray=new T.Raycaster(),pointer=new T.Vector2();
+
 renderer.domElement.addEventListener('pointerup',e=>{
-pointers.delete(e.pointerId);pinchDistance=0;
-if(drag&&!drag.moved&&performance.now()-drag.t<250&&playing&&!paused){
-pointer.set(e.clientX/innerWidth*2-1,1-e.clientY/innerHeight*2);
-ray.setFromCamera(pointer,camera);
-const hit=ray.intersectObjects(characters.map(a=>a.model),true);
-if(hit.length){
-let obj=hit[0].object;
-while(obj.parent&&!characters.some(a=>a.model===obj))obj=obj.parent;
-const i=characters.findIndex(a=>a.model===obj);
-if(i>=0)switchTo(i);
+pointers.delete(e.pointerId);
+pinch=0;
+if(drag&&!drag.moved&&performance.now()-drag.started<250){
+const coords=new THREE.Vector2(
+e.clientX/innerWidth*2-1,
+1-e.clientY/innerHeight*2
+);
+const ray=new THREE.Raycaster();
+ray.setFromCamera(coords,camera);
+let hits=ray.intersectObjects(roster.map(a=>a.obj),true);
+if(hits.length){
+let o=hits[0].object;
+while(o.parent&&!roster.some(a=>a.obj===o))o=o.parent;
+let i=roster.findIndex(a=>a.obj===o);
+if(i>=0)choose(i);
 }
 }
 drag=null;
 });
 renderer.domElement.addEventListener('pointercancel',e=>{
-pointers.delete(e.pointerId);drag=null;pinchDistance=0;
+pointers.delete(e.pointerId);
+drag=null;
+pinch=0;
 });
 
-const stops=[[0,0],[17,3],[-19,9],[-10,-9],[10,-9],[-10,11],[10,11],[-5,-12],[5,12]];
-function newGoal(a,nighttime){
-const p=nighttime&&rng()<.75?[a.home.x,a.home.z]:pick(stops);
-a.goal.set(p[0]+rand(-2.2,2.2),0,p[1]+rand(-2.2,2.2));
-a.pause=rand(.7,3);
+// INDEPENDENT VILLAGERS
+const places=[
+[0,0],[15,3],[-20,8],[-10,-10],[11,-10],[0,13]
+];
+
+function newGoal(a){
+let p=phase===3&&random()<.85
+?[a.home.x,a.home.z]
+:pick(places);
+a.goal.set(p[0]+rnd(-2,2),0,p[1]+rnd(-2,2));
+a.pause=rnd(.5,2.4);
 }
-function animateGait(a,t,i,moving){
-const ud=a.model.userData,v=moving?1:0;
-ud.rig.position.y=Math.sin(t*.012+i)*.055*v;
-ud.head.rotation.z=Math.sin(t*.006+i)*.045;
-ud.legs.forEach((l,k)=>l.rotation.x=Math.sin(t*.012+i+k*Math.PI)*.35*v);
-ud.arms.forEach((l,k)=>l.rotation.x=Math.sin(t*.012+i+(1-k)*Math.PI)*.18*v);
-ud.tail.rotation.y=Math.sin(t*.006+i)*.35;
+
+function gait(a,t,i,walking){
+let d=a.obj.userData,f=walking?1:0;
+d.rig.position.y=Math.sin(t*.012+i)*.05*f;
+d.head.rotation.z=Math.sin(t*.005+i)*.04;
+d.legs.forEach((l,k)=>{
+l.rotation.x=Math.sin(t*.012+i+k*Math.PI)*.32*f;
+});
+d.arms.forEach((arm,k)=>{
+arm.rotation.x=Math.sin(t*.012+i+(1-k)*Math.PI)*.19*f;
+});
+d.tail.rotation.y=Math.sin(t*.007+i)*.29;
 }
-function animateAgent(a,dt,t,i,nighttime){
-const root=a.model,rig=root.userData.rig;
+
+function npcMove(a,dt,t,i){
 if(a.pause>0){
 a.pause-=dt;
-rig.position.y=Math.sin(t*.003+i)*.015;
-root.userData.head.rotation.z=Math.sin(t*.002+i)*.045;
+gait(a,t,i,false);
 return;
 }
-const d=a.goal.clone().sub(root.position);
-d.y=0;
-if(d.lengthSq()<.55){newGoal(a,nighttime);return}
-d.normalize();
-const speed=nighttime?.7:1.12;
-root.position.addScaledVector(d,speed*dt);
-root.position.x=clamp(root.position.x,-45,45);
-root.position.z=clamp(root.position.z,-45,45);
-root.rotation.y=Math.atan2(d.x,d.z);
-animateGait(a,t,i,true);
+let delta=a.goal.clone().sub(a.obj.position);
+delta.y=0;
+if(delta.length()<.55){
+newGoal(a);
+return;
+}
+delta.normalize();
+let old=a.obj.position.clone();
+a.obj.position.addScaledVector(delta,dt*(phase===3?.65:1));
+a.obj.position.x=clamp(a.obj.position.x,-45,45);
+a.obj.position.z=clamp(a.obj.position.z,-45,45);
+if(blockers.some(o=>
+Math.hypot(a.obj.position.x-o.x,a.obj.position.z-o.z)<o.r)){
+a.obj.position.copy(old);
+newGoal(a);
+return;
+}
+a.obj.rotation.y=Math.atan2(delta.x,delta.z);
+gait(a,t,i,true);
 }
 
-const precipitation=[],particleMat=new T.MeshBasicMaterial({color:'#e9f6ff'});
-for(let i=0;i<65;i++){
-precipitation.push(ball(scene,particleMat,0,-100,0,.045,.13,.045));
-}
+// WEATHER AND MUSIC
+const drops=[];
+for(let i=0;i<50;i++)
+drops.push(orb(
+scene,
+new THREE.MeshBasicMaterial({color:'#e8f2f4'}),
+0,-100,0,.045,.13,.045
+));
 
-let audio,noteIndex=0;
-const notes=[392,440,523,587,659,523,440,392];
+let audio,melody=0;
+const notes=[392,440,523,659,587,523,440,392];
+
 function startAudio(){
 try{
 audio??=new(window.AudioContext||window.webkitAudioContext)();
@@ -780,88 +875,101 @@ audio.resume();
 setInterval(()=>{
 if(!music||!playing)return;
 try{
-startAudio();if(!audio)return;
-const o=audio.createOscillator(),v=audio.createGain();
-o.type='sine';o.frequency.value=notes[noteIndex++%notes.length];
+startAudio();
+if(!audio)return;
+let o=audio.createOscillator(),v=audio.createGain();
+o.frequency.value=notes[melody++%notes.length];
+o.type='sine';
 v.gain.setValueAtTime(.025,audio.currentTime);
-v.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.27);
-o.connect(v);v.connect(audio.destination);
-o.start();o.stop(audio.currentTime+.28);
+v.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.28);
+o.connect(v);
+v.connect(audio.destination);
+o.start();
+o.stop(audio.currentTime+.29);
 }catch(e){}
-},410);
+},460);
 
-let last=performance.now(),elapsed=0;
-const velocity=new T.Vector3(),focus=new T.Vector3();
-camera.position.set(8,9,14);
+// MAIN LOOP
+let last=performance.now();
+const dir=new THREE.Vector3(),target=new THREE.Vector3();
+camera.position.set(8,9,13);
 
 function frame(t){
 requestAnimationFrame(frame);
-const dt=Math.min((t-last)/1000,.05);
+let dt=Math.min((t-last)/1000,.05);
 last=t;
 
-if(playing&&!paused){
-const hero=characters[selected],p=hero.model.position;
-yaw-=look.x*1.55*dt;
-pitch=clamp(pitch+look.y*.8*dt,.22,1.1);
-const intensity=Math.hypot(move.x,move.y);
+if(playing&&!menuOpen){
+let hero=roster[chosen],p=hero.obj.position;
+yaw-=look.x*1.5*dt;
+pitch=clamp(pitch+look.y*.83*dt,.3,1.1);
 
-if(intensity>.085){
-const forward=new T.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
-const right=new T.Vector3(Math.cos(yaw),0,-Math.sin(yaw));
-velocity.copy(right).multiplyScalar(move.x).addScaledVector(forward,-move.y).normalize();
-const old=p.clone();
-p.addScaledVector(velocity,dt*4.4);
+let power=Math.hypot(move.x,move.y);
+if(power>.07){
+let forward=new THREE.Vector3(
+-Math.sin(yaw),0,-Math.cos(yaw)
+);
+let right=new THREE.Vector3(
+Math.cos(yaw),0,-Math.sin(yaw)
+);
+dir.copy(right)
+.multiplyScalar(move.x)
+.addScaledVector(forward,-move.y)
+.normalize();
+
+let old=p.clone();
+p.addScaledVector(dir,dt*4.5);
 p.x=clamp(p.x,-46,46);
 p.z=clamp(p.z,-46,46);
-for(const o of obstacles){
-if(Math.hypot(p.x-o.x,p.z-o.z)<o.r){p.copy(old);break}
+
+if(blockers.some(o=>Math.hypot(p.x-o.x,p.z-o.z)<o.r))
+p.copy(old);
+hero.obj.rotation.y=Math.atan2(dir.x,dir.z);
 }
-hero.model.rotation.y=Math.atan2(velocity.x,velocity.z);
-animateGait(hero,t,0,true);
-}else animateGait(hero,t,0,false);
 
-for(let i=0;i<characters.length;i++)
-if(i!==selected)animateAgent(characters[i],dt,t,i,time===3);
-for(let i=0;i<villagers.length;i++)
-animateAgent(villagers[i],dt,t,i+30,time===3);
+gait(hero,t,0,power>.07);
+roster.forEach((a,i)=>{
+if(i!==chosen)npcMove(a,dt,t,i);
+});
+npcs.forEach((a,i)=>npcMove(a,dt,t,i+30));
 
-focus.set(p.x,1.2,p.z);
-const target=new T.Vector3(
+target.set(
 p.x+Math.sin(yaw)*distance*Math.cos(pitch),
 1.2+distance*Math.sin(pitch),
 p.z+Math.cos(yaw)*distance*Math.cos(pitch)
 );
-for(const o of obstacles){
-const dx=target.x-o.x,dz=target.z-o.z;
-if(Math.hypot(dx,dz)<o.r+1.3&&target.y<5.5)target.y=5.5;
-}
-camera.position.lerp(target,Math.min(1,dt*5));
-camera.lookAt(focus);
-elapsed+=dt;
-if(elapsed>105){elapsed=0;rest()}
+camera.position.lerp(target,Math.min(1,dt*4));
+camera.lookAt(p.x,1.2,p.z);
+
+sun.position.set(p.x-15,23,p.z+13);
+sun.target.position.set(p.x,0,p.z);
+
+clock+=dt;
+if(clock>=100){clock=0;rest()}
 }
 
-for(const [c,ph] of wind)c.rotation.z=Math.sin(t*.0008+ph)*.025;
-for(let i=0;i<treasures.length;i++){
-const a=treasures[i];
-if(!a.found){
-a.g.rotation.y+=dt*.7;
-a.g.position.y=Math.sin(t*.002+i)*.09;
+for(let [c,ph] of sway)
+c.rotation.z=Math.sin(t*.0008+ph)*.018;
+
+pickups.forEach((o,i)=>{
+if(!o.found){
+o.g.rotation.y+=dt*.6;
+o.g.position.y=Math.sin(t*.002+i)*.08;
 }
-}
-for(const p of precipitation){
-p.visible=weather===1||weather===3;
-if(!p.visible)continue;
-const h=characters[selected].model.position;
-if(p.position.y<0)
-p.position.set(h.x+rand(-15,15),rand(7,18),h.z+rand(-15,15));
-p.position.y-=dt*(weather===3?1.5:10);
-p.position.x+=dt*(weather===3?.5:2);
+});
+
+for(let d of drops){
+d.visible=weather===1||weather===3;
+if(!d.visible)continue;
+let p=roster[chosen].obj.position;
+if(d.position.y<0)
+d.position.set(p.x+rnd(-12,12),rnd(8,16),p.z+rnd(-12,12));
+d.position.y-=dt*(weather===3?1.7:9);
 }
 renderer.render(scene,camera);
 }
-requestAnimationFrame(frame);
 
+requestAnimationFrame(frame);
 window.addEventListener('resize',()=>{
 camera.aspect=innerWidth/innerHeight;
 camera.updateProjectionMatrix();
