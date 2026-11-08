@@ -1,0 +1,335 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Maple's 99 Nights in the Forest</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;overflow:hidden;background:#8fcbd3;font-family:system-ui;color:white;touch-action:none}
+canvas{display:block}
+#hud{position:absolute;top:12px;left:10px;right:10px;background:#173f43df;border:2px solid #ffe1a0;border-radius:17px;padding:10px;font-size:13px;pointer-events:none}
+#tools{position:absolute;top:100px;right:10px;display:flex;flex-direction:column;gap:7px}
+button{background:#28565b;color:white;border:2px solid #ffe5ac;border-radius:15px;padding:10px;font-weight:bold;font-size:13px}
+button:active{background:#658e79}
+#pad{position:absolute;bottom:28px;left:24px;width:145px;height:145px;border:3px solid #fff5d5;border-radius:50%;background:#315d65a8;touch-action:none}
+#nub{position:absolute;width:62px;height:62px;left:39px;top:39px;border-radius:50%;background:#ffd182;border:3px solid white;pointer-events:none}
+#actions{position:absolute;bottom:35px;right:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#actions button{height:65px;min-width:76px;background:#517d74}
+#msg{position:absolute;bottom:194px;left:10%;right:10%;background:#173f43de;padding:10px;border-radius:16px;text-align:center;font-size:13px;pointer-events:none}
+#intro{position:absolute;inset:0;background:#163a40ee;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px;z-index:8}
+#intro h1{color:#ffd88c;font-size:30px}
+#intro p{max-width:340px;line-height:1.5}
+#intro button{font-size:20px;background:#dba858;padding:16px;color:#263d36}
+</style>
+</head>
+<body>
+<div id="hud">🍁 Maple's 99 Nights<br><span id="info">Loading forest...</span></div>
+<div id="tools">
+<button id="switch">🐾 Switch</button>
+<button id="create">➕ Create</button>
+<button id="music">🎵 Music</button>
+</div>
+<div id="pad"><div id="nub"></div></div>
+<div id="actions">
+<button id="explore">🔎 Explore</button>
+<button id="plant">🌱 Plant</button>
+<button id="build">🏠 Build</button>
+<button id="rest">🌙 Rest</button>
+</div>
+<div id="msg">Welcome to the forest!</div>
+<div id="intro">
+<h1>🍁 Maple's 99 Nights<br>in the Forest</h1>
+<p>Explore a magical 3D village with kittens, puppies, birds and people. Make friends, gather treasures, plant gardens and experience 99 cozy nights!</p>
+<button id="start">▶ Start Adventure</button>
+</div>
+<script type="module">
+import * as T from "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js";
+
+const $=id=>document.getElementById(id);
+const scene=new T.Scene();
+scene.background=new T.Color("#a7daec");
+scene.fog=new T.Fog("#a7daec",25,75);
+const camera=new T.PerspectiveCamera(60,innerWidth/innerHeight,.1,150);
+const renderer=new T.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));
+document.body.prepend(renderer.domElement);
+scene.add(new T.HemisphereLight(0xffffff,0x657550,2));
+const sun=new T.DirectionalLight(0xffe8b0,2);
+sun.position.set(12,20,8);scene.add(sun);
+
+function box(w,h,d,c,x=0,y=0,z=0){
+const m=new T.Mesh(new T.BoxGeometry(w,h,d),new T.MeshLambertMaterial({color:c}));
+m.position.set(x,y,z);return m;
+}
+function ball(r,c,x=0,y=0,z=0){
+const m=new T.Mesh(new T.SphereGeometry(r,12,9),new T.MeshLambertMaterial({color:c}));
+m.position.set(x,y,z);return m;
+}
+function cone(r,h,c,x=0,y=0,z=0){
+const m=new T.Mesh(new T.ConeGeometry(r,h,7),new T.MeshLambertMaterial({color:c}));
+m.position.set(x,y,z);return m;
+}
+const ground=box(110,.15,110,"#80b77a",0,-.1,0);scene.add(ground);
+scene.add(box(5,.02,46,"#decba0",0,.02,0));
+scene.add(box(40,.02,4,"#decba0",0,.03,0));
+const scenery=[],plants=[],items=[],villagers=[],party=[];
+function tree(x,z){
+const g=new T.Group();
+g.add(box(.45,2,.45,"#80583f",0,1,0));
+g.add(cone(1.5,3.5,"#428b5e",0,3,0));
+g.position.set(x,0,z);scene.add(g);
+scenery.push(g);
+}
+function house(x,z,color){
+const g=new T.Group();
+g.add(box(4,3,4,color,0,1.5,0));
+g.add(cone(3.6,2.5,"#bd7765",0,4.1,0));
+g.add(box(.95,1.9,.12,"#77533c",0,.95,2.05));
+g.add(box(.8,.8,.15,"#c7effb",-1.2,2,2.05));
+g.position.set(x,0,z);scene.add(g);
+}
+house(-9,-8,"#eac997");
+house(9,-7,"#a7b9db");
+house(-10,10,"#dfa7a1");
+house(10,11,"#cfb3df");
+for(let i=0;i<95;i++){
+let x=Math.random()*90-45,z=Math.random()*90-45;
+if(Math.abs(x)<14&&Math.abs(z)<15)continue;
+tree(x,z);
+}
+const artifactNames=["Cat collar","Dog bed","Bird cage","Axe","Rope","Ladder","Flashlight","Magic key","Star crystal"];
+for(let i=0;i<25;i++){
+let x=Math.random()*38-19,z=Math.random()*38-19;
+const o=ball(.36,["#f5ce58","#d7a5ec","#90dbdd"][i%3],x,.5,z);
+scene.add(o);
+items.push({mesh:o,name:artifactNames[i%artifactNames.length],found:false});
+}
+function character(type,color,name,x=0,z=0){
+const g=new T.Group();
+g.add(ball(.57,color,0,1,0));
+g.add(ball(.43,color,0,1.65,.18));
+if(type==="Kitten"){
+g.add(cone(.22,.43,color,-.3,2.12,.12));
+g.add(cone(.22,.43,color,.3,2.12,.12));
+}else if(type==="Puppy"){
+g.add(ball(.26,color,-.48,1.63,0));
+g.add(ball(.26,color,.48,1.63,0));
+}else if(type==="Bird"){
+g.add(cone(.18,.35,"#ffcf70",0,1.6,.64));
+}else{
+g.add(ball(.36,"#f0c9a0",0,2,.1));
+g.add(cone(.49,.48,color,0,2.48,0));
+}
+g.add(ball(.085,"#25343b",-.18,1.73,.54));
+g.add(ball(.085,"#25343b",.18,1.73,.54));
+for(let s of [-1,1]){
+g.add(ball(.19,color,s*.35,.35,.12));
+}
+g.position.set(x,0,z);
+g.userData={type,name};
+scene.add(g);return g;
+}
+party.push(character("Kitten","#e5b36f","Maple"));
+party.push(character("Puppy","#e6d0b6","Biscuit"));
+party.push(character("Bird","#8ac5d9","Pip"));
+party[1].position.set(1.8,0,0);
+party[2].position.set(-1.8,0,0);
+let active=0;
+const names=["Luna","Clover","Milo","Sunny","Peaches","Robin"];
+const types=["Kitten","Puppy","Bird","Human"];
+for(let i=0;i<10;i++){
+let x=(Math.random()-.5)*27,z=(Math.random()-.5)*27;
+const m=character(types[i%4],["#e7bd85","#c5b3dc","#9fcdb5","#f4a7a5"][i%4],names[i%6],x,z);
+villagers.push({m,angle:Math.random()*6.28});
+}
+function current(){return party[active]}
+const seasons=["Spring","Summer","Autumn","Winter"];
+const times=["Morning","Afternoon","Evening","Night"];
+const weather=["Sunny","Rainy","Cloudy","Snowy"];
+let season=0,period=0,night=1,rain=false,inventory=[],wood=0,food=0,gardens=0,homes=0,started=false,musicOn=false;
+function say(s){$("msg").textContent=s}
+function info(){
+$("info").textContent=`🌙 Night ${night}/99 · ${times[period]} · ${seasons[season]} · ${weather[rain?season===3?3:1:period===3?2:0]} | 🐾 ${current().userData.name} | 🎒 ${inventory.length} artifacts | 🌱 ${gardens} | 🏠 ${homes}`;
+}
+function lighting(){
+const colors=["#b3e4f3","#a7dcec","#edac88","#273a72"];
+scene.background=new T.Color(colors[period]);
+scene.fog.color.set(colors[period]);
+ground.material.color.set(season===3?"#e0edee":season===2?"#b89d65":season===1?"#7bbd6c":"#80b77a");
+sun.intensity=[1.3,2,.9,.25][period];
+}
+function nextTime(){
+period=(period+1)%4;
+if(period===0){
+night++;if(night%8===0)season=(season+1)%4;
+}
+rain=Math.random()<.25;
+lighting();info();
+say(period===3?"✨ The stars are shining!":"🌤️ "+times[period]+" has arrived!");
+if(night>=99)say("🏆 You made it through 99 cozy nights! Keep exploring!");
+}
+lighting();info();
+function switchPet(){
+active=(active+1)%party.length;
+say("🐾 You're now "+current().userData.name+"!");
+info();
+}
+function createPet(){
+const t=prompt("Create a Kitten, Puppy, Bird or Human:","Kitten");
+if(!t)return;
+const type=types.find(v=>v.toLowerCase()===t.trim().toLowerCase())||"Kitten";
+const name=(prompt("What is their name?","New Friend")||"New Friend").slice(0,24);
+const colors=["#e4b18d","#a8c6e5","#f0d18a","#c5afe0","#a4d3b5"];
+const pet=character(type,colors[party.length%colors.length],name,current().position.x+1.5,current().position.z+1.5);
+party.push(pet);active=party.length-1;
+say("✨ Meet "+name+"!");info();
+}
+function explore(){
+const p=current().position;
+let closest=null,best=2.8;
+for(const i of items){
+if(i.found)continue;
+const d=p.distanceTo(i.mesh.position);
+if(d<best){best=d;closest=i}
+}
+if(closest){
+closest.found=true;scene.remove(closest.mesh);
+inventory.push(closest.name);
+say("🎁 Found "+closest.name+"! Artifacts: "+inventory.join(", "));
+}else{
+let near=villagers.find(v=>v.m.position.distanceTo(p)<3);
+if(near)say("💬 "+near.m.userData.name+": Welcome to our magical village!");
+else{wood++;food++;say("🌲 Gathered wood and berries! Wood: "+wood)}
+}
+info();
+}
+function plant(){
+gardens++;
+const p=current().position;
+const g=new T.Group();
+g.add(box(.85,.16,.85,"#865f43",0,.08,0));
+g.add(cone(.36,.8,"#63b952",0,.6,0));
+g.position.set(p.x+1,0,p.z);
+scene.add(g);plants.push(g);
+say("🌱 You planted a garden!");
+info();
+}
+function build(){
+if(wood<2){
+say("🪵 Explore to gather 2 wood before building!");
+return;
+}
+wood-=2;homes++;
+const p=current().position;
+const g=new T.Group();
+g.add(box(2,1.5,2,"#eed5a2",0,.75,0));
+g.add(cone(1.8,1.4,"#ba8572",0,2,0));
+g.position.set(p.x+3,0,p.z+3);scene.add(g);
+say("🏡 You built a cozy cottage!");
+info();
+}
+let audio;
+function playNote(f,d=.18){
+if(!musicOn)return;
+try{
+audio??=new AudioContext();
+const o=audio.createOscillator(),v=audio.createGain();
+o.type="sine";o.frequency.value=f;
+v.gain.setValueAtTime(.035,audio.currentTime);
+v.gain.exponentialRampToValueAtTime(.001,audio.currentTime+d);
+o.connect(v);v.connect(audio.destination);
+o.start();o.stop(audio.currentTime+d);
+}catch(e){}
+}
+let notes=[392,440,523,659,523,440,392,330],note=0;
+setInterval(()=>{if(musicOn&&started)playNote(notes[note++%notes.length])},400);
+$("music").onclick=()=>{
+musicOn=!musicOn;
+$("music").textContent=musicOn?"🔊 Music On":"🎵 Music";
+if(musicOn)playNote(523);
+};
+$("switch").onclick=switchPet;
+$("create").onclick=createPet;
+$("explore").onclick=explore;
+$("plant").onclick=plant;
+$("build").onclick=build;
+$("rest").onclick=nextTime;
+$("start").onclick=()=>{
+$("intro").style.display="none";started=true;
+say("🍁 Welcome to Maple's magical forest!");
+};
+let joyX=0,joyY=0;
+const pad=$("pad"),nub=$("nub");
+function moveStick(e){
+const r=pad.getBoundingClientRect();
+let x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2);
+const len=Math.hypot(x,y),max=48;
+if(len>max){x=x/len*max;y=y/len*max}
+joyX=x/max;joyY=y/max;
+nub.style.transform=`translate(${x}px,${y}px)`;
+}
+pad.addEventListener("pointerdown",e=>{pad.setPointerCapture(e.pointerId);moveStick(e)});
+pad.addEventListener("pointermove",e=>{if(pad.hasPointerCapture(e.pointerId))moveStick(e)});
+function release(){joyX=joyY=0;nub.style.transform="translate(0,0)"}
+pad.addEventListener("pointerup",release);
+pad.addEventListener("pointercancel",release);
+const raycaster=new T.Raycaster(),mouse=new T.Vector2();
+renderer.domElement.addEventListener("pointerup",e=>{
+if(!started)return;
+mouse.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);
+raycaster.setFromCamera(mouse,camera);
+const hit=raycaster.intersectObjects(party,true);
+if(hit.length){
+let object=hit[0].object;
+while(object.parent&&!party.includes(object))object=object.parent;
+let i=party.indexOf(object);
+if(i>=0){active=i;info();say("🐾 Playing as "+object.userData.name)}
+}
+});
+let last=performance.now(),timer=0;
+function animate(now){
+requestAnimationFrame(animate);
+let dt=Math.min((now-last)/1000,.05);last=now;
+if(started){
+const p=current().position;
+const len=Math.hypot(joyX,joyY);
+if(len>.08){
+p.x+=joyX*5*dt;p.z+=joyY*5*dt;
+p.x=T.MathUtils.clamp(p.x,-48,48);
+p.z=T.MathUtils.clamp(p.z,-48,48);
+current().rotation.y=Math.atan2(joyX,joyY);
+}
+for(const v of villagers){
+v.angle+=(Math.random()-.5)*dt;
+v.m.position.x+=Math.sin(v.angle)*dt*.65;
+v.m.position.z+=Math.cos(v.angle)*dt*.65;
+v.m.position.x=T.MathUtils.clamp(v.m.position.x,-19,19);
+v.m.position.z=T.MathUtils.clamp(v.m.position.z,-19,19);
+}
+for(let i=0;i<party.length;i++){
+if(i===active)continue;
+party[i].position.lerp(new T.Vector3(p.x+(i%3-1)*1.5,0,p.z+2+Math.floor(i/3)),dt*.9);
+}
+timer+=dt;
+if(timer>35){timer=0;nextTime()}
+const target=new T.Vector3(p.x+10,13,p.z+17);
+camera.position.lerp(target,.07);
+camera.lookAt(p.x,1,p.z);
+}
+for(const o of items)if(!o.found)o.mesh.rotation.y+=dt;
+renderer.render(scene,camera);
+}
+camera.position.set(11,14,20);
+camera.lookAt(0,0,0);
+requestAnimationFrame(animate);
+addEventListener("resize",()=>{
+camera.aspect=innerWidth/innerHeight;
+camera.updateProjectionMatrix();
+renderer.setSize(innerWidth,innerHeight);
+});
+</script>
+</body>
+</html>
